@@ -1,0 +1,10 @@
+{
+    "sounds": {
+        "karjahtelu": "/sounds/karjahtelu.mp3",
+        "kähähdys": "/sounds/kähähdys.mp3",
+        "lumpsahdus": "/sounds/lumpsahdus.mp3",
+        "porskaus": "/sounds/porskaus.mp3",
+        "poru": "/sounds/poru.mp3",
+        "rasahtelu": "/sounds/rasahtelu.mp3"
+    }
+}

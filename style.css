@@ -1,0 +1,74 @@
+#sound-tracks {
+    position: relative;
+    overflow-x: hidden;
+}
+
+#sound-menu {
+    height: 6em;
+    width: 25vw;
+    border: solid;
+    overflow-y: scroll;
+    scrollbar-width: 1rem;
+}
+
+#cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: .3%;
+    background: rgba(200, 200, 200, 0.7);
+    animation: moving-cursor linear 10s;
+    animation-play-state: paused;
+    z-index: 1;
+}
+
+@keyframes moving-cursor {
+    0% { left: 0; }
+    100% { left: 100%; }
+}
+
+.track {
+    position: relative;
+    z-index: 0;
+}
+
+.sound {
+    position: absolute;
+    top: 0;
+    background: #cb9;
+    color: black;
+    height: 100%;
+    overflow: visible;
+    border: 1px solid black;
+    white-space: nowrap;
+}
+
+.sound audio {
+    /*Fit nicely to #sound-menu */
+    width: calc(25vw - 2.4rem - 1px);
+}
+
+#sound-menu .sound {
+    position: relative;
+    height: 2em;
+}
+
+.sound checkbox {
+    width: 1.2rem;
+    margin: 0.1rem;
+}
+
+audio {
+    position: absolute;
+    height: 100%;
+}
+
+#track1 { background: red; }
+#track2 { background: orange; }
+#track3 { background: yellow; }
+#track4 { background: green; }
+#track5 { background: cyan; }
+#track6 { background: blue; }
+#track7 { background: purple; }
+#track8 { background: magenta; }
