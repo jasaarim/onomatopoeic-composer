@@ -33,7 +33,8 @@ function makeTracks(tracks, num) {
         const track = document.createElement('div');
         track.className = 'track';
         track.id = `track${i}`;
-        track.appendChild(document.createTextNode(String(i)));
+        // The whitespace before the track number is a unicode en space
+        track.appendChild(document.createTextNode(` ${i}`));
         tracks.appendChild(track);
     }
 }
