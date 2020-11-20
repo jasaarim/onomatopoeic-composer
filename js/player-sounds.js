@@ -5,14 +5,11 @@ import { createSound } from './sounds.js';
 async function createActiveSound(name, source, target, position) {
     const sound = createSound(name, source);
 
-    sound.id = `active-sound-${target.id}-${position}`;
+    sound.move = (target, position) => moveSound(sound, target, position);
+    sound.move(target, position);
+
     // Initial width to be adjusted after the audio is fetched
     sound.style.width = '5%';
-    sound.style.left = String(position) + '%';
-    // Percentage expressing where the sound starts in the track
-    sound.position = position;
-
-    target.appendChild(sound);
 
     const tracks = getSoundTracks(target);
     const audioCxt = tracks.getAudioCxt();
@@ -23,15 +20,26 @@ async function createActiveSound(name, source, target, position) {
 
     sound.audioBuffer = await createAudioBuffer(sound.audio, audioCxt);
 
-    sound.adjustWidth = () => {
-        const audioDuration = sound.audioBuffer.buffer.duration;
-        sound.style.width = `${audioDuration / tracks.getDuration() * 100}%`;
-    };
+    sound.adjustWidth = () => adjustSoundWidth(sound, tracks);
     sound.adjustWidth();
 
     // TODO: Check for overlap and possibly move to another place
 
     return sound
+}
+
+
+function moveSound(sound, target, position) {
+    sound.id = `active-sound-${target.id}-${position}`;
+    sound.style.left = `${position}%`;
+    sound.position = position;
+    target.appendChild(sound);
+}
+
+
+function adjustSoundWidth(sound, tracks) {
+    const audioDuration = sound.audioBuffer.buffer.duration;
+    sound.style.width = `${audioDuration / tracks.getDuration() * 100}%`;
 }
 
 function fetchAudioBuffer(src, audioCxt) {

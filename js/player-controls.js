@@ -6,7 +6,10 @@ function play() {
     const audioCxt = tracks.getAudioCxt();
     if (!audioCxt.playing) {
         tracks.applyActiveSounds(async sound => {
-            sound.audioBuffer.start(audioCxt.currentTime + audioStart(sound));
+            let start = audioStart(sound);
+            const offset = Math.max(0, -start);
+            start = Math.max(0, start);
+            sound.audioBuffer.start(audioCxt.currentTime + start, offset);
         });
         audioCxt.playing = true;
     }

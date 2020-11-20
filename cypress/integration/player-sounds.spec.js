@@ -136,5 +136,55 @@ describe('Sound elements in the player', () => {
                                .map(d => Math.round(d * 1e6) / 1e6 )
                               ).to.deep.eq([2, 4, 8, 14]));
         cy.get('#stop-button').click();
-      });
+    });
+
+    it('Moving active sounds, also to before 0 seconds', () => {
+        const delays = [];
+        const offsets = [];
+        const targets = [2, 2, 5, 5];
+        const positions = [10, 40, 20, 70];
+        const moveTargets = [1, 2, 4, 6];
+        const movePositions = [90, 30, 20, -10];
+        testSoundsToTracks(
+            targets, positions,
+            (name, source, target, position) => {
+                const moveTarget = moveTargets.pop();
+                const movePosition = movePositions.pop();
+                cy.get(`#active-sound-track${target}-${position}`).then($el => {
+                    const sound = $el.get(0);
+                    // Mock start
+                    sound.audioBuffer._start = sound.audioBuffer.start;
+                    sound.audioBuffer.start = (delay, offset) => {
+                        const audioCxt =  sound.parentElement
+                              .parentElement.audioCxt;
+                        delays.push(delay - audioCxt.currentTime);
+                        offsets.push(offset);
+                        sound.audioBuffer._start(delay, offset);
+                    };
+                    // Move the sound
+                    cy.get(`#track${moveTarget}`).then($el2 => {
+                        sound.move($el2.get(0), movePosition);
+                    });
+                });
+                cy.get(`#active-sound-track${moveTarget}-${movePosition}`)
+                    .then($el => {
+                        const sound = $el.get(0);
+                        expect(sound.position).to.eq(movePosition);
+                    });
+            });
+        // Change the duration in the player
+        cy.get('#sound-tracks').then($el => $el.get(0).setDuration(20));
+        cy.get('#play-button').click().contains('Pause');
+        cy.get('#play-button').click().contains('Play')
+            .then(() => expect(delays
+                               .sort((a, b) => a - b)
+                               .map(d => Math.round(d * 1e6) / 1e6 )
+                              ).to.deep.eq([0, 4, 6, 18]))
+            .then(() => expect(offsets
+                               .sort((a, b) => a - b)
+                               .map(d => Math.round(d * 1e6) / 1e6 )
+                              ).to.deep.eq([0, 0, 0, 2]));
+        cy.get('#stop-button').click();
+
+    });
 })
