@@ -39,7 +39,7 @@ function moveSound(sound, target, position) {
 
 function adjustSoundWidth(sound, tracks) {
     const audioDuration = sound.audioBuffer.buffer.duration;
-    sound.style.width = `${audioDuration / tracks.getDuration() * 100}%`;
+    sound.style.width = `${audioDuration / tracks.duration * 100}%`;
 }
 
 function fetchAudioBuffer(src, audioCxt) {

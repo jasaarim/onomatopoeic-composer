@@ -1,5 +1,5 @@
-import { play, clearAudioContext, getAudioContext, createActiveSound } from '../../js/player-sounds.js'
-import { fetchSoundNames } from '../../js/sounds.js'
+import { play, clearAudioContext, getAudioContext, createActiveSound } from '../../js/player-sounds.js';
+import { fetchSoundNames } from '../../js/sounds.js';
 
 
 class MockAudioCxt extends AudioContext {
@@ -128,14 +128,24 @@ describe('Sound elements in the player', () => {
                 });
             });
         // Change the duration in the player
-        cy.get('#sound-tracks').then($el => $el.get(0).setDuration(20));
+        cy.get('#sound-tracks')
+            .then($el => $el.get(0).setDuration(20));
         cy.get('#play-button').click().contains('Pause');
+        cy.get('#sound-tracks').then($el => {
+            expect($el.get(0).audioCxt.playing).to.eq(true);
+        });
         cy.get('#play-button').click().contains('Play')
             .then(() => expect(delays
                                .sort((a, b) => a - b)
                                .map(d => Math.round(d * 1e6) / 1e6 )
                               ).to.deep.eq([2, 4, 8, 14]));
+        cy.get('#sound-tracks').then($el => {
+            expect($el.get(0).audioCxt.playing).to.eq(true);
+        });
         cy.get('#stop-button').click();
+        cy.get('#sound-tracks').then($el => {
+            expect($el.get(0).audioCxt.playing).to.eq(false);
+        });
     });
 
     it('Moving active sounds, also to before 0 seconds', () => {
@@ -185,6 +195,43 @@ describe('Sound elements in the player', () => {
                                .map(d => Math.round(d * 1e6) / 1e6 )
                               ).to.deep.eq([0, 0, 0, 2]));
         cy.get('#stop-button').click();
-
     });
+
+    it('Starting from a different position', () => {
+        const delays = [];
+        const offsets = [];
+        const targets = [8, 2, 5, 8];
+        const positions = [-50, 10, 20, 60];
+        testSoundsToTracks(
+            targets, positions,
+            (name, source, target, position) => {
+                cy.get(`#active-sound-track${target}-${position}`).then($el => {
+                    const sound = $el.get(0);
+                    // Mock start
+                    sound.audioBuffer._start = sound.audioBuffer.start;
+                    sound.audioBuffer.start = (delay, offset) => {
+                        const audioCxt =  sound.parentElement
+                              .parentElement.audioCxt;
+                        delays.push(delay - audioCxt.currentTime);
+                        offsets.push(offset);
+                        sound.audioBuffer._start(delay, offset);
+                    };
+                });
+            });
+        // Change the duration in the player
+        cy.get('#sound-tracks').then($el => $el.get(0).setDuration(5));
+        cy.get('#sound-tracks').then($el => $el.get(0).setStart(1));
+        cy.get('#play-button').click().contains('Pause');
+        cy.get('#play-button').click().contains('Play')
+            .then(() => expect(delays
+                               .sort((a, b) => a - b)
+                               .map(d => Math.round(d * 1e6) / 1e6 )
+                              ).to.deep.eq([0, 0, 0, 2]))
+            .then(() => expect(offsets
+                               .sort((a, b) => a - b)
+                               .map(d => Math.round(d * 1e6) / 1e6 )
+                              ).to.deep.eq([0, 0, 0.5, 3.5]));
+        cy.get('#stop-button').click();
+    });
+
 })

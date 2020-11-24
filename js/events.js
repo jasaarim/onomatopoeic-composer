@@ -1,5 +1,5 @@
 import { play, stop, pause } from './player-controls.js';
-import { Cursor } from './player.js';
+import { Cursor } from './player-cursor.js';
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -23,6 +23,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
     stopButton.addEventListener('click', (event) => {
         stop();
         playButton.textContent = 'Play';
+        // This might emit an animationend event, which will click on
+        // the button again
         cursor.stop();
     });
 

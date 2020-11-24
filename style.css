@@ -14,17 +14,14 @@
 #cursor {
     position: absolute;
     top: 0;
-    left: 0;
     height: 100%;
     width: .3%;
     background: rgba(200, 200, 200, 0.7);
-    animation: moving-cursor linear 10s;
-    animation-play-state: paused;
+    animation: moving-cursor linear paused;
     z-index: 1;
 }
 
 @keyframes moving-cursor {
-    0% { left: 0; }
     100% { left: 100%; }
 }
 

@@ -18,18 +18,27 @@ function play() {
 
 
 function audioStart(sound) {
-    return sound.position / 100 * getSoundTracks().getDuration();
+    const tracks = sound.parentElement.parentElement;
+    let startSeconds = sound.position / 100 * tracks.duration;
+    startSeconds = startSeconds - tracks.start;
+    return startSeconds;
 }
 
 
 function stop() {
     const tracks = getSoundTracks();
     const audioCxt = tracks.getAudioCxt();
-    tracks.applyActiveSounds(async sound => {
-        sound.audioBuffer.stop();
-        sound.audioBuffer = sound.audioBuffer.renew();
-    });
-    audioCxt.playing = false;
+    if (audioCxt.playing) {
+        tracks.applyActiveSounds(async sound => {
+            await sound.audioBuffer.stop();
+            sound.audioBuffer = sound.audioBuffer.renew();
+        });
+        audioCxt.playing = false;
+    } else {
+        // This may happen on pressing the stop button button if that emits an
+        // animationend event.
+        console.log('Stopping when not playing');
+    }
 
     return audioCxt.resume();
 }
@@ -37,7 +46,11 @@ function stop() {
 
 function pause() {
     const audioCxt = getSoundTracks().getAudioCxt();
-    return audioCxt.suspend();
+    if (audioCxt.playing) {
+        return audioCxt.suspend();
+    } else {
+        return audioCxt.resume();
+    }
 }
 
 

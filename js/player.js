@@ -4,8 +4,9 @@ function initializeTracks(num, duration) {
     makeTracks(tracks, num);
 
     // Let the #sound-tracks element contain this state
-    tracks.getDuration = () => getDuration(tracks);
+    // Changing duration changes the start
     tracks.setDuration = (seconds) => setDuration(tracks, seconds);
+    tracks.setStart = (seconds) => setStart(tracks, seconds);
     tracks.getAudioCxt = () => getAudioCxt(tracks);
     tracks.clearAudioCxt = () => clearAudioCxt(tracks);
     tracks.applyActiveSounds = (action) => applyActiveSounds(action);
@@ -40,6 +41,38 @@ function makeTracks(tracks, num) {
 }
 
 
+function setDuration(tracks, seconds) {
+    if (seconds > 0) {
+        const prevDuration = tracks.duration ? tracks.duration : 0;
+        const prevStart = tracks.start ? tracks.start : 0;
+        tracks.duration = seconds;
+        const newStart = prevStart * prevDuration / tracks.duration;
+        tracks.setStart(newStart);
+        applyActiveSounds(sound => sound.adjustWidth());
+    } else {
+        console.log('Invalid duration');
+    }
+}
+
+
+function setStart(tracks, seconds) {
+    const duration = tracks.duration;
+    if (seconds >= 0 && seconds < duration) {
+        tracks.start = seconds;
+        updateCursor(tracks);
+    } else {
+        console.log('Invalid start time');
+    }
+}
+
+
+function updateCursor(tracks) {
+    const cursor = tracks.querySelector('#cursor');
+    cursor.start = tracks.start;
+    cursor.style.left = `${tracks.start / tracks.duration * 100}%`;
+}
+
+
 function getAudioCxt(tracks) {
     if (!tracks.audioCxt) {
         tracks.audioCxt = newAudioCxt();
@@ -64,16 +97,6 @@ function clearAudioCxt(tracks) {
     }
 }
 
-function getDuration(tracks) {
-    return tracks.duration;
-}
-
-
-function setDuration(tracks, seconds) {
-    tracks.duration = seconds;
-    applyActiveSounds(sound => sound.adjustWidth());
-}
-
 
 async function applyActiveSounds(action) {
     for (const sound of getActiveSounds()) {
@@ -87,29 +110,6 @@ function getActiveSounds() {
 }
 
 
-class Cursor {
-    constructor() {
-        this.element = document.querySelector('#cursor');
-        this.tracks = getSoundTracks();
-    }
-
-    play() {
-        this.element.style.animationDuration = `${this.tracks.getDuration()}s`;
-        this.element.style.animationPlayState = 'running';
-    }
-
-    pause() {
-        this.element.style.animationPlayState = 'paused';
-    }
-
-    stop() {
-        // Restart the animation
-        this.element.style.animation = 'none';
-        this.element.offsetHeight;
-        this.element.style.animation = null;
-        this.element.style.animationPlayState = 'paused';
-    }
-}
 
 
-export { Cursor, getSoundTracks, initializeTracks };
+export { getSoundTracks, initializeTracks };
