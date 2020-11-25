@@ -2,14 +2,15 @@ import { getSoundTracks } from './player.js';
 import { createSound } from './sounds.js';
 
 
-async function createActiveSound(name, source, target, position) {
-    const sound = createSound(name, source);
+async function createActiveSound(sound, target, position) {
+    const newSound = createSound(sound.name, sound.audio.src);
 
-    sound.move = (target, position) => moveSound(sound, target, position);
-    sound.move(target, position);
+    newSound.move = moveSound;
+    newSound.adjustWidth = adjustSoundWidth;
+    newSound.move(target, position);
 
     // Initial width to be adjusted after the audio is fetched
-    sound.style.width = '5%';
+    newSound.style.width = '5%';
 
     const tracks = getSoundTracks(target);
     const audioCxt = tracks.getAudioCxt();
@@ -18,28 +19,29 @@ async function createActiveSound(name, source, target, position) {
     //sound.audio.preload = 'auto';
     //connectAudioElement(sound.audio, audioCxt, target);
 
-    sound.audioBuffer = await createAudioBuffer(sound.audio, audioCxt);
-
-    sound.adjustWidth = () => adjustSoundWidth(sound, tracks);
-    sound.adjustWidth();
-
+    newSound.audioBuffer = await createAudioBuffer(newSound.audio, audioCxt);
+    newSound.adjustWidth(tracks);
     // TODO: Check for overlap and possibly move to another place
 
-    return sound
+    return newSound
 }
 
 
-function moveSound(sound, target, position) {
-    sound.id = `active-sound-${target.id}-${position}`;
-    sound.style.left = `${position}%`;
-    sound.position = position;
-    target.appendChild(sound);
+function moveSound(target, position) {
+    this.id = `active-sound-${target.id}-${position}`;
+    this.style.left = `${position}%`;
+    this.position = position;
+    target.appendChild(this);
 }
 
 
-function adjustSoundWidth(sound, tracks) {
-    const audioDuration = sound.audioBuffer.buffer.duration;
-    sound.style.width = `${audioDuration / tracks.duration * 100}%`;
+function adjustSoundWidth(tracks) {
+    if (this.audioBuffer) {
+        const audioDuration = this.audioBuffer.buffer.duration;
+        this.style.width = `${audioDuration / tracks.duration * 100}%`;
+    } else {
+        console.log("Cannot set width because audio buffer isn't ready");
+    }
 }
 
 function fetchAudioBuffer(src, audioCxt) {

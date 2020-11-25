@@ -32,6 +32,8 @@
 
 .sound {
     position: absolute;
+    display: flex;
+    align-items: center;
     top: 0;
     background: #cb9;
     color: black;
@@ -51,9 +53,18 @@
     height: 2em;
 }
 
-.sound checkbox {
+.sound input {
     width: 1.2rem;
     margin: 0.1rem;
+}
+
+.sound select {
+    margin: 1em;
+    background: transparent;
+    box-sizing: border-box;
+    border: 1px solid #888;
+    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+    border-radius: .5em;
 }
 
 audio {

@@ -5,6 +5,7 @@ class Cursor {
     constructor() {
         this.element = document.querySelector('#cursor');
         this.tracks = getSoundTracks();
+        this.playing = false;
     }
 
     play() {
@@ -12,6 +13,7 @@ class Cursor {
         this.element.style.animationDuration = `${duration}s`;
         this.render();
         this.element.style.animationPlayState = 'running';
+        this.playing = true;
     }
 
     pause() {
@@ -21,11 +23,12 @@ class Cursor {
     stop() {
         // Restart the animation
         // This seems to emit animationend event too
-        if (this.element.style.animation) {
+        if (this.playing) {
             this.element.style.animation = 'none';
             this.render();
             this.element.style.animation = null;
             this.element.style.animationPlayState = 'paused';
+            this.playing = false;
         }
     }
 

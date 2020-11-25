@@ -1,4 +1,5 @@
-import { play, clearAudioContext, getAudioContext, createActiveSound } from '../../js/player-sounds.js';
+import { createActiveSound } from '../../js/player-sounds.js';
+import { createSound } from '../../js/sounds.js';
 import { fetchSoundNames } from '../../js/sounds.js';
 
 
@@ -52,12 +53,12 @@ function testSoundsToTracks(targets, positions, test = () => {}) {
             await fetchSoundNames().then(sounds => {
                 for (const name in sounds) {
                     if (targets.length) {
+                        const sound = createSound(name, sounds[name])
                         const source = sounds[name];
                         const targetNum = targets.pop();
                         const position = positions.pop();
                         cy.get(`#track${targetNum}`).then(async $el => {
-                            await createActiveSound(name, source,
-                                              $el.get(0), position);
+                            await createActiveSound(sound, $el.get(0), position);
                         });
                         test(name, source, targetNum, position);
                     }
@@ -221,6 +222,11 @@ describe('Sound elements in the player', () => {
         // Change the duration in the player
         cy.get('#sound-tracks').then($el => $el.get(0).setDuration(5));
         cy.get('#sound-tracks').then($el => $el.get(0).setStart(1));
+        cy.get('#active-sound-track5-20').then($el1 => {
+            cy.get('#cursor').then($el2 => {
+                expect($el1.css('left')).to.eq($el2.css('left'));
+            })
+        })
         cy.get('#play-button').click().contains('Pause');
         cy.get('#play-button').click().contains('Play')
             .then(() => expect(delays
@@ -232,6 +238,11 @@ describe('Sound elements in the player', () => {
                                .map(d => Math.round(d * 1e6) / 1e6 )
                               ).to.deep.eq([0, 0, 0.5, 3.5]));
         cy.get('#stop-button').click();
+        cy.get('#sound-tracks').then($el => expect($el.get(0).start).to.eq(0));
+        cy.get('#cursor').then($el => {
+            expect($el.get(0).style.left).to.eq('0%');
+            expect($el.css('left')).to.eq('0px');
+        });
     });
 
 })

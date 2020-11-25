@@ -43,12 +43,11 @@ function makeTracks(tracks, num) {
 
 function setDuration(tracks, seconds) {
     if (seconds > 0) {
-        const prevDuration = tracks.duration ? tracks.duration : 0;
-        const prevStart = tracks.start ? tracks.start : 0;
+        const prevPosition = tracks.duration ? tracks.start / tracks.duration : 0;
         tracks.duration = seconds;
-        const newStart = prevStart * prevDuration / tracks.duration;
+        const newStart = prevPosition * tracks.duration;
         tracks.setStart(newStart);
-        applyActiveSounds(sound => sound.adjustWidth());
+        applyActiveSounds(sound => sound.adjustWidth(tracks));
     } else {
         console.log('Invalid duration');
     }
@@ -61,7 +60,7 @@ function setStart(tracks, seconds) {
         tracks.start = seconds;
         updateCursor(tracks);
     } else {
-        console.log('Invalid start time');
+        console.log(`Invalid start time: ${seconds}`);
     }
 }
 
