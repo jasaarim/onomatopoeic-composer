@@ -77,21 +77,29 @@ function audioCheckboxChange() {
 function styleAudioControls(audio) {
     if (audio.position > 50) {
         audio.style.right = '100%';
+        audio.style.left = null;
     } else {
         audio.style.left = '1.4rem';
+        audio.style.right = null;
     }
 };
 
 function createSoundMoveMenu() {
+    const tracks = document.querySelector('#sound-tracks');
+    const len = tracks ? tracks.length : 0;
     const menu = document.createElement('select');
     let option = document.createElement('Option');
     menu.appendChild(option);
-    for (let i = 1; i < 9; i++) {
+    for (let i = 1; i <= len; i++) {
         option = document.createElement('option');
         option.value = String(i);
         option.textContent = String(i);
         menu.appendChild(option);
     }
+    option = document.createElement('option');
+    option.value = String('*');
+    option.textContent = String('*');
+    menu.appendChild(option);
 
     menu.onchange = () => soundMove(menu);
 

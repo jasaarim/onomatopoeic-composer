@@ -14,6 +14,7 @@ function initializeTracks(num, duration) {
     tracks.clearAudioCxt = clearAudioCxt;
     tracks.applyActiveSounds = applyActiveSounds;
 
+    tracks.length = num;
     tracks.setDuration(duration);
 
     return tracks;

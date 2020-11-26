@@ -45,12 +45,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
     tracks.addEventListener('moveSound', (event) => {
         const sound = event.detail.sound;
         const trackNum = event.detail.trackNumber;
-        const track = tracks.querySelector(`#track${trackNum}`);
-        const position = tracks.start / tracks.duration * 100;
-        if (sound.move) {
-            sound.move(track, position);
+        if (sound.move && trackNum == '*') {
+            sound.remove();
         } else {
-            createActiveSound(sound, track, position);
+            const track = tracks.querySelector(`#track${trackNum}`);
+            const position = tracks.start / tracks.duration * 100;
+            if (sound.move) {
+                sound.move(track, position);
+            } else {
+                createActiveSound(sound, track, position);
+            }
         }
     })
 

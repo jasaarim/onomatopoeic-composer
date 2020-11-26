@@ -1,6 +1,6 @@
 describe('Moving sounds with select', () => {
 
-    it('Creating new active sounds and moving them', () => {
+    it('Creating new active sounds, moving, and removing them', () => {
         cy.visit('/');
         cy.get('#sound-tracks').then($el => $el.get(0).setStart(5));
         cy.get('#sound-menu').get('select').first().select('8');
@@ -41,5 +41,16 @@ describe('Moving sounds with select', () => {
             expect(sound.position).to.eq(20);
             expect(sound.style.left).to.eq('20%');
         })
+
+        cy.get('#sound-tracks').find('.sound')
+            .should($sounds => expect($sounds.length).to.eq(2));
+
+        cy.get('#active-sound-track2-25 select').select('*');
+        cy.get('#active-sound-track2-25').should('not.exist');
+        cy.get('#active-sound-track4-20 select').select('*');
+        cy.get('#active-sound-track4-20').should('not.exist');
+
+        cy.get('#sound-tracks').find('.sound')
+            .should($sounds => expect($sounds.length).to.eq(0));
     });
 });
