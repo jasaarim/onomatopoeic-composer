@@ -30,6 +30,17 @@
     z-index: 0;
 }
 
+#controls {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+#input-start, #input-duration {
+    width: 4em;
+    text-align: center;
+}
+
 .sound {
     position: absolute;
     display: flex;
@@ -61,19 +72,13 @@
 .sound select {
     margin: 1em;
     background: transparent;
-    box-sizing: border-box;
     border: 1px solid #888;
-    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
     border-radius: .5em;
 }
 
 audio {
     position: absolute;
     height: 100%;
-}
-
-#cursor-start {
-    width: 4em;
 }
 
 

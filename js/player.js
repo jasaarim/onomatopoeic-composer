@@ -46,20 +46,20 @@ function makeTracks(tracks, num) {
 
 function setDuration(seconds) {
     if (seconds > 0) {
+        const inputDuration = document.querySelector('#input-duration');
         const prevPosition = this.duration ? this.start / this.duration : 0;
         this.duration = seconds;
-        const newStart = prevPosition * this.duration;
-        this.setStart(newStart);
+        this.setStart(prevPosition * this.duration);
+        inputDuration.value = seconds;
         this.applyActiveSounds(sound => sound.adjustWidth(this));
     } else {
-        console.log('Invalid duration');
+        console.log(`Invalid duration: ${seconds}`);
     }
 }
 
 
 function setStart(seconds) {
-    const duration = this.duration;
-    if (seconds >= 0 && seconds < duration) {
+    if (seconds >= 0 && seconds < this.duration) {
         this.start = seconds;
         updateCursor(this);
     } else {
@@ -70,11 +70,11 @@ function setStart(seconds) {
 
 function updateCursor(tracks) {
     const cursor = tracks.querySelector('#cursor');
-    const cursorStart = document.querySelector('#cursor-start');
+    const inputStart = document.querySelector('#input-start');
     cursor.start = tracks.start;
     const startPercentage  = tracks.start / tracks.duration * 100;
     cursor.style.left = `${startPercentage}%`;
-    cursorStart.value = startPercentage;
+    inputStart.value = startPercentage;
 }
 
 

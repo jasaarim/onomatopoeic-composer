@@ -61,7 +61,7 @@ describe('Cursor in the player', () => {
         // randomly to 0 when the play button is clicked. Whether this
         // is an artifact of tests or a real problem is unknown.
         let startTime;
-        cy.get('#cursor-start').should('have.value', '25');
+        cy.get('#input-start').should('have.value', '25');
         cy.get('#play-button').click().then(() => {
             startTime = new Date();
         }).contains('Play')
@@ -72,16 +72,25 @@ describe('Cursor in the player', () => {
         });
     });
 
-    it('Setting cursor starting point from the input field', () => {
+    it('Starting point and duration from the input fields', () => {
         cy.visit('/');
-        cy.get('#cursor-start').should('have.value', '0');
-        cy.get('#sound-tracks').then($el => $el.get(0).setStart(2.5));
-        cy.get('#cursor-start').should('have.value', '25')
+        cy.get('#input-duration').should('have.value', '10')
+        cy.get('#input-start').should('have.value', '0');
+        // Set duration from input
+        cy.get('#input-duration').type('{backspace}{backspace}20{enter}');
+        cy.get('#sound-tracks')
+            .then($el => expect($el.get(0).duration).to.eq('20'));
+        // Set start from the function
+        cy.get('#sound-tracks').then($el => $el.get(0).setStart(5));
+        cy.get('#input-start').should('have.value', '25')
+        // Set start from input
             .type('{backspace}{backspace}40{enter}');
         cy.get('#sound-tracks')
-            .then($el => expect($el.get(0).start).to.eq(4));
+            .then($el => expect($el.get(0).start).to.eq(8));
+        // Set duration from the function
         cy.get('#sound-tracks').then($el => $el.get(0).setDuration(30));
-        cy.get('#cursor-start').should('have.value', '40');
+        cy.get('#input-duration').should('have.value', '30')
+        cy.get('#input-start').should('have.value', '40');
     });
 
 });

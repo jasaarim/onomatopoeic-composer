@@ -10,9 +10,16 @@
     <div id="sound-tracks">
       <div id="cursor"></div>
     </div>
-    <button id="play-button">Play</button>
-    <button id="stop-button">Stop</button>
-    <input id="cursor-start" type="number" max="99">%</input>
+    <div id="controls">
+      <span id="controls-left">
+        <button id="play-button">Play</button>
+        <button id="stop-button">Stop</button>
+        <input id="input-start" type="number" min="0" max="99">%</input>
+      </span>
+      <span id="controls-right">
+        <input id="input-duration" type="number" min="0" max="45">s</input>
+      </span>
+    </div>
     <div id="sound-menu"></div>
   </body>
 </html>
