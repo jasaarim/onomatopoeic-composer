@@ -10,8 +10,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const stopButton = document.querySelector('#stop-button');
     const soundMenu = document.querySelector('#sound-menu');
     const tracks = document.querySelector('#sound-tracks');
+    const cursorStart = document.querySelector('#cursor-start');
 
     playButton.addEventListener('click', (event) => {
+        cursorStart.disabled = true;
         if (playButton.textContent === 'Play') {
             play();
             playButton.textContent = 'Pause';
@@ -24,11 +26,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
     });
 
     stopButton.addEventListener('click', (event) => {
-        stop();
         playButton.textContent = 'Play';
+        stop();
         tracks.setStart(0);
-        // This might emit an animationend event, which will click on
-        // the button again
+        cursorStart.disabled = false;
+        // This might once emit an animationend event, which would
+        // click on the button again
         cursor.stop();
     });
 
@@ -46,6 +49,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
         } else {
             createActiveSound(sound, track, position);
         }
+    })
+
+    cursorStart.addEventListener('change', event => {
+        const start = cursorStart.value / 100 * tracks.duration;
+        tracks.setStart(start);
     })
 
 });

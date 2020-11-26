@@ -3,13 +3,16 @@ function initializeTracks(num, duration) {
 
     makeTracks(tracks, num);
 
-    // Let the #sound-tracks element contain this state
-    // Changing duration changes the start
-    tracks.setDuration = (seconds) => setDuration(tracks, seconds);
-    tracks.setStart = (seconds) => setStart(tracks, seconds);
-    tracks.getAudioCxt = () => getAudioCxt(tracks);
-    tracks.clearAudioCxt = () => clearAudioCxt(tracks);
-    tracks.applyActiveSounds = (action) => applyActiveSounds(action);
+    // Let the #sound-tracks element contain these methods and the state that
+    // the methods modify.
+    //
+    // Changing duration also changes the start so that the cursor
+    // stays in place
+    tracks.setDuration = setDuration;
+    tracks.setStart = setStart;
+    tracks.getAudioCxt = getAudioCxt;
+    tracks.clearAudioCxt = clearAudioCxt;
+    tracks.applyActiveSounds = applyActiveSounds;
 
     tracks.setDuration(duration);
 
@@ -41,24 +44,24 @@ function makeTracks(tracks, num) {
 }
 
 
-function setDuration(tracks, seconds) {
+function setDuration(seconds) {
     if (seconds > 0) {
-        const prevPosition = tracks.duration ? tracks.start / tracks.duration : 0;
-        tracks.duration = seconds;
-        const newStart = prevPosition * tracks.duration;
-        tracks.setStart(newStart);
-        applyActiveSounds(sound => sound.adjustWidth(tracks));
+        const prevPosition = this.duration ? this.start / this.duration : 0;
+        this.duration = seconds;
+        const newStart = prevPosition * this.duration;
+        this.setStart(newStart);
+        this.applyActiveSounds(sound => sound.adjustWidth(this));
     } else {
         console.log('Invalid duration');
     }
 }
 
 
-function setStart(tracks, seconds) {
-    const duration = tracks.duration;
+function setStart(seconds) {
+    const duration = this.duration;
     if (seconds >= 0 && seconds < duration) {
-        tracks.start = seconds;
-        updateCursor(tracks);
+        this.start = seconds;
+        updateCursor(this);
     } else {
         console.log(`Invalid start time: ${seconds}`);
     }
@@ -67,16 +70,19 @@ function setStart(tracks, seconds) {
 
 function updateCursor(tracks) {
     const cursor = tracks.querySelector('#cursor');
+    const cursorStart = document.querySelector('#cursor-start');
     cursor.start = tracks.start;
-    cursor.style.left = `${tracks.start / tracks.duration * 100}%`;
+    const startPercentage  = tracks.start / tracks.duration * 100;
+    cursor.style.left = `${startPercentage}%`;
+    cursorStart.value = startPercentage;
 }
 
 
-function getAudioCxt(tracks) {
-    if (!tracks.audioCxt) {
-        tracks.audioCxt = newAudioCxt();
+function getAudioCxt() {
+    if (!this.audioCxt) {
+        this.audioCxt = newAudioCxt();
     }
-    return tracks.audioCxt;
+    return this.audioCxt;
 }
 
 
@@ -89,10 +95,10 @@ function newAudioCxt() {
 }
 
 
-function clearAudioCxt(tracks) {
-    if (tracks.audioCxt) {
-        tracks.audioCxt.close();
-        delete tracks.audioCxt;
+function clearAudioCxt() {
+    if (this.audioCxt) {
+        this.audioCxt.close();
+        delete this.audioCxt;
     }
 }
 
@@ -107,8 +113,6 @@ async function applyActiveSounds(action) {
 function getActiveSounds() {
     return document.querySelectorAll('div[id^="active-sound"]');
 }
-
-
 
 
 export { getSoundTracks, initializeTracks };

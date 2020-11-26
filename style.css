@@ -72,6 +72,11 @@ audio {
     height: 100%;
 }
 
+#cursor-start {
+    width: 4em;
+}
+
+
 #track1 { background: red; }
 #track2 { background: orange; }
 #track3 { background: yellow; }
