@@ -80,13 +80,13 @@ describe('Sound elements in the player', () => {
                 let parentWidth, expected;
                 cy.get(`#track${targetNum}`).then(($el) => {
                     parentWidth = Number($el.css('width').split('px')[0]);
-                    expected = Math.round(position * parentWidth * 10) / 1000;
+                    expected = Math.round(position * parentWidth / 100);
                 });
                 cy.get(`#active-sound-track${targetNum}-${position}`)
                     .then(($el) => {
                         expect($el.get(0).position).to.eq(position);
                         const left = Number($el.css('left').split('px')[0]);
-                        expect(Math.round(left * 1000) / 1000).to.eq(expected);
+                        expect(Math.round(left)).to.eq(expected);
                     });
             }
         )

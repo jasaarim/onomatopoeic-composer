@@ -9,7 +9,13 @@
   <body>
     <div id="sound-tracks">
       <div id="cursor"></div>
+      <noscript> Javascript is needed for this app.</noscript>
     </div>
+    <script nomodule>
+      document.querySelector('#sound-tracks').textContent = ' Another '
+        + 'browser is needed for this app. A recent Firefox, Chrome, or '
+        + 'Safari is recommended.';
+    </script>
     <div id="controls">
       <span id="controls-left">
         <button id="play-button">Play</button>
@@ -20,6 +26,9 @@
         <input id="input-duration" type="number" min="0" max="45">s</input>
       </span>
     </div>
-    <div id="sound-menu"></div>
+    <div id="menu-et-description">
+      <div id="sound-menu"></div>
+      <div id="description"></div>
+    </div>
   </body>
 </html>

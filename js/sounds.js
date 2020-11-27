@@ -22,25 +22,54 @@ function fetchSoundNames() {
 }
 
 
-function createSound(name, source) {
+function createSound(name, files) {
     const sound = document.createElement('div');
-    const audio = createSoundAudio(name, source);
+    const audio = files.audio ? createSoundAudio(name, files.audio) : null;
     const checkbox = createSoundCheckbox();
     const moveMenu = createSoundMoveMenu();
 
     sound.className = 'sound';
     sound.id = 'sound-' + name;
+    sound.tabIndex = "0";
     sound.name = name;
     sound.audio = audio;
+    sound.files = files;
 
     sound.appendChild(checkbox);
-    sound.appendChild(audio);
+    if (audio) {
+        sound.appendChild(audio);
+    } else {
+        sound.className += " no-audio";
+        checkbox.disabled = true;
+        moveMenu.disabled = true;
+    }
     sound.appendChild(document.createTextNode(name));
     sound.appendChild(moveMenu);
+
+    sound.onfocus = showDescription;
+    sound.onblur = clearDescription;
 
     return sound
 }
 
+
+async function showDescription() {
+    if (this.files.description) {
+        const descriptionElem = document.querySelector('#description');
+        fetch(this.files.description)
+            .then(response => response.text())
+        // TODO: Fix descriptions to get rid of decoding and splitting
+            .then(text => unescape(decodeURI(text)).split('txtSelitys=')[1])
+            .then(text => descriptionElem.textContent = text);
+    }
+}
+
+async function clearDescription() {
+    if (this.files.description) {
+        const descriptionElem = document.querySelector('#description');
+        descriptionElem.textContent = null;
+    }
+}
 
 function createSoundAudio(name, source) {
     const audio = document.createElement('audio');
@@ -101,19 +130,19 @@ function createSoundMoveMenu() {
     option.textContent = String('*');
     menu.appendChild(option);
 
-    menu.onchange = () => soundMove(menu);
+    menu.onchange = soundMenuMove;
 
     return menu
 }
 
 
-function soundMove(menu) {
-    const sound = menu.parentElement;
+function soundMenuMove() {
+    const sound = this.parentElement;
     const event = new CustomEvent('moveSound', {
-        detail: { trackNumber: menu.value, sound: sound }
+        detail: { trackNumber: this.value, sound: sound }
     });
     document.querySelector('#sound-tracks').dispatchEvent(event);
-    menu.value = menu.firstChild.textContent;
+    this.value = this.firstChild.textContent;
 }
 
 

@@ -3,7 +3,7 @@ import { createSound } from './sounds.js';
 
 
 async function createActiveSound(sound, target, position) {
-    const newSound = createSound(sound.name, sound.audio.src);
+    const newSound = createSound(sound.name, sound.files);
 
     newSound.move = moveSound;
     newSound.adjustWidth = adjustSoundWidth;

@@ -1,14 +1,29 @@
-#sound-tracks {
-    position: relative;
-    overflow-x: hidden;
+html {
+    background: #afa;
+    padding: 2.5vh;
 }
 
-#sound-menu {
-    height: 6em;
-    width: 25vw;
-    border: solid;
-    overflow-y: scroll;
-    scrollbar-width: 1rem;
+
+body {
+    background: #fffff0;
+    margin: 0;
+    padding: 2.5vh;
+    border-radius: 2.5vh;
+    border-bottom-right-radius: 0;
+}
+
+
+#sound-tracks {
+    position: relative;
+    background: #cfc;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    height: calc(40vh - 10px);
+    border: 5px #555 outset;
+    border-radius: 2.5vh;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 #cursor {
@@ -26,19 +41,58 @@
 }
 
 .track {
+    flex-grow: 1;
     position: relative;
     z-index: 0;
 }
 
+.track .sound {
+    border-top-right-radius: 10px;
+}
+
 #controls {
-    display: flex;
-    justify-content: space-between;
+   display: flex;
+   justify-content: space-between;
+   margin-top: 1vh;
+   height: 9vh;
 }
 
 
 #input-start, #input-duration {
     width: 4em;
     text-align: center;
+}
+
+#menu-et-description {
+    display: flex;
+    align-items: flex-start;
+}
+
+#sound-menu {
+    display: inline-block;
+    background: #cfc;
+    width: 25vw;
+    overflow-y: scroll;
+    scrollbar-width: 1rem;
+    height: calc(40vh - 10px);
+    border: 5px #777 inset;
+    border-bottom-left-radius: 2.5vh;
+}
+
+#sound-menu .sound {
+    position: relative;
+    height: 2em;
+}
+
+
+#description {
+    display: inline-block;
+    margin-left: 10vw;
+    padding: .5em;
+    background: #cfc;
+    width: 40vw;
+    height: 6em;
+    border: 5px #777 inset;
 }
 
 .sound {
@@ -48,20 +102,27 @@
     top: 0;
     background: #cb9;
     color: black;
-    height: 100%;
     overflow: visible;
+    height: calc(100% - 2px);
     border: 1px solid black;
     white-space: nowrap;
 }
 
-.sound audio {
-    /*Fit nicely to #sound-menu */
-    width: calc(25vw - 2.4rem - 1px);
+.sound:focus {
+    background: rgb(224, 208, 144, 0.8);
 }
 
-#sound-menu .sound {
-    position: relative;
-    height: 2em;
+.sound.no-audio {
+    background: #ea9;
+}
+
+.sound.no-audio:focus {
+    background: rgb(240, 176, 160, 0.8);
+}
+
+.sound audio {
+    /*Fit to #sound-menu */
+    width: calc(25vw - 2.4rem - 1px);
 }
 
 .sound input {
