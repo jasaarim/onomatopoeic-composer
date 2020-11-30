@@ -41,7 +41,7 @@ describe('Cursor in the player', () => {
         let playerWidth, startTime;
         cy.visit('/')
         // Wait a little so that the initial time will be set to 0
-            .wait(100)
+            .wait(300)
         // Change the duration to 800 ms to start to 200 ms
             .get('#sound-tracks').then($el => {
                 $el.get(0).setDuration(0.8);

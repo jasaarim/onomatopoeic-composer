@@ -3,10 +3,12 @@ describe('Moving sounds with select', () => {
     it('Creating new active sounds, moving, and removing them', () => {
         cy.visit('/');
         cy.get('#sound-tracks').then($el => $el.get(0).setStart(5));
-        cy.get('#sound-menu').get('select').first().select('8');
+        cy.get('#sound-menu .sound').not('.no-audio')
+            .first().find('select').select('8');
         cy.get('#sound-tracks').then($el => $el.get(0).setStart(2.5));
         cy.get('#sound-tracks').then($el => $el.get(0).setDuration(20));
-        cy.get('#sound-menu .sound select').first().select('4');
+        cy.get('#sound-menu .sound').not('.no-audio')
+            .first().find('select').select('4');
 
         let width0;
         cy.get('#active-sound-track8-50').then($el => {

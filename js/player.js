@@ -1,4 +1,4 @@
-function initializeTracks(num, duration) {
+async function initializeTracks(num, duration) {
     const tracks =  getSoundTracks();
 
     makeTracks(tracks, num);

@@ -13,7 +13,12 @@ function parseDescription(text) {
     if (text.includes('txtSelitys=')) {
         text = text.split('txtSelitys=')[1];
     }
-    return unescape(decodeURI(text))
+    try {
+        text = unescape(decodeURI(text));
+    } catch {
+        text = unescape(text);
+    }
+    return text;
 }
 
 

@@ -1,4 +1,4 @@
-function populateSoundMenu() {
+async function populateSoundMenu() {
     const menu = document.querySelector('#sound-menu');
     processAllSounds(sound => menu.appendChild(sound));
 }
@@ -18,7 +18,6 @@ function processAllSounds(process) {
 function fetchSoundNames() {
     return fetch('/sounds.json')
         .then(response => response.json())
-        .then(json => json['sounds'] )
 }
 
 

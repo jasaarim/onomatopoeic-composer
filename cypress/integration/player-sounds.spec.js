@@ -52,7 +52,7 @@ function testSoundsToTracks(targets, positions, test = () => {}) {
             MockAudioCxt.create();
             await fetchSoundNames().then(sounds => {
                 for (const name in sounds) {
-                    if (targets.length) {
+                    if (sounds[name].audio && targets.length) {
                         const sound = createSound(name, sounds[name])
                         const source = sounds[name];
                         const targetNum = targets.pop();

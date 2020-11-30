@@ -7,6 +7,7 @@ import { showDescription, clearDescription} from './description.js'
 window.addEventListener('DOMContentLoaded', (event) => {
 
     const cursor = new Cursor();
+
     const body = document.querySelector('body');
     const playButton = document.querySelector('#play-button');
     const stopButton = document.querySelector('#stop-button');
