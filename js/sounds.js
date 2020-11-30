@@ -41,43 +41,16 @@ function createSound(name, files) {
     } else {
         sound.className += " no-audio";
         checkbox.disabled = true;
+        checkbox.style.visibility = 'hidden';
         moveMenu.disabled = true;
+        moveMenu.style.visibility = 'hidden';
     }
-    sound.appendChild(document.createTextNode(name));
     sound.appendChild(moveMenu);
-
-    sound.onfocus = showDescription;
-    sound.onblur = clearDescription;
+    sound.appendChild(document.createTextNode(name));
 
     return sound
 }
 
-
-async function showDescription() {
-    if (this.files.description) {
-        const descriptionElem = document.querySelector('#description');
-        fetch(this.files.description)
-            .then(response => response.text())
-            .then(text => descriptionElem.textContent = parseDescription(text));
-    }
-}
-
-
-function parseDescription(text) {
-    // TODO: Fix descriptions to get rid of decoding and splitting
-    if (text.includes('txtSelitys=')) {
-        text = text.split('txtSelitys=')[1];
-    }
-    return unescape(decodeURI(text))
-}
-
-
-async function clearDescription() {
-    if (this.files.description) {
-        const descriptionElem = document.querySelector('#description');
-        descriptionElem.textContent = null;
-    }
-}
 
 function createSoundAudio(name, source) {
     const audio = document.createElement('audio');
@@ -94,32 +67,9 @@ function createSoundAudio(name, source) {
 function createSoundCheckbox() {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.onchange = audioCheckboxChange;
     return checkbox;
 }
 
-
-function audioCheckboxChange() {
-    const audio = this.nextSibling;
-    if (this.checked) {
-        styleAudioControls(audio);
-        audio.controls = true;
-    } else {
-        audio.style = {};
-        audio.controls = false;
-    }
-}
-
-
-function styleAudioControls(audio) {
-    if (audio.position > 50) {
-        audio.style.right = '100%';
-        audio.style.left = null;
-    } else {
-        audio.style.left = '1.4rem';
-        audio.style.right = null;
-    }
-};
 
 function createSoundMoveMenu() {
     const tracks = document.querySelector('#sound-tracks');
@@ -138,19 +88,7 @@ function createSoundMoveMenu() {
     option.textContent = String('*');
     menu.appendChild(option);
 
-    menu.onchange = soundMenuMove;
-
     return menu
-}
-
-
-function soundMenuMove() {
-    const sound = this.parentElement;
-    const event = new CustomEvent('moveSound', {
-        detail: { trackNumber: this.value, sound: sound }
-    });
-    document.querySelector('#sound-tracks').dispatchEvent(event);
-    this.value = this.firstChild.textContent;
 }
 
 

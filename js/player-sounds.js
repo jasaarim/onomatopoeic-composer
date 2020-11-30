@@ -89,4 +89,19 @@ function connectAudioElement(audio, audioCxt, target) {
 }
 
 
-export { createActiveSound };
+function soundToTrack(sound, trackNumText) {
+    if (sound.move && trackNumText == '*') {
+        sound.remove();
+    } else {
+        const tracks = document.querySelector('#sound-tracks');
+        const track = tracks.querySelector(`#track${trackNumText}`);
+        const position = tracks.start / tracks.duration * 100;
+        if (sound.move) {
+            sound.move(track, position);
+        } else {
+            createActiveSound(sound, track, position);
+        }
+    }
+}
+
+export { createActiveSound, soundToTrack };

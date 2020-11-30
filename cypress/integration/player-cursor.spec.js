@@ -38,38 +38,34 @@ describe('Cursor in the player', () => {
     });
 
     it('Cursor in a different starting point', () => {
-        cy.visit('/');
-        // Change the duration to 500 ms to start to 200 ms
-        let playerWidth;
-        cy.get('#sound-tracks').then($el => {
-            $el.get(0).setDuration(0.8);
-            $el.get(0).setStart(0.2);
-            playerWidth = Number($el.css('width').split('px')[0]);
-            expect($el.get(0).start).to.eq(0.2);
-        });
-        cy.get('#cursor').then($el => {
-            let left = Number($el.css('left').split('px')[0]);
-            left = Math.round(left / playerWidth * 100);
-            expect(left).to.eq(25);
-            expect($el.get(0).parentElement.start * 125).to.eq(left);
-        })
+        let playerWidth, startTime;
+        cy.visit('/')
+        // Wait a little so that the initial time will be set to 0
+            .wait(100)
+        // Change the duration to 800 ms to start to 200 ms
+            .get('#sound-tracks').then($el => {
+                $el.get(0).setDuration(0.8);
+                $el.get(0).setStart(0.2);
+                playerWidth = Number($el.css('width').split('px')[0]);
+                expect($el.get(0).start).to.eq(0.2);
+            })
+            .get('#cursor').then($el => {
+                let left = Number($el.css('left').split('px')[0]);
+                left = Math.round(left / playerWidth * 100);
+                expect(left).to.eq(25);
+                expect($el.get(0).parentElement.start * 125).to.eq(left);
+            })
 
-        // Estimate how much time it takes for the cursor to travel
-        // across
-
-        // FIXME: Sometimes the start time of the tracks seems to set
-        // randomly to 0 when the play button is clicked. Whether this
-        // is an artifact of tests or a real problem is unknown.
-        let startTime;
-        cy.get('#input-start').should('have.value', '25');
-        cy.get('#play-button').click().then(() => {
-            startTime = new Date();
-        }).contains('Play')
+            .get('#input-start').should('have.value', '25')
+            .get('#play-button').click().then(() => {
+                startTime = new Date();
+            })
+            .contains('Play')
             .then(() => {
                 const endTime = new Date();
                 const elapsed = endTime - startTime;
                 expect(elapsed).to.gt(500).and.to.lt(700);
-        });
+            });
     });
 
     it('Starting point and duration from the input fields', () => {

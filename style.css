@@ -131,7 +131,6 @@ body {
 }
 
 .sound select {
-    margin: 1em;
     background: transparent;
     border: 1px solid #888;
     border-radius: .5em;
