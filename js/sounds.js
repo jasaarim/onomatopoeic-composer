@@ -58,11 +58,19 @@ async function showDescription() {
         const descriptionElem = document.querySelector('#description');
         fetch(this.files.description)
             .then(response => response.text())
-        // TODO: Fix descriptions to get rid of decoding and splitting
-            .then(text => unescape(decodeURI(text)).split('txtSelitys=')[1])
-            .then(text => descriptionElem.textContent = text);
+            .then(text => descriptionElem.textContent = parseDescription(text));
     }
 }
+
+
+function parseDescription(text) {
+    // TODO: Fix descriptions to get rid of decoding and splitting
+    if (text.includes('txtSelitys=')) {
+        text = text.split('txtSelitys=')[1];
+    }
+    return unescape(decodeURI(text))
+}
+
 
 async function clearDescription() {
     if (this.files.description) {
