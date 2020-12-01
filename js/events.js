@@ -62,20 +62,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 soundToTrack(sound, select.value);
                 select.value = select.firstChild.textContent;
             } else if (event.target.tagName == 'INPUT') {
-                const audio = event.target.nextSibling;
-                if (event.target.checked) {
-                    if (event.target.parentElement.position > 50) {
-                        audio.style.right = '100%';
-                        audio.style.left = null;
-                    } else {
-                        audio.style.left = '1.4rem';
-                        audio.style.right = null;
-                    }
-                    audio.controls = true;
-                } else {
-                    audio.style = {};
-                    audio.controls = false;
-                }
+                event.target.toggleAudioControls();
             }
         }
     });

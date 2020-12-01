@@ -1,41 +1,33 @@
-import { processAllSounds } from '../../js/sounds.js'
+import { createAllSounds } from '../../js/sound-creation.js'
 
+/* These tests don't interact with any URIs. They start with
+   `cy.visit('/')` to enable testing async code.*/
 
-function testProcessAllSounds(test) {
-        cy.visit('/').then(async () => {
-            await processAllSounds(test);
-        });
+function testAllSounds(test) {
+    cy.visit('/').then(async () =>
+        createAllSounds().then(sounds => sounds.forEach(test)));
 }
 
 describe('Initial sound element creation', () => {
 
-    it('ProcessAllSounds does something', () => {
-        cy.visit('/').then(async () => {
-            const sounds = [];
-            await processAllSounds(sound => sounds.push(sound));
-            expect(sounds).not.to.be.empty;
-        })
-    })
-
-    /* This takes too long with all the files
-
-    it('All audio and description files exist', () => {
-        testProcessAllSounds(async sound => {
-            if (sound.files.audio) {
+    it('First audio and description files exist', () => {
+        let times = 3;
+        testAllSounds(sound => {
+            if (times && sound.files.audio) {
                 cy.request(sound.audio.src)
                     .then(resp => expect(resp.status).to.eq(200));
+                times--;
             }
-            if (sound.files.description) {
+            if (times && sound.files.description) {
                 cy.request(sound.files.description)
                     .then(resp => expect(resp.status).to.eq(200));
             }
         });
     })
-    */
 
     it('Controls can be toggled', () => {
         let times = 5;
-        testProcessAllSounds(sound => {
+        testAllSounds(sound => {
             if (sound.files.audio && times > 0) {
                 cy.get('#' + sound.id + ' input').click();
                 cy.get('#' + sound.id + ' audio').then(($el) => {
@@ -48,7 +40,7 @@ describe('Initial sound element creation', () => {
 
     it('Audio elements fetch a file when played', () => {
         let times = 5;
-        testProcessAllSounds(sound => {
+        testAllSounds(sound => {
             if (times > 0) {
                 let requestedUrl;
                 if (sound.files.audio) {

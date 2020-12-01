@@ -1,5 +1,5 @@
 import { initializeTracks } from './player.js';
-import { populateSoundMenu } from './sounds.js';
+import { populateSoundMenu } from './sound-creation.js';
 import './events.js';
 
 window.addEventListener('DOMContentLoaded', (event) => {

@@ -1,5 +1,5 @@
 import { getSoundTracks } from './player.js';
-import { createSound } from './sounds.js';
+import { createSound } from './sound-creation.js';
 
 
 async function createActiveSound(sound, target, position) {
@@ -89,12 +89,12 @@ function connectAudioElement(audio, audioCxt, target) {
 }
 
 
-function soundToTrack(sound, trackNumText) {
-    if (sound.move && trackNumText == '*') {
+function soundToTrack(sound, trackNumStr) {
+    if (sound.move && trackNumStr == '*') {
         sound.remove();
     } else {
         const tracks = document.querySelector('#sound-tracks');
-        const track = tracks.querySelector(`#track${trackNumText}`);
+        const track = tracks.querySelector(`#track${trackNumStr}`);
         const position = tracks.start / tracks.duration * 100;
         if (sound.move) {
             sound.move(track, position);

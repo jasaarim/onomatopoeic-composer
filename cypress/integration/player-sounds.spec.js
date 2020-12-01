@@ -1,26 +1,13 @@
 import { createActiveSound } from '../../js/player-sounds.js';
-import { createSound } from '../../js/sounds.js';
-import { fetchSoundNames } from '../../js/sounds.js';
+import { createAllSounds } from '../../js/sound-creation.js';
 
 
 class MockAudioCxt extends AudioContext {
-
-    createMediaElementSource(audio) {
-        const source = super.createMediaElementSource(audio);
-        source.src = [ decodeURI(audio.src.split(':8000')[1]) ];
-        return MockAudioCxt.mockConnect(source);
-    }
 
     createBufferSource() {
         const source = super.createBufferSource();
         source.src = ['buffer'];
         return MockAudioCxt.mockConnect(source);
-    }
-
-    createDelay(maxDelay) {
-        const delayNode = super.createDelay(maxDelay);
-        delayNode.src = ['delay'];
-        return MockAudioCxt.mockConnect(delayNode);
     }
 
     static mockConnect(node) {
@@ -46,23 +33,24 @@ class MockAudioCxt extends AudioContext {
 }
 
 
+/* This creates new sound elements with `createAllSounds`. The same
+sound elements should exist also in the sound menu. `cy.visit('/')` is
+called to enable testing with async code. */
 function testSoundsToTracks(targets, positions, test = () => {}) {
     return cy.visit('/')
         .then(async () => {
             MockAudioCxt.create();
-            await fetchSoundNames().then(sounds => {
-                for (const name in sounds) {
-                    if (sounds[name].audio && targets.length) {
-                        const sound = createSound(name, sounds[name])
-                        const source = sounds[name];
+            await createAllSounds().then(sounds => {
+                sounds.forEach(sound => {
+                    if (sound.files.audio && targets.length) {
                         const targetNum = targets.pop();
                         const position = positions.pop();
                         cy.get(`#track${targetNum}`).then(async $el => {
                             await createActiveSound(sound, $el.get(0), position);
                         });
-                        test(name, source, targetNum, position);
+                        test(targetNum, position);
                     }
-                }
+                });
             });
     });
 }
@@ -75,7 +63,7 @@ describe('Sound elements in the player', () => {
         const positions = [10, 40, 20, 70];
         testSoundsToTracks(
             targets, positions,
-            (name, source, targetNum, position) => {
+            (targetNum, position) => {
                 // Check that the left side is in line with the position
                 let parentWidth, expected;
                 cy.get(`#track${targetNum}`).then(($el) => {
@@ -98,7 +86,7 @@ describe('Sound elements in the player', () => {
         const positions = [10, 40, 20, 70];
         testSoundsToTracks(
             targets, positions,
-            (name, source, target, position) => {
+            (target, position) => {
                 expectedGraph.push(['buffer']);
             }
         ).then(() => {
@@ -115,7 +103,7 @@ describe('Sound elements in the player', () => {
         const positions = [10, 40, 20, 70];
         testSoundsToTracks(
             targets, positions,
-            (name, source, target, position) => {
+            (target, position) => {
                 cy.get(`#active-sound-track${target}-${position}`).then($el => {
                     const sound = $el.get(0);
                     // Mock start
@@ -158,7 +146,7 @@ describe('Sound elements in the player', () => {
         const movePositions = [90, 30, 20, -10];
         testSoundsToTracks(
             targets, positions,
-            (name, source, target, position) => {
+            (target, position) => {
                 const moveTarget = moveTargets.pop();
                 const movePosition = movePositions.pop();
                 cy.get(`#active-sound-track${target}-${position}`).then($el => {
@@ -205,7 +193,7 @@ describe('Sound elements in the player', () => {
         const positions = [-50, 10, 20, 60];
         testSoundsToTracks(
             targets, positions,
-            (name, source, target, position) => {
+            (target, position) => {
                 cy.get(`#active-sound-track${target}-${position}`).then($el => {
                     const sound = $el.get(0);
                     // Mock start
@@ -244,5 +232,4 @@ describe('Sound elements in the player', () => {
             expect($el.css('left')).to.eq('0px');
         });
     });
-
 })

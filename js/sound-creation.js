@@ -1,23 +1,25 @@
 async function populateSoundMenu() {
     const menu = document.querySelector('#sound-menu');
-    processAllSounds(sound => menu.appendChild(sound));
+    menu.append('Loading sound words...');
+    try {
+        await createAllSounds().then(sounds => menu.append(...sounds));
+    } catch {
+        menu.append('Loading sound words failed!')
+    } finally {
+        menu.firstChild.remove();
+    }
 }
 
 
-function processAllSounds(process) {
+function createAllSounds() {
     return fetchSoundNames()
-        .then(sounds => {
-            for (const name in sounds) {
-                const sound = createSound(name, sounds[name]);
-                process(sound);
-            }
-        })
+        .then(entries =>
+              Object.keys(entries).map(name => createSound(name, entries[name])))
 }
 
 
 function fetchSoundNames() {
-    return fetch('/sounds.json')
-        .then(response => response.json())
+    return fetch('/sounds.json').then(response => response.json())
 }
 
 
@@ -34,18 +36,21 @@ function createSound(name, files) {
     sound.audio = audio;
     sound.files = files;
 
-    sound.appendChild(checkbox);
+    const children = []
+    children.push(checkbox);
     if (audio) {
-        sound.appendChild(audio);
+        checkbox.audio = audio;
+        children.push(audio);
     } else {
-        sound.className += " no-audio";
+        sound.className += ' no-audio';
         checkbox.disabled = true;
         checkbox.style.visibility = 'hidden';
         moveMenu.disabled = true;
         moveMenu.style.visibility = 'hidden';
     }
-    sound.appendChild(moveMenu);
-    sound.appendChild(document.createTextNode(name));
+    children.push(moveMenu);
+    children.push(name);
+    sound.append(...children);
 
     return sound
 }
@@ -66,7 +71,25 @@ function createSoundAudio(name, source) {
 function createSoundCheckbox() {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
+    checkbox.toggleAudioControls = toggleAudioControls;
     return checkbox;
+}
+
+
+function toggleAudioControls() {
+    if (this.checked) {
+        if (this.parentElement.position > 50) {
+            this.audio.style.right = '100%';
+            this.audio.style.left = null;
+        } else {
+            this.audio.style.left = '1.4rem';
+            this.audio.style.right = null;
+        }
+        this.audio.controls = true;
+    } else {
+        this.audio.style = {};
+        this.audio.controls = false;
+    }
 }
 
 
@@ -74,21 +97,22 @@ function createSoundMoveMenu() {
     const tracks = document.querySelector('#sound-tracks');
     const len = tracks ? tracks.length : 0;
     const menu = document.createElement('select');
-    let option = document.createElement('Option');
-    menu.appendChild(option);
+    let options = [document.createElement('option')];
+    let option;
     for (let i = 1; i <= len; i++) {
         option = document.createElement('option');
         option.value = String(i);
         option.textContent = String(i);
-        menu.appendChild(option);
+        options.push(option);
     }
     option = document.createElement('option');
-    option.value = String('*');
-    option.textContent = String('*');
-    menu.appendChild(option);
+    option.value = '*';
+    option.textContent = '*';
+    options.push(option);
+    menu.append(...options);
 
     return menu
 }
 
 
-export { createSound, fetchSoundNames, processAllSounds, populateSoundMenu };
+export { createSound, createAllSounds, populateSoundMenu };
