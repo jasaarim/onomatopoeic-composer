@@ -1,5 +1,5 @@
 async function initializeTracks(num, duration) {
-    const tracks =  getSoundTracks();
+    const tracks = getSoundTracks();
 
     makeTracks(tracks, num);
 

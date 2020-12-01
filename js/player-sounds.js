@@ -3,7 +3,9 @@ import { createSound } from './sound-creation.js';
 
 
 async function createActiveSound(sound, target, position) {
-    const newSound = createSound(sound.name, sound.files);
+    const tracks = getSoundTracks(target);
+
+    const newSound = createSound(sound.name, sound.files, tracks.length);
 
     newSound.move = moveSound;
     newSound.adjustWidth = adjustSoundWidth;
@@ -12,7 +14,6 @@ async function createActiveSound(sound, target, position) {
     // Initial width to be adjusted after the audio is fetched
     newSound.style.width = '5%';
 
-    const tracks = getSoundTracks(target);
     const audioCxt = tracks.getAudioCxt();
 
     // TODO: Do we want to connect the audio element to Audio Context?

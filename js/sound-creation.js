@@ -1,8 +1,10 @@
-async function populateSoundMenu() {
+async function populateSoundMenu(numTracks = 0) {
     const menu = document.querySelector('#sound-menu');
     menu.append('Loading sound words...');
+    const frag = document.createDocumentFragment();
     try {
-        await createAllSounds().then(sounds => menu.append(...sounds));
+        await createAllSounds(numTracks).then(sounds => frag.append(...sounds));
+        menu.append(frag);
     } catch {
         menu.append('Loading sound words failed!')
     } finally {
@@ -11,10 +13,11 @@ async function populateSoundMenu() {
 }
 
 
-function createAllSounds() {
+function createAllSounds(numTracks) {
     return fetchSoundNames()
         .then(entries =>
-              Object.keys(entries).map(name => createSound(name, entries[name])))
+              Object.keys(entries).map(
+                  name => createSound(name, entries[name], numTracks)))
 }
 
 
@@ -23,11 +26,11 @@ function fetchSoundNames() {
 }
 
 
-function createSound(name, files) {
+function createSound(name, files, numTracks) {
     const sound = document.createElement('div');
     const audio = files.audio ? createSoundAudio(name, files.audio) : null;
     const checkbox = createSoundCheckbox();
-    const moveMenu = createSoundMoveMenu();
+    const moveMenu = createSoundMoveMenu(numTracks);
 
     sound.className = 'sound';
     sound.id = 'sound-' + name;
@@ -36,11 +39,10 @@ function createSound(name, files) {
     sound.audio = audio;
     sound.files = files;
 
-    const children = []
-    children.push(checkbox);
+    sound.append(checkbox);
     if (audio) {
         checkbox.audio = audio;
-        children.push(audio);
+        sound.append(audio);
     } else {
         sound.className += ' no-audio';
         checkbox.disabled = true;
@@ -48,9 +50,8 @@ function createSound(name, files) {
         moveMenu.disabled = true;
         moveMenu.style.visibility = 'hidden';
     }
-    children.push(moveMenu);
-    children.push(name);
-    sound.append(...children);
+    sound.append(moveMenu);
+    sound.append(name);
 
     return sound
 }
@@ -93,13 +94,11 @@ function toggleAudioControls() {
 }
 
 
-function createSoundMoveMenu() {
-    const tracks = document.querySelector('#sound-tracks');
-    const len = tracks ? tracks.length : 0;
+function createSoundMoveMenu(numTracks) {
     const menu = document.createElement('select');
     let options = [document.createElement('option')];
     let option;
-    for (let i = 1; i <= len; i++) {
+    for (let i = 1; i <= numTracks; i++) {
         option = document.createElement('option');
         option.value = String(i);
         option.textContent = String(i);
