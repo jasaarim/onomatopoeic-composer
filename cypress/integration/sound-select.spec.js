@@ -30,7 +30,7 @@ describe('Moving sounds with select', () => {
         cy.get('#sound-tracks').then($el => $el.get(0).setStart(8));
         cy.get('#active-sound-track4-25 select').select('4');
 
-        cy.get('#active-sound-track2-25').then($el => {
+        cy.wait(100).get('#active-sound-track2-25').then($el => {
             const sound = $el.get(0);
             expect(sound.position).to.eq(25);
             expect(sound.style.left).to.eq('25%');
@@ -54,5 +54,20 @@ describe('Moving sounds with select', () => {
 
         cy.get('#sound-tracks').find('.sound')
             .should($sounds => expect($sounds.length).to.eq(0));
+    });
+
+    it('Positioning active sounds on top of each other', () => {
+        cy.visit('/');
+        cy.get('#sound-menu .sound').not('.no-audio')
+            .first().find('select').select('1');
+        cy.get('#sound-menu .sound').not('.no-audio')
+            .first().find('select').select('1');
+        cy.get('#track1').children().first()
+            .should('have.css', 'left').and('match', /0px/);
+        cy.wait(100)
+        .get('#track1').children().last().then($el => {
+            const sound = $el.get(0);
+            expect(sound.position).to.eq(sound.width);
+        })
     });
 });

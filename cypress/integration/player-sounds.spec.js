@@ -59,7 +59,7 @@ function testSoundsToTracks(targets, positions, test = () => {}) {
 describe('Sound elements in the player', () => {
 
     it('Active sounds go to right positions', () => {
-        const targets = [2, 2, 5, 5];
+        const targets = [2, 3, 5, 6];
         const positions = [10, 40, 20, 70];
         testSoundsToTracks(
             targets, positions,
@@ -82,7 +82,7 @@ describe('Sound elements in the player', () => {
 
     it('Audio buffer sources connect to Audio Context destination', () => {
         const expectedGraph = [];
-        const targets = [2, 2, 5, 5];
+        const targets = [2, 3, 5, 6];
         const positions = [10, 40, 20, 70];
         testSoundsToTracks(
             targets, positions,
@@ -99,7 +99,7 @@ describe('Sound elements in the player', () => {
 
     it('Player can be played and delays are set correctly', () => {
         const delays = [];
-        const targets = [2, 2, 5, 5];
+        const targets = [2, 3, 5, 6];
         const positions = [10, 40, 20, 70];
         testSoundsToTracks(
             targets, positions,
@@ -140,9 +140,9 @@ describe('Sound elements in the player', () => {
     it('Moving active sounds, also to before 0 seconds', () => {
         const delays = [];
         const offsets = [];
-        const targets = [2, 2, 5, 5];
+        const targets = [2, 3, 5, 6];
         const positions = [10, 40, 20, 70];
-        const moveTargets = [1, 2, 4, 6];
+        const moveTargets = [1, 4, 7, 8];
         const movePositions = [90, 30, 20, -10];
         testSoundsToTracks(
             targets, positions,

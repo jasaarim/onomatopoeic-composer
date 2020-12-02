@@ -9,6 +9,7 @@ async function createActiveSound(sound, target, position) {
 
     newSound.move = moveSound;
     newSound.adjustWidth = adjustSoundWidth;
+    
     newSound.move(target, position);
 
     // Initial width to be adjusted after the audio is fetched
@@ -21,27 +22,49 @@ async function createActiveSound(sound, target, position) {
     //connectAudioElement(sound.audio, audioCxt, target);
 
     newSound.audioBuffer = await createAudioBuffer(newSound.audio, audioCxt);
-    newSound.adjustWidth(tracks);
-    // TODO: Check for overlap and possibly move to another place
+    newSound.adjustWidth();
+
+    newSound.noOverlap = noOverlap;
+    newSound.noOverlap();
 
     return newSound
 }
 
 
 function moveSound(target, position) {
-    this.id = `active-sound-${target.id}-${position}`;
-    this.style.left = `${position}%`;
     this.position = position;
+    this.id = `active-sound-${target.id}-${this.position}`;
+    this.style.left = `${this.position}%`;
     target.appendChild(this);
+    if (this.noOverlap) this.noOverlap();
 }
 
 
-function adjustSoundWidth(tracks) {
+function adjustSoundWidth() {
     if (this.audioBuffer) {
+        const tracks = this.parentNode.parentNode;
         const audioDuration = this.audioBuffer.buffer.duration;
-        this.style.width = `${audioDuration / tracks.duration * 100}%`;
+        const width = audioDuration / tracks.duration * 100;
+        this.width = width;
+        this.style.width = `${this.width}%`;
     } else {
         console.log("Cannot set width because audio buffer isn't ready");
+    }
+}
+
+
+function noOverlap() {
+    const position = this.position;
+    const end = this.position + this.width;
+    for (const elem of this.parentNode.children) {
+        if (elem != this) {
+            const elemEnd = elem.position + elem.width;
+            if ((elem.position >= position && elem.position < end) ||
+                (elemEnd > position && elemEnd < end)) {
+                this.move(this.parentNode, elemEnd)
+                break;
+            }
+        }
     }
 }
 

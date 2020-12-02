@@ -52,7 +52,7 @@ function setDuration(seconds) {
         this.duration = seconds;
         this.setStart(prevPosition * this.duration);
         inputDuration.value = seconds;
-        this.applyActiveSounds(sound => sound.adjustWidth(this));
+        this.applyActiveSounds(sound => sound.adjustWidth());
     } else {
         console.log(`Invalid duration: ${seconds}`);
     }
