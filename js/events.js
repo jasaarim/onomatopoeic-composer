@@ -1,7 +1,8 @@
 import { play, stop, pause } from './player-controls.js';
 import { soundToTrack } from './player-sounds.js';
 import { Cursor } from './player-cursor.js';
-import { showDescription, clearDescription} from './description.js'
+import { showDescription, clearDescription} from './description.js';
+import { drag } from './drag-and-drop.js';
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -77,6 +78,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
         if (event.target.className.includes('sound')) {
             clearDescription(event.target);
         }
+    });
+
+    body.addEventListener('pointerdown', event => {
+        if (event.target.className == 'sound')
+            drag(event.target, event);
     });
 
 });

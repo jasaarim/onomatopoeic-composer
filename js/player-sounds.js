@@ -9,7 +9,7 @@ async function createActiveSound(sound, target, position) {
 
     newSound.move = moveSound;
     newSound.adjustWidth = adjustSoundWidth;
-    
+
     newSound.move(target, position);
 
     // Initial width to be adjusted after the audio is fetched
@@ -60,13 +60,15 @@ function noOverlap() {
         if (elem != this) {
             const elemEnd = elem.position + elem.width;
             if ((elem.position >= position && elem.position < end) ||
-                (elemEnd > position && elemEnd < end)) {
+                (elemEnd > position && elemEnd < end) ||
+                (position >= elem.position && position < elemEnd)) {
                 this.move(this.parentNode, elemEnd)
                 break;
             }
         }
     }
 }
+
 
 function fetchAudioBuffer(src, audioCxt) {
     return fetch(src)
@@ -78,10 +80,12 @@ function fetchAudioBuffer(src, audioCxt) {
         ))
 }
 
+
 function createAudioBuffer(audioElement, audioCxt) {
     return fetchAudioBuffer(audioElement.src, audioCxt)
         .then(buffer => newBufferSource(buffer, audioCxt));
 }
+
 
 function newBufferSource(buffer, audioCxt) {
     const source = audioCxt.createBufferSource();
@@ -90,6 +94,7 @@ function newBufferSource(buffer, audioCxt) {
     source.renew = () => newBufferSource(buffer, audioCxt);
     return source;
 }
+
 
 function connectAudioBuffer(audioBuffer, audioCxt, target) {
     audioBuffer.connect(audioCxt.destination);
@@ -113,13 +118,16 @@ function connectAudioElement(audio, audioCxt, target) {
 }
 
 
-function soundToTrack(sound, trackNumStr) {
-    if (sound.move && trackNumStr == '*') {
+function soundToTrack(sound, track, position) {
+    if (sound.move && track == '*') {
         sound.remove();
     } else {
         const tracks = document.querySelector('#sound-tracks');
-        const track = tracks.querySelector(`#track${trackNumStr}`);
-        const position = tracks.start / tracks.duration * 100;
+        if (typeof(track) == 'string') {
+            track = tracks.querySelector(`#track${track}`);
+        }
+        if (!position)
+            position = tracks.start / tracks.duration * 100;
         if (sound.move) {
             sound.move(track, position);
         } else {
@@ -127,5 +135,6 @@ function soundToTrack(sound, trackNumStr) {
         }
     }
 }
+
 
 export { createActiveSound, soundToTrack };

@@ -38,6 +38,8 @@ function createSound(name, files, numTracks) {
     sound.name = name;
     sound.audio = audio;
     sound.files = files;
+    sound.draggable = true;
+    sound.ondragstart = () => false;
 
     sound.append(checkbox);
     if (audio) {

@@ -106,6 +106,8 @@ body {
     height: calc(100% - 2px);
     border: 1px solid black;
     white-space: nowrap;
+    cursor: pointer;
+    touch-action: none;
 }
 
 .sound:focus {
@@ -118,6 +120,13 @@ body {
 
 .sound.no-audio:focus {
     background: rgb(240, 176, 160, 0.8);
+}
+
+.sound.clone {
+    cursor: grab;
+    width: 25vw;
+    height: 2em;
+    opacity: 0.6;
 }
 
 .sound audio {
