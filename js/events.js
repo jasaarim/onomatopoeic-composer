@@ -2,7 +2,7 @@ import { play, stop, pause } from './player-controls.js';
 import { soundToTrack } from './player-sounds.js';
 import { Cursor } from './player-cursor.js';
 import { showDescription, clearDescription} from './description.js';
-import { drag } from './drag-and-drop.js';
+import { dragAfterTimeout } from './drag-and-drop.js';
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -81,8 +81,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     });
 
     body.addEventListener('pointerdown', event => {
-        if (event.target.className == 'sound')
-            drag(event.target, event);
+        if (event.target.className == 'sound') {
+            dragAfterTimeout(event, 300);
+        }
     });
 
 });

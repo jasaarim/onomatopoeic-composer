@@ -1,7 +1,25 @@
 import { soundToTrack } from './player-sounds.js';
 
 
-function drag(sound, event) {
+function dragAfterTimeout(event, timeout) {
+    let canceled;
+    function cancel() {
+        canceled = true;
+    }
+    document.addEventListener('pointerup', cancel);
+    window.setTimeout(() => {
+        document.removeEventListener('pointerup', cancel);
+        if (!canceled)
+            drag(event);
+    }, timeout)
+}
+
+
+function drag(event) {
+    event.preventDefault();
+    // Does this work?
+    // window.navigator.vibrate(200);
+    const sound = event.target;
     const clone = sound.cloneNode(true);
     clone.classList.add('clone');
     document.body.append(clone);
@@ -16,17 +34,19 @@ function drag(sound, event) {
     clone.leaveTrack = leaveTrack;
     clone.enterTrack = enterTrack;
     clone.drop = drop;
-    clone.onpointerup = pointerUp;
-    // This may be redundant
-    clone.onpointercancel = pointerUp;
 
     // Bind for the event listener
     const clonePointerMove = pointerMove.bind(clone);
-    // Reference for the removal of the listener
+    const clonePointerUp = pointerUp.bind(clone);
+    // References for the removal of the listener
     clone.pointerMove = clonePointerMove;
+    clone.pointerUp = clonePointerUp;
 
     clonePointerMove(event);
     document.addEventListener('pointermove', clone.pointerMove);
+    document.addEventListener('pointerup', clone.pointerUp);
+    // This may be redundant
+    document.addEventListener('pointercancel', clone.pointerUp);
 }
 
 
@@ -64,6 +84,8 @@ function pointerUp(event) {
     if (this.currentTrack)
         this.drop(event);
     document.removeEventListener('pointermove', this.pointerMove);
+    document.removeEventListener('pointerup', this.pointerUp);
+    document.removeEventListener('pointercancel', this.pointerUp);
     this.remove();
 }
 
@@ -78,4 +100,4 @@ function drop(event) {
 }
 
 
-export { drag };
+export { dragAfterTimeout };
