@@ -9,7 +9,7 @@ function play() {
             let start = audioStart(sound);
             const offset = Math.max(0, -start);
             start = Math.max(0, start);
-            sound.audioBuffer.start(audioCxt.currentTime + start, offset);
+            sound.bufferSource.start(audioCxt.currentTime + start, offset);
         });
         audioCxt.playing = true;
     }
@@ -30,8 +30,8 @@ function stop() {
     const audioCxt = tracks.getAudioCxt();
     if (audioCxt.playing) {
         tracks.applyActiveSounds(async sound => {
-            await sound.audioBuffer.stop();
-            sound.audioBuffer = sound.audioBuffer.renew();
+            await sound.bufferSource.stop();
+            sound.bufferSource = await sound.bufferSource.renew();
         });
         audioCxt.playing = false;
     } else {

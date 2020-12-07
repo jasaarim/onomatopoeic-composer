@@ -1,15 +1,49 @@
+:root {
+    --borders: 10px;
+    --sound-tracks-height: 40vh;
+    --controls-height: 10vh;
+    --sound-menu-height: 40vh;
+    --description-height: 20vh;
+    --sound-menu-width: 25vw;
+    --description-width: 40vw;
+    --description-margin: 10vw;
+    --vpadding: 2.5vh;
+    --hpadding: 2.5vw;
+    --tracks-num: 8;
+    --font-size: 3vh;
+}
+
+
+@media all and (orientation:portrait) {
+    :root {
+        --sound-tracks-height: 30vh;
+        --sound-menu-height: 50vh;
+        --description-height: 20vh;
+        --sound-menu-width: 45vw;
+        --description-width: 35vw;
+        --description-margin: 5vw;
+        --font-size: 2vh;
+    }
+}
+
+
 html {
     background: #afa;
-    padding: 2.5vh;
+    padding: var(--vpadding);
+    padding-left: var(--hpadding); padding-right: var(--hpadding);
+    margin: 0;
 }
 
 
 body {
     background: #fffff0;
     margin: 0;
-    padding: 2.5vh;
-    border-radius: 2.5vh;
-    border-bottom-right-radius: 0;
+    font-size: var(--font-size);
+    padding: var(--vpadding);
+    padding-left: var(--hpadding); padding-right: var(--hpadding);
+    border-bottom-left-radius: var(--hpadding) var(--vpadding);
+    border-top-left-radius: var(--hpadding) var(--vpadding);
+    border-top-right-radius: var(--hpadding) var(--vpadding);
 }
 
 
@@ -19,12 +53,12 @@ body {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    height: calc(40vh - 10px);
-    border: 5px #555 outset;
-    border-radius: 2.5vh;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    height: calc(var(--sound-tracks-height) - var(--borders));
+    border: calc(var(--borders) / 2)  #555 outset;
+    border-top-left-radius: var(--hpadding) var(--vpadding);
+    border-top-right-radius: var(--hpadding) var(--vpadding);
 }
+
 
 #cursor {
     position: absolute;
@@ -47,14 +81,14 @@ body {
 }
 
 .track .sound {
-    border-top-right-radius: 10px;
+    border-top-right-radius: var(--borders);
 }
 
 #controls {
    display: flex;
    justify-content: space-between;
    margin-top: 1vh;
-   height: 9vh;
+   height: calc(var(--controls-height) - 1vh);
 }
 
 
@@ -71,29 +105,38 @@ body {
 #sound-menu {
     display: inline-block;
     background: #cfc;
-    width: 25vw;
     overflow-y: scroll;
     scrollbar-width: 1rem;
-    height: calc(40vh - 10px);
-    border: 5px #777 inset;
-    border-bottom-left-radius: 2.5vh;
+    width: calc(var(--sound-menu-width) - var(--borders));
+    height: calc(var(--sound-menu-height) - var(--borders));
+    border: calc(var(--borders) / 2) #777 inset;
+    border-bottom-left-radius: var(--hpadding) var(--vpadding);
 }
 
 #sound-menu .sound {
     position: relative;
-    height: 2em;
 }
 
+.sound audio {
+    /*Fit to #sound-menu */
+    width: calc(var(--sound-menu-width) - 2.4em - 4px);
+}
 
 #description {
     display: inline-block;
-    margin-left: 10vw;
+    margin-left: var(--description-margin);
     padding: .5em;
     background: #cfc;
-    width: 40vw;
-    height: 6em;
-    border: 5px #777 inset;
+    font-size: 0.9em;
+    overflow-y: scroll;
+    width:  calc(var(--description-width) - var(--borders));
+    height: calc(var(--description-height) - var(--borders));;
+    border: calc(var(--borders) / 2) #777 inset;
 }
+
+
+/* To be used by a search function */
+#sound-menu .sound:not([id^='sound-']) { display: none; }
 
 .sound {
     position: absolute;
@@ -103,7 +146,7 @@ body {
     background: #cb9;
     color: black;
     overflow: visible;
-    height: calc(100% - 2px);
+    height: calc(var(--sound-tracks-height) / var(--tracks-num));
     border: 1px solid black;
     white-space: nowrap;
     cursor: pointer;
@@ -125,22 +168,16 @@ body {
 
 .sound.clone {
     cursor: grab;
-    width: 25vw;
-    height: 2em;
     opacity: 0.6;
+    width: var(--sound-menu-width);
     border-width: 2px;
     border-color: red;
     touch-action: none;
 }
 
-.sound audio {
-    /*Fit to #sound-menu */
-    width: calc(25vw - 2.4rem - 1px);
-}
-
 .sound input {
-    width: 1.2rem;
-    margin: 0.1rem;
+    width: 1.2em;
+    margin: 0.1em;
 }
 
 .sound select {

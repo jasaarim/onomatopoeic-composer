@@ -88,8 +88,7 @@ function getAudioCxt() {
 
 
 function newAudioCxt() {
-    const AudioContext = window.AudioContext
-          || window.webkitAudioContext;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCxt = new AudioContext();
 
     return audioCxt;

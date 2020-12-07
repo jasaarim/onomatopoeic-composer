@@ -16,9 +16,7 @@ function dragAfterTimeout(event, timeout) {
 
 
 function drag(event) {
-    event.preventDefault();
-    // Does this work?
-    // window.navigator.vibrate(200);
+    try { window.navigator.vibrate(50); } catch {}
     const sound = event.target;
     const clone = sound.cloneNode(true);
     clone.classList.add('clone');

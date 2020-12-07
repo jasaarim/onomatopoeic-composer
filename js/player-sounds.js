@@ -9,6 +9,7 @@ async function createActiveSound(sound, target, position) {
 
     newSound.move = moveSound;
     newSound.adjustWidth = adjustSoundWidth;
+    newSound.noOverlap = noOverlap;
 
     newSound.move(target, position);
 
@@ -17,14 +18,8 @@ async function createActiveSound(sound, target, position) {
 
     const audioCxt = tracks.getAudioCxt();
 
-    // TODO: Do we want to connect the audio element to Audio Context?
-    //sound.audio.preload = 'auto';
-    //connectAudioElement(sound.audio, audioCxt, target);
-
-    newSound.audioBuffer = await createAudioBuffer(newSound.audio, audioCxt);
+    newSound.bufferSource = await newBufferSource(sound, audioCxt);
     newSound.adjustWidth();
-
-    newSound.noOverlap = noOverlap;
     newSound.noOverlap();
 
     return newSound
@@ -41,9 +36,9 @@ function moveSound(target, position) {
 
 
 function adjustSoundWidth() {
-    if (this.audioBuffer) {
+    if (this.bufferSource) {
         const tracks = this.parentNode.parentNode;
-        const audioDuration = this.audioBuffer.buffer.duration;
+        const audioDuration = this.bufferSource.buffer.duration;
         const width = audioDuration / tracks.duration * 100;
         this.width = width;
         this.style.width = `${this.width}%`;
@@ -70,51 +65,40 @@ function noOverlap() {
 }
 
 
-function fetchAudioBuffer(src, audioCxt) {
-    return fetch(src)
-        .then(response => response.arrayBuffer())
-        .then(data => audioCxt.decodeAudioData(
-            data,
-            (buffer) => buffer,
-            (error) => console.log("Error decoding: " + error.err)
-        ))
-}
-
-
-function createAudioBuffer(audioElement, audioCxt) {
-    return fetchAudioBuffer(audioElement.src, audioCxt)
-        .then(buffer => newBufferSource(buffer, audioCxt));
-}
-
-
-function newBufferSource(buffer, audioCxt) {
+async function newBufferSource(sound, audioCxt) {
     const source = audioCxt.createBufferSource();
-    source.buffer = buffer;
-    connectAudioBuffer(source, audioCxt);
-    source.renew = () => newBufferSource(buffer, audioCxt);
+    if (sound.buffer) {
+        source.buffer = sound.buffer;
+    } else {
+        await fetchAudioBuffer(sound.audio.src, audioCxt, source);
+        // On iOS Safari there seems to be no way of knowing when the
+        // audio data is decoded, hence the following check.
+        let waits = 50;
+        while (waits && !source.buffer) {
+            await new Promise(r => setTimeout(r, 100));
+            waits--;
+        }
+        sound.buffer = source.buffer;
+    }
+    connectBufferSource(source, audioCxt);
+    source.renew = () => newBufferSource({buffer: source.buffer}, audioCxt);
     return source;
 }
 
 
-function connectAudioBuffer(audioBuffer, audioCxt, target) {
-    audioBuffer.connect(audioCxt.destination);
+function fetchAudioBuffer(src, audioCxt, bufferSource) {
+    return fetch(src)
+        .then(response =>  response.arrayBuffer())
+        .then(data => audioCxt.decodeAudioData(
+            data,
+            (buffer) => bufferSource.buffer = buffer,
+            (error) => console.error('Error decoding: ' + error.err)
+        ))
 }
 
 
-function connectAudioElement(audio, audioCxt, target) {
-    // TODO: Use target to define panning
-    const source = audioCxt.createMediaElementSource(audio);
-    // TODO: The max delay time should be updated later
-    const delayNode = audioCxt.createDelay(10);
-    // We update the delay time once the player starts playing
-    delayNode.delayTime.value = 0;
-    source.connect(delayNode).connect(audioCxt.destination);
-    // For updating the delay time (and max delay time) later
-    audio.delayNode = delayNode;
-    audio.setDelay = () => {
-        audio.delayNode.delayTime.value = audioStart(audio)
-    }
-    audio.unsetDelay = () => { audio.delayNode.delayTime.value = 0; };
+function connectBufferSource(bufferSource, audioCxt, target) {
+    bufferSource.connect(audioCxt.destination);
 }
 
 
