@@ -4,6 +4,6 @@ import './events.js';
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    initializeTracks(8, 10);
+    initializeTracks(8, 20);
     populateSoundMenu(8);
 });

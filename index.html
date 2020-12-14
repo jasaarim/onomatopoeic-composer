@@ -18,17 +18,44 @@
     </script>
     <div id="controls">
       <span id="controls-left">
-        <button id="play-button">Play</button>
-        <button id="stop-button">Stop</button>
-        <input id="input-start" type="number" min="0" max="99">%</input>
+        <button id="play-button" title="play/pause">
+          <svg class="play-icon" xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 100 100">
+            <polygon points="0,0 0,100 100,50"/>
+          </svg>
+          <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 100 100">
+            <polygon points="0,0 0,100 40,100 40,0"/>
+            <polygon points="60,0 60,100 100,100 100,0"/>
+          </svg>
+        </button>
+        <button id="stop-button" title="pause">
+          <svg class="stop-icon" xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 100 100">
+            <polygon points="0,0 0,100 100,100 100,0"/>
+          </svg>
+        </button>
+        <p id="tracks-start"></p>
       </span>
       <span id="controls-right">
-        <input id="input-duration" type="number" min="0" max="45">s</input>
+        <p id="tracks-duration"></p>
       </span>
     </div>
     <div id="menu-et-description">
       <div id="sound-menu"></div>
-      <div id="description"></div>
+      <div id="description">
+        <button id="description-play" title="play/pause">
+          <svg class="play-icon" xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 100 100">
+            <polygon points="0,0 0,100 100,50"/>
+          </svg>
+          <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 100 100">
+            <polygon points="0,0 0,100 40,100 40,0"/>
+            <polygon points="60,0 60,100 100,100 100,0"/>
+          </svg>
+        </button>
+      </div>
       <div id="debug"></div>
     </div>
   </body>

@@ -1,23 +1,28 @@
-async function populateSoundMenu(numTracks = 0) {
+async function populateSoundMenu() {
     const menu = document.querySelector('#sound-menu');
     menu.append('Loading sound words...');
     const frag = document.createDocumentFragment();
     try {
-        await createAllSounds(numTracks).then(sounds => frag.append(...sounds));
+        await createAllSounds(true).then(sounds => frag.append(...sounds));
         menu.append(frag);
     } catch {
         menu.append('Loading sound words failed!')
     } finally {
         menu.firstChild.remove();
     }
+    // Let's see if this makes the sounds appear faster
+    for (const button of menu.querySelectorAll('button')) {
+        if (!button.disabled)
+            button.append(addButtonSvg());
+    }
 }
 
 
-function createAllSounds(numTracks) {
+function createAllSounds(delaySvgs) {
     return fetchSoundNames()
         .then(entries =>
               Object.keys(entries).map(
-                  name => createSound(name, entries[name], numTracks)))
+                  name => createSound(name, entries[name], delaySvgs)))
 }
 
 
@@ -26,33 +31,21 @@ function fetchSoundNames() {
 }
 
 
-function createSound(name, files, numTracks) {
+function createSound(name, files, delaySvgs) {
     const sound = document.createElement('div');
     const audio = files.audio ? createSoundAudio(name, files.audio) : null;
-    const checkbox = createSoundCheckbox();
-    const moveMenu = createSoundMoveMenu(numTracks);
+    const addButton = createAddButton(audio, delaySvgs);
 
     sound.className = 'sound';
     sound.id = 'sound-' + name;
-    sound.tabIndex = "0";
+    sound.tabIndex = '0';
     sound.name = name;
     sound.audio = audio;
+    sound.addButton = addButton;
     sound.files = files;
-    sound.draggable = true;
-    sound.ondragstart = () => false;
 
-    sound.append(checkbox);
-    if (audio) {
-        checkbox.audio = audio;
-        sound.append(audio);
-    } else {
-        sound.className += ' no-audio';
-        checkbox.disabled = true;
-        checkbox.style.visibility = 'hidden';
-        moveMenu.disabled = true;
-        moveMenu.style.visibility = 'hidden';
-    }
-    sound.append(moveMenu);
+    audio ? sound.append(audio) : sound.classList.add('no-audio');
+    sound.append(addButton);
     sound.append(name);
 
     return sound
@@ -63,7 +56,6 @@ function createSoundAudio(name, source) {
     const audio = document.createElement('audio');
 
     audio.controls = false;
-    audio.position = 0;
     audio.src = source;
     audio.preload = 'none';
 
@@ -71,48 +63,27 @@ function createSoundAudio(name, source) {
 }
 
 
-function createSoundCheckbox() {
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.toggleAudioControls = toggleAudioControls;
-    return checkbox;
+function createAddButton(audio, delaySvgs) {
+    const button = document.createElement('button');
+    button.className = 'add-button';
+    if (!delaySvgs)
+        button.append(addButtonSvg());
+    if (!audio)
+        button.disabled = true;
+    return button;
 }
 
-
-function toggleAudioControls() {
-    if (this.checked) {
-        if (this.parentElement.position > 50) {
-            this.audio.style.right = '100%';
-            this.audio.style.left = null;
-        } else {
-            this.audio.style.left = '1.4rem';
-            this.audio.style.right = null;
-        }
-        this.audio.controls = true;
-    } else {
-        this.audio.style = {};
-        this.audio.controls = false;
-    }
-}
-
-
-function createSoundMoveMenu(numTracks) {
-    const menu = document.createElement('select');
-    let options = [document.createElement('option')];
-    let option;
-    for (let i = 1; i <= numTracks; i++) {
-        option = document.createElement('option');
-        option.value = String(i);
-        option.textContent = String(i);
-        options.push(option);
-    }
-    option = document.createElement('option');
-    option.value = '*';
-    option.textContent = '*';
-    options.push(option);
-    menu.append(...options);
-
-    return menu
+function addButtonSvg() {
+    const svgUri = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgUri, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    const polygonH = document.createElementNS(svgUri, 'polygon');
+    polygonH.setAttribute('points', '0,60 100,60 100,40 0,40');
+    const polygonV = document.createElementNS(svgUri, 'polygon');
+    polygonV.setAttribute('points', '60,0 60,100 40,100 40,0');
+    polygonV.setAttribute('class', 'plus-button');
+    svg.append(polygonH, polygonV);
+    return svg;
 }
 
 

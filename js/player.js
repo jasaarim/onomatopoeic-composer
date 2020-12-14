@@ -1,18 +1,14 @@
 async function initializeTracks(num, duration) {
-    const tracks = getSoundTracks();
+    const tracks = makeTracks(num);
 
-    makeTracks(tracks, num);
-
-    // Let the #sound-tracks element contain these methods and the state that
-    // the methods modify.
-    //
-    // Changing duration also changes the start so that the cursor
-    // stays in place
     tracks.setDuration = setDuration;
     tracks.setStart = setStart;
     tracks.getAudioCxt = getAudioCxt;
     tracks.clearAudioCxt = clearAudioCxt;
     tracks.applyActiveSounds = applyActiveSounds;
+
+    tracks.getATrack = getATrack;
+    tracks.audioEnd = audioEnd;
 
     tracks.length = num;
     tracks.setDuration(duration);
@@ -33,26 +29,68 @@ function getSoundTracks(track) {
 }
 
 
-function makeTracks(tracks, num) {
+function getATrack() {
+    let firstEnd, endsFirst;
+    for (const track of this.querySelectorAll('div[id^="track"]')) {
+        const end = track.audioEnd();
+        if (!end)
+            return track;
+        else
+            if (!firstEnd || end < firstEnd) {
+                firstEnd = end;
+                endsFirst = track;
+            }
+    }
+    return endsFirst;
+}
+
+
+function makeTracks(num) {
+    const tracks = getSoundTracks();
     for (let i=1; i <= num; i++) {
         const track = document.createElement('div');
         track.className = 'track';
         track.id = `track${i}`;
         // The whitespace before the track number is a unicode en space
-        track.appendChild(document.createTextNode(` ${i}`));
-        tracks.appendChild(track);
+        track.append(` ${i}`);
+        tracks.append(track);
+        track.audioEnd = audioEnd;
+        // For stereo panning
+        track.panValue = -1 + 2 / (num - 1) * (i - 1);
     }
+    return tracks
+}
+
+
+function audioEnd() {
+    const duration = this.duration || this.parentElement.duration;
+    const sounds = this.querySelectorAll('div[id^="active-sound"]');
+    if (sounds.length === 0)
+        return null;
+    else
+        return lastEnd(sounds, duration);
+}
+
+
+function lastEnd(sounds, duration) {
+    return Array.from(sounds)
+        .map(sound => (sound.position + sound.width) / 100 * duration || 0)
+        .reduce((a, b) => Math.max(a, b), 0);
 }
 
 
 function setDuration(seconds) {
     if (seconds > 0) {
-        const inputDuration = document.querySelector('#input-duration');
+        const durationDisplay = document.querySelector('#tracks-duration');
         const prevPosition = this.duration ? this.start / this.duration : 0;
+        const ratio = this.duration / seconds;
         this.duration = seconds;
         this.setStart(prevPosition * this.duration);
-        inputDuration.value = seconds;
-        this.applyActiveSounds(sound => sound.adjustWidth());
+        durationDisplay.textContent = `${Math.round(seconds * 10) / 10} s`;
+        this.applyActiveSounds(sound => {
+            sound.adjustWidth();
+            sound.move(sound.parentElement, ratio * sound.position);
+        });
     } else {
         console.log(`Invalid duration: ${seconds}`);
     }
@@ -71,11 +109,11 @@ function setStart(seconds) {
 
 function updateCursor(tracks) {
     const cursor = tracks.querySelector('#cursor');
-    const inputStart = document.querySelector('#input-start');
+    const startDisplay = document.querySelector('#tracks-start');
     cursor.start = tracks.start;
     const startPercentage  = tracks.start / tracks.duration * 100;
     cursor.style.left = `${startPercentage}%`;
-    inputStart.value = startPercentage;
+    startDisplay.textContent = `Start: ${Math.round(startPercentage * 10) / 10} %`;
 }
 
 
@@ -104,14 +142,9 @@ function clearAudioCxt() {
 
 
 async function applyActiveSounds(action) {
-    for (const sound of getActiveSounds()) {
+    for (const sound of this.querySelectorAll('.sound:not(.clone)')) {
         action(sound);
     }
-}
-
-
-function getActiveSounds() {
-    return document.querySelectorAll('div[id^="active-sound"]');
 }
 
 

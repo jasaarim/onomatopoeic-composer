@@ -17,7 +17,21 @@ class Cursor {
     }
 
     pause() {
-        this.element.style.animationPlayState = 'paused';
+        let left = window.getComputedStyle(this.element).left;
+        left = Number(left.split('px')[0]);
+        const position = left / this.element.parentElement.clientWidth;
+        // Annoyingly, we have to set the position after the animationend event
+        // is processed, hence the cloning and hiding
+        const clone = this.element.cloneNode();
+        this.element.parentElement.append(clone);
+        clone.style.left = left;
+        this.element.style.visibility = 'hidden';
+        this.stop();
+        setTimeout(() => {
+            this.tracks.setStart(position * this.tracks.duration)
+            this.element.style.visibility = null;
+            clone.remove();
+        }, 50);
     }
 
     stop() {

@@ -32,6 +32,7 @@ function stop() {
         tracks.applyActiveSounds(async sound => {
             await sound.bufferSource.stop();
             sound.bufferSource = await sound.bufferSource.renew();
+            sound.setPan();
         });
         audioCxt.playing = false;
     } else {

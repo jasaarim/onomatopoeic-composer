@@ -7,8 +7,7 @@
     --sound-menu-width: 25vw;
     --description-width: 40vw;
     --description-margin: 10vw;
-    --vpadding: 2.5vh;
-    --hpadding: 2.5vw;
+    --padding: 2.5vh;
     --tracks-num: 8;
     --font-size: 3vh;
 }
@@ -16,21 +15,22 @@
 
 @media all and (orientation:portrait) {
     :root {
-        --sound-tracks-height: 30vh;
-        --sound-menu-height: 50vh;
+        --sound-tracks-height: calc(41vh + 5vh - 5vw);
+        --controls-height: 8vh;
+        --sound-menu-height: calc(41vh + 5vh - 5vw);
         --description-height: 20vh;
         --sound-menu-width: 45vw;
         --description-width: 35vw;
         --description-margin: 5vw;
-        --font-size: 2vh;
+        --font-size: 2.5vh;
+        --padding: 2.5vw;
     }
 }
 
 
 html {
-    background: #afa;
-    padding: var(--vpadding);
-    padding-left: var(--hpadding); padding-right: var(--hpadding);
+    background: #7e7;
+    padding: var(--padding);
     margin: 0;
 }
 
@@ -39,24 +39,23 @@ body {
     background: #fffff0;
     margin: 0;
     font-size: var(--font-size);
-    padding: var(--vpadding);
-    padding-left: var(--hpadding); padding-right: var(--hpadding);
-    border-bottom-left-radius: var(--hpadding) var(--vpadding);
-    border-top-left-radius: var(--hpadding) var(--vpadding);
-    border-top-right-radius: var(--hpadding) var(--vpadding);
+    padding: var(--padding);
+    border-bottom-left-radius: var(--padding);
+    border-top-left-radius: var(--padding);
+    border-top-right-radius: var(--padding);
 }
 
 
 #sound-tracks {
     position: relative;
-    background: #cfc;
+    background: #4a4;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
     height: calc(var(--sound-tracks-height) - var(--borders));
     border: calc(var(--borders) / 2)  #555 outset;
-    border-top-left-radius: var(--hpadding) var(--vpadding);
-    border-top-right-radius: var(--hpadding) var(--vpadding);
+    border-top-left-radius: var(--padding);
+    border-top-right-radius: var(--padding);
 }
 
 
@@ -64,69 +63,128 @@ body {
     position: absolute;
     top: 0;
     height: 100%;
-    width: .3%;
+    width: .5%;
     background: rgba(200, 200, 200, 0.7);
     animation: moving-cursor linear paused;
     z-index: 1;
 }
 
+
 @keyframes moving-cursor {
     100% { left: 100%; }
 }
+
 
 .track {
     flex-grow: 1;
     position: relative;
     z-index: 0;
+    overflow: hidden;
 }
+
 
 .track .sound {
     border-top-right-radius: var(--borders);
+    transition: width .5s;
 }
+
 
 #controls {
-   display: flex;
-   justify-content: space-between;
-   margin-top: 1vh;
-   height: calc(var(--controls-height) - 1vh);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 1vh;
+    margin-bottom: 2vh;
+    height: calc(var(--controls-height) - 3vh);
+}
+
+#controls-left {
+    display: inline-flex;
+    align-items: flex-start;
+}
+
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(var(--controls-height) - 3vh);
+    width: calc(var(--controls-height) - 3vh);
+    min-width: calc(var(--controls-height) - 3vh);
+    background: transparent;
+    border: 3px solid #555;
+    border-radius: .5em;
+    padding: 0;
+    margin: 0;
+    margin-right: 0.2em;
+}
+
+button:focus {
+    background: #ccc;
+}
+
+svg {
+    height: 55%;
+    fill: #555;
+    pointer-events: none;
+}
+
+.pause-icon {
+    display: none;
+}
+
+.playing .pause-icon {
+    display: inline;
+}
+
+.playing .play-icon {
+    display: none;
 }
 
 
-#input-start, #input-duration {
+#controls p {
+    display: inline;
+    vertical-align: top;
+    margin-left: 2em;
+    font-size: 1em;
+}
+
+
+#input-start {
     width: 4em;
     text-align: center;
 }
+
 
 #menu-et-description {
     display: flex;
     align-items: flex-start;
 }
 
+
 #sound-menu {
     display: inline-block;
-    background: #cfc;
+    background: #9f9;
     overflow-y: scroll;
     scrollbar-width: 1rem;
     width: calc(var(--sound-menu-width) - var(--borders));
     height: calc(var(--sound-menu-height) - var(--borders));
     border: calc(var(--borders) / 2) #777 inset;
-    border-bottom-left-radius: var(--hpadding) var(--vpadding);
+    border-bottom-left-radius: var(--padding);
 }
+
 
 #sound-menu .sound {
     position: relative;
+    width: calc(100% - 2px);
+    overflow-x: hidden;
 }
 
-.sound audio {
-    /*Fit to #sound-menu */
-    width: calc(var(--sound-menu-width) - 2.4em - 4px);
-}
 
 #description {
     display: inline-block;
     margin-left: var(--description-margin);
     padding: .5em;
-    background: #cfc;
+    background: #9f9;
     font-size: 0.9em;
     overflow-y: scroll;
     width:  calc(var(--description-width) - var(--borders));
@@ -134,9 +192,24 @@ body {
     border: calc(var(--borders) / 2) #777 inset;
 }
 
+#description h3, p {
+    padding: 0;
+    margin: 0;
+}
+
+
+#description button {
+    float: right;
+    display: none;
+}
+
+#description.audio button {
+    display: flex;
+}
 
 /* To be used by a search function */
 #sound-menu .sound:not([id^='sound-']) { display: none; }
+
 
 .sound {
     position: absolute;
@@ -151,52 +224,59 @@ body {
     white-space: nowrap;
     cursor: pointer;
     touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-.sound:focus {
+
+.sound:focus, .sound button:focus {
     background: rgb(224, 208, 144, 0.8);
 }
+
 
 .sound.no-audio {
     background: #ea9;
     touch-action: auto;
 }
 
+.sound.no-audio button {
+    visibility: hidden;
+}
+
+
 .sound.no-audio:focus {
     background: rgb(240, 176, 160, 0.8);
 }
 
+
 .sound.clone {
     cursor: grab;
     opacity: 0.6;
-    width: var(--sound-menu-width);
+    width: calc(var(--sound-menu-width) - var(--borders) - 1rem - 2px);
     border-width: 2px;
     border-color: red;
     touch-action: none;
 }
 
-.sound input {
-    width: 1.2em;
-    margin: 0.1em;
+
+.sound button {
+    border-width: 1px;
+    width: 1em;
+    height: 80%;
+    margin-left: .3em;
+    margin-right: .3em;
 }
 
-.sound select {
-    background: transparent;
-    border: 1px solid #888;
-    border-radius: .5em;
-}
-
-audio {
-    position: absolute;
-    height: 100%;
+.sound.active .plus-button {
+    visibility: hidden;
 }
 
 
-#track1 { background: red; }
-#track2 { background: orange; }
-#track3 { background: yellow; }
-#track4 { background: green; }
-#track5 { background: cyan; }
-#track6 { background: blue; }
-#track7 { background: purple; }
-#track8 { background: magenta; }
+#track1 { background: #f66; }
+#track2 { background: #f84; }
+#track3 { background: #ee0; }
+#track4 { background: #7e7; }
+#track5 { background: #5ee; }
+#track6 { background: #6bf; }
+#track7 { background: #c8f; }
+#track8 { background: #f8e; }
