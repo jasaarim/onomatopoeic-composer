@@ -7,39 +7,39 @@
     <title>Onomatopoeic Multitracker</title>
   </head>
   <body>
-    <div id="sound-tracks">
-      <div id="cursor"></div>
-      <noscript> Javascript is needed for this app.</noscript>
-    </div>
-    <script nomodule>
-      document.querySelector('#sound-tracks').textContent = ' Another '
-        + 'browser is needed for this app. A recent Firefox, Chrome, or '
-        + 'Safari is recommended.';
-    </script>
-    <div id="controls">
-      <span id="controls-left">
-        <button id="play-button" title="play/pause">
-          <svg class="play-icon" xmlns="http://www.w3.org/2000/svg"
-               viewBox="0 0 100 100">
-            <polygon points="0,0 0,100 100,50"/>
-          </svg>
-          <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg"
-               viewBox="0 0 100 100">
-            <polygon points="0,0 0,100 40,100 40,0"/>
-            <polygon points="60,0 60,100 100,100 100,0"/>
-          </svg>
-        </button>
-        <button id="stop-button" title="pause">
-          <svg class="stop-icon" xmlns="http://www.w3.org/2000/svg"
-               viewBox="0 0 100 100">
-            <polygon points="0,0 0,100 100,100 100,0"/>
-          </svg>
-        </button>
-        <p id="tracks-start"></p>
-      </span>
-      <span id="controls-right">
-        <p id="tracks-duration"></p>
-      </span>
+    <div id="player">
+      <div id="player-tracks">
+        <div id="player-cursor"></div>
+        <noscript> Javascript is needed for this app.</noscript>
+      </div>
+      <script nomodule>
+        document.querySelector('#player-tracks').textContent = ' Another '
+    + 'browser is needed for this app. A recent Firefox, Chrome, or '
+    + 'Safari is recommended.';
+      </script>
+      <div id="player-controls">
+        <div id="player-controls-left">
+          <button id="play-button" title="play/pause">
+            <svg class="play-icon" xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 100 100">
+              <polygon points="0,0 0,100 100,50"/>
+            </svg>
+            <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 100 100">
+              <polygon points="0,0 0,100 40,100 40,0"/>
+              <polygon points="60,0 60,100 100,100 100,0"/>
+            </svg>
+          </button>
+          <button id="stop-button" title="pause">
+            <svg class="stop-icon" xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 100 100">
+              <polygon points="0,0 0,100 100,100 100,0"/>
+            </svg>
+          </button>
+          <p id="player-start"></p>
+        </div>
+        <p id="player-duration"></p>
+      </div>
     </div>
     <div id="menu-et-description">
       <div id="sound-menu"></div>

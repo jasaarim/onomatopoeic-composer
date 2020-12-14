@@ -46,7 +46,7 @@ body {
 }
 
 
-#sound-tracks {
+#player-tracks {
     position: relative;
     background: #4a4;
     display: flex;
@@ -59,7 +59,7 @@ body {
 }
 
 
-#cursor {
+#player-cursor {
     position: absolute;
     top: 0;
     height: 100%;
@@ -83,25 +83,24 @@ body {
 }
 
 
-.track .sound {
-    border-top-right-radius: var(--borders);
-    transition: width .5s;
-}
-
-
-#controls {
+#player-controls {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     margin-top: 1vh;
     margin-bottom: 2vh;
+    font-size: 1rem;
     height: calc(var(--controls-height) - 3vh);
 }
 
-#controls-left {
-    display: inline-flex;
-    align-items: flex-start;
+#player-controls p {
+    margin-left: 2em;
 }
+
+#player-controls-left {
+    display: inline-flex;
+}
+
 
 button {
     display: inline-flex;
@@ -138,20 +137,6 @@ svg {
 
 .playing .play-icon {
     display: none;
-}
-
-
-#controls p {
-    display: inline;
-    vertical-align: top;
-    margin-left: 2em;
-    font-size: 1em;
-}
-
-
-#input-start {
-    width: 4em;
-    text-align: center;
 }
 
 
@@ -249,7 +234,7 @@ svg {
 }
 
 
-.sound.clone {
+.sound.clone, .sound.initial {
     cursor: grab;
     opacity: 0.6;
     width: calc(var(--sound-menu-width) - var(--borders) - 1rem - 2px);
@@ -265,6 +250,11 @@ svg {
     height: 80%;
     margin-left: .3em;
     margin-right: .3em;
+}
+
+.sound.active {
+    border-top-right-radius: var(--borders);
+    transition: width .5s;
 }
 
 .sound.active .plus-button {

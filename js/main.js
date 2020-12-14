@@ -1,9 +1,12 @@
-import { initializeTracks } from './player.js';
-import { populateSoundMenu } from './sound-creation.js';
+import initializePlayer from './player.js';
+import initializeMenu from './sound-menu.js';
+import './player-controls.js';
+import './player-cursor.js';
+import './description.js';
 import './events.js';
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    initializeTracks(8, 20);
-    populateSoundMenu(8);
+    initializePlayer(8, 20);
+    initializeMenu('sounds.json');
 });

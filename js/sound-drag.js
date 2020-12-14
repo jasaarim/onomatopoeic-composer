@@ -1,9 +1,9 @@
-import { soundToTrack } from './player-sounds.js';
+import { soundToTrack } from './sound-active.js';
 
 
 function drag(event) {
     try { window.navigator.vibrate(50); } catch {}
-    const tracks = document.querySelector('#sound-tracks');
+    const player = document.querySelector('#player');
     const sound = event.target;
     sound.setPointerCapture(event.pointerId)
     const clone = sound.cloneNode(true);
@@ -18,8 +18,8 @@ function drag(event) {
     clone.shiftY = event.clientY - sound.getBoundingClientRect().top;
 
     if (sound.buffer)
-        clone.style.width = (sound.buffer.duration / tracks.duration
-                             * tracks.clientWidth);
+        clone.style.width = (sound.buffer.duration / player.duration
+                             * player.tracks.clientWidth);
     clone.leaveTrack = leaveTrack;
     clone.enterTrack = enterTrack;
     clone.drop = drop;

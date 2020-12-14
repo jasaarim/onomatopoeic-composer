@@ -1,37 +1,36 @@
-import { getSoundTracks } from './player.js';
-import { createSound } from './sound-creation.js';
+import { newSound } from './sound.js';
 
 
-async function createActiveSound(sound, target, position) {
-    const tracks = getSoundTracks(target);
+async function newActiveSound(sound, target, position) {
+    const player = document.querySelector('#player');
 
-    const newSound = createSound(sound.name, sound.files);
-    newSound.classList.add('active');
-    newSound.move = moveSound;
-    newSound.endTime = endTime;
-    newSound.adjustWidth = adjustSoundWidth;
-    newSound.noOverlap = noOverlap;
-    newSound.setPan = setPan;
-
-    newSound.move(target, position);
+    const activeSound = newSound(sound.name, sound.files);
+    activeSound.classList.add('active');
     // Set the initial width and remove the class after width adjustment
-    newSound.classList.add('clone');
+    activeSound.classList.add('initial');
+    activeSound.player = player;
 
-    const audioCxt = tracks.getAudioCxt();
+    activeSound.move = moveSound;
+    activeSound.endTime = endTime;
+    activeSound.adjustWidth = adjustSoundWidth;
+    activeSound.noOverlap = noOverlap;
+    activeSound.setPan = setPan;
 
-    newSound.bufferSource = await newBufferSource(sound, audioCxt);
-    newSound.buffer = newSound.bufferSource.buffer;
-    newSound.setPan();
-    newSound.adjustWidth(true);
-    newSound.classList.remove('clone');
-    newSound.noOverlap();
+    activeSound.move(target, position);
+    const audioCxt = player.getAudioCxt();
+
+    activeSound.bufferSource = await newBufferSource(sound, audioCxt);
+    activeSound.buffer = activeSound.bufferSource.buffer;
+    activeSound.setPan();
+    activeSound.adjustWidth(true);
+    activeSound.classList.remove('initial');
+    activeSound.noOverlap();
 
     return newSound
 }
 
 
 function moveSound(target, position, checkForOverlap) {
-    const tracks = target.parentElement;
     this.position = position;
     this.id = `active-sound-${target.id}-${this.position}`;
     this.style.left = `${this.position}%`;
@@ -39,8 +38,8 @@ function moveSound(target, position, checkForOverlap) {
     if (checkForOverlap && this.noOverlap) {
         this.noOverlap();
     }
-    if (this.endTime() > tracks.duration) {
-        tracks.setDuration(tracks.audioEnd());
+    if (this.endTime() > this.player.duration) {
+        this.player.setDuration(this.player.audioEnd());
     }
     this.setPan();
 }
@@ -48,7 +47,7 @@ function moveSound(target, position, checkForOverlap) {
 
 function endTime() {
     const tracks = this.parentElement.parentElement;
-    return (this.position + this.width) / 100 * tracks.duration;
+    return (this.position + this.width) / 100 * player.duration;
 }
 
 
@@ -56,11 +55,11 @@ function adjustSoundWidth(setDuration) {
     if (this.bufferSource) {
         const tracks = this.parentNode.parentNode;
         const audioDuration = this.bufferSource.buffer.duration;
-        const width = audioDuration / tracks.duration * 100;
+        const width = audioDuration / player.duration * 100;
         this.width = width;
         this.style.width = `${this.width}%`;
-        if (setDuration && tracks.audioEnd() > tracks.duration)
-            tracks.setDuration(tracks.audioEnd());
+        if (setDuration && player.audioEnd() > player.duration)
+            player.setDuration(player.audioEnd());
     } else {
         console.log("Cannot set width because audio buffer isn't ready");
     }
@@ -110,8 +109,8 @@ function fetchAudioBuffer(src, audioCxt, bufferSource) {
         .then(response =>  response.arrayBuffer())
         .then(data => audioCxt.decodeAudioData(
             data,
-            (buffer) => bufferSource.buffer = buffer,
-            (error) => console.error('Error decoding: ' + error.err)
+            buffer => bufferSource.buffer = buffer,
+            error => console.error('Error decoding audio:', error)
         ))
 }
 
@@ -144,18 +143,18 @@ function setPan() {
 
 
 function soundToTrack(sound, track, position) {
-    const tracks = document.querySelector('#sound-tracks');
+    const player = document.querySelector('#player');
     if (!track) {
-        track = tracks.getATrack();
-        position = position || track.audioEnd / tracks.duration * 100;
+        track = player.getATrack();
+        position = position || track.audioEnd / player.duration * 100;
     }
     if (!position)
-        position = tracks.start / tracks.duration * 100;
+        position = player.start / player.duration * 100;
     if (sound.move)
         sound.move(track, position, true);
     else
-        createActiveSound(sound, track, position);
+        newActiveSound(sound, track, position);
 }
 
 
-export { createActiveSound, soundToTrack };
+export { newActiveSound, soundToTrack };

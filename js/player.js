@@ -1,32 +1,30 @@
-async function initializeTracks(num, duration) {
-    const tracks = makeTracks(num);
-
-    tracks.setDuration = setDuration;
-    tracks.setStart = setStart;
-    tracks.getAudioCxt = getAudioCxt;
-    tracks.clearAudioCxt = clearAudioCxt;
-    tracks.applyActiveSounds = applyActiveSounds;
-
-    tracks.getATrack = getATrack;
-    tracks.audioEnd = audioEnd;
-
-    tracks.length = num;
-    tracks.setDuration(duration);
-
-    return tracks;
-}
+import { newTrack } from './track.js'
 
 
-function getSoundTracks(track) {
-    // In tests we may need to access #sound-tracks through a track
-    let tracks;
-    if (track) {
-        tracks = track.parentElement;
-    } else {
-        tracks = document.querySelector('#sound-tracks');
+async function initialize(num, duration) {
+
+    const player = document.querySelector('#player');
+    player.cursor = player.querySelector('#player-cursor');
+    player.tracks = player.querySelector('#player-tracks');
+    player.length = num;
+
+    for (let i=1; i <= num; i++) {
+        player.tracks.append(newTrack(i, num));
     }
-    return tracks;
+
+    player.setDuration = setDuration;
+    player.setStart = setStart;
+    player.getAudioCxt = getAudioCxt;
+    player.clearAudioCxt = clearAudioCxt;
+    player.applyActiveSounds = applyActiveSounds;
+
+    player.getATrack = getATrack;
+    // This method will work in both a track and in the player
+    player.audioEnd = player.tracks.lastChild.audioEnd;
+
+    player.setDuration(duration);
 }
+
 
 
 function getATrack() {
@@ -45,43 +43,9 @@ function getATrack() {
 }
 
 
-function makeTracks(num) {
-    const tracks = getSoundTracks();
-    for (let i=1; i <= num; i++) {
-        const track = document.createElement('div');
-        track.className = 'track';
-        track.id = `track${i}`;
-        // The whitespace before the track number is a unicode en space
-        track.append(` ${i}`);
-        tracks.append(track);
-        track.audioEnd = audioEnd;
-        // For stereo panning
-        track.panValue = -1 + 2 / (num - 1) * (i - 1);
-    }
-    return tracks
-}
-
-
-function audioEnd() {
-    const duration = this.duration || this.parentElement.duration;
-    const sounds = this.querySelectorAll('div[id^="active-sound"]');
-    if (sounds.length === 0)
-        return null;
-    else
-        return lastEnd(sounds, duration);
-}
-
-
-function lastEnd(sounds, duration) {
-    return Array.from(sounds)
-        .map(sound => (sound.position + sound.width) / 100 * duration || 0)
-        .reduce((a, b) => Math.max(a, b), 0);
-}
-
-
 function setDuration(seconds) {
     if (seconds > 0) {
-        const durationDisplay = document.querySelector('#tracks-duration');
+        const durationDisplay = document.querySelector('#player-duration');
         const prevPosition = this.duration ? this.start / this.duration : 0;
         const ratio = this.duration / seconds;
         this.duration = seconds;
@@ -108,19 +72,18 @@ function setStart(seconds) {
 
 
 function updateCursor(tracks) {
-    const cursor = tracks.querySelector('#cursor');
-    const startDisplay = document.querySelector('#tracks-start');
-    cursor.start = tracks.start;
-    const startPercentage  = tracks.start / tracks.duration * 100;
+    const cursor = player.querySelector('#player-cursor');
+    const startDisplay = document.querySelector('#player-start');
+    cursor.start = player.start;
+    const startPercentage  = player.start / player.duration * 100;
     cursor.style.left = `${startPercentage}%`;
     startDisplay.textContent = `Start: ${Math.round(startPercentage * 10) / 10} %`;
 }
 
 
 function getAudioCxt() {
-    if (!this.audioCxt) {
+    if (!this.audioCxt)
         this.audioCxt = newAudioCxt();
-    }
     return this.audioCxt;
 }
 
@@ -128,7 +91,7 @@ function getAudioCxt() {
 function newAudioCxt() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCxt = new AudioContext();
-
+    audioCxt.suspend();
     return audioCxt;
 }
 
@@ -148,4 +111,4 @@ async function applyActiveSounds(action) {
 }
 
 
-export { getSoundTracks, initializeTracks };
+export default initialize;

@@ -1,58 +1,61 @@
-import { getSoundTracks } from './player.js';
+async function initialize() {
+    const controls = document.querySelector('#player-controls');
+
+    controls.player = document.querySelector('#player');
+    controls.playButton = controls.querySelector('#play-button');
+    controls.stopButton = controls.querySelector('#stop-button');
+
+    controls.audioStart = audioStart;
+    controls.play = play;
+    controls.pause = pause;
+    controls.stop = stop;
+}
 
 
-function play() {
-    const tracks = getSoundTracks();
-    const audioCxt = tracks.getAudioCxt();
-    if (!audioCxt.playing) {
-        tracks.applyActiveSounds(async sound => {
-            let start = audioStart(sound);
+async function play() {
+    if (!this.player.classList.contains('playing')) {
+        this.player.classList.add('playing');
+        const audioCxt = this.player.getAudioCxt();
+        audioCxt.resume();
+        this.player.applyActiveSounds(async sound => {
+            let start = this.audioStart(sound);
             const offset = Math.max(0, -start);
             start = Math.max(0, start);
             sound.bufferSource.start(audioCxt.currentTime + start, offset);
         });
-        audioCxt.playing = true;
+        this.player.cursor.play();
+    } else {
+        this.pause();
     }
-    return audioCxt.resume();
 }
 
 
 function audioStart(sound) {
-    const tracks = sound.parentElement.parentElement;
-    let startSeconds = sound.position / 100 * tracks.duration;
-    startSeconds = startSeconds - tracks.start;
+    let startSeconds = sound.position / 100 * this.player.duration;
+    startSeconds = startSeconds - this.player.start;
     return startSeconds;
 }
 
 
-function stop() {
-    const tracks = getSoundTracks();
-    const audioCxt = tracks.getAudioCxt();
-    if (audioCxt.playing) {
-        tracks.applyActiveSounds(async sound => {
-            await sound.bufferSource.stop();
-            sound.bufferSource = await sound.bufferSource.renew();
-            sound.setPan();
-        });
-        audioCxt.playing = false;
-    } else {
-        // This may happen on pressing the stop button button if that emits an
-        // animationend event.
-        console.log('Stopping when not playing');
+async function stop() {
+    if (this.player.classList.contains('playing')) {
+        await this.pause();
     }
-
-    return audioCxt.resume();
+    this.player.setStart(0);
+    this.player.cursor.stop();
 }
 
 
-function pause() {
-    const audioCxt = getSoundTracks().getAudioCxt();
-    if (audioCxt.playing) {
-        return audioCxt.suspend();
-    } else {
-        return audioCxt.resume();
-    }
+async function pause() {
+    this.player.applyActiveSounds(async sound => {
+        await sound.bufferSource.stop();
+        sound.bufferSource = await sound.bufferSource.renew();
+        sound.setPan();
+    });
+    this.player.classList.remove('playing')
+    this.player.getAudioCxt().suspend();
+    await this.player.cursor.pause();
 }
 
 
-export { pause, stop, play };
+initialize();

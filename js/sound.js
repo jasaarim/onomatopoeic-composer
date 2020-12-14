@@ -1,40 +1,7 @@
-async function populateSoundMenu() {
-    const menu = document.querySelector('#sound-menu');
-    menu.append('Loading sound words...');
-    const frag = document.createDocumentFragment();
-    try {
-        await createAllSounds(true).then(sounds => frag.append(...sounds));
-        menu.append(frag);
-    } catch {
-        menu.append('Loading sound words failed!')
-    } finally {
-        menu.firstChild.remove();
-    }
-    // Let's see if this makes the sounds appear faster
-    for (const button of menu.querySelectorAll('button')) {
-        if (!button.disabled)
-            button.append(addButtonSvg());
-    }
-}
-
-
-function createAllSounds(delaySvgs) {
-    return fetchSoundNames()
-        .then(entries =>
-              Object.keys(entries).map(
-                  name => createSound(name, entries[name], delaySvgs)))
-}
-
-
-function fetchSoundNames() {
-    return fetch('/sounds.json').then(response => response.json())
-}
-
-
-function createSound(name, files, delaySvgs) {
+function newSound(name, files) {
     const sound = document.createElement('div');
     const audio = files.audio ? createSoundAudio(name, files.audio) : null;
-    const addButton = createAddButton(audio, delaySvgs);
+    const addButton = createAddButton(audio);
 
     sound.className = 'sound';
     sound.id = 'sound-' + name;
@@ -63,15 +30,15 @@ function createSoundAudio(name, source) {
 }
 
 
-function createAddButton(audio, delaySvgs) {
+function createAddButton(audio) {
     const button = document.createElement('button');
     button.className = 'add-button';
-    if (!delaySvgs)
-        button.append(addButtonSvg());
+    button.append(addButtonSvg());
     if (!audio)
         button.disabled = true;
     return button;
 }
+
 
 function addButtonSvg() {
     const svgUri = 'http://www.w3.org/2000/svg';
@@ -87,4 +54,4 @@ function addButtonSvg() {
 }
 
 
-export { createSound, createAllSounds, populateSoundMenu };
+export { newSound };
