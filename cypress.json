@@ -1,4 +1,3 @@
 {
-  "baseUrl": "http://localhost:8000",
-  "experimentalNetworkStubbing": true
+  "baseUrl": "http://localhost:8000"
 }

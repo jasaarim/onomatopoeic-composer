@@ -1,6 +1,6 @@
 :root {
     --borders: 10px;
-    --sound-tracks-height: 40vh;
+    --tracks-height: 40vh;
     --controls-height: 10vh;
     --sound-menu-height: 40vh;
     --description-height: 20vh;
@@ -9,21 +9,23 @@
     --description-margin: 10vw;
     --padding: 2.5vh;
     --tracks-num: 8;
-    --font-size: 3vh;
+    --sound-height: calc((var(--tracks-height) - var(--borders))
+                         / var(--tracks-num) - 2px);
+    --font-size: calc(0.75 * var(--sound-height));
 }
 
 
 @media all and (orientation:portrait) {
     :root {
-        --sound-tracks-height: calc(41vh + 5vh - 5vw);
+        --tracks-height: calc(41vh + 5vh - 5vw);
         --controls-height: 8vh;
         --sound-menu-height: calc(41vh + 5vh - 5vw);
         --description-height: 20vh;
         --sound-menu-width: 45vw;
         --description-width: 35vw;
         --description-margin: 5vw;
-        --font-size: 2.5vh;
         --padding: 2.5vw;
+        --font-size: calc(0.5 * var(--sound-height));
     }
 }
 
@@ -52,7 +54,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    height: calc(var(--sound-tracks-height) - var(--borders));
+    height: calc(var(--tracks-height) - var(--borders));
     border: calc(var(--borders) / 2)  #555 outset;
     border-top-left-radius: var(--padding);
     border-top-right-radius: var(--padding);
@@ -94,6 +96,7 @@ body {
 }
 
 #player-controls p {
+    font-size: var(--font-size);
     margin-left: 2em;
 }
 
@@ -127,16 +130,12 @@ svg {
     pointer-events: none;
 }
 
-.pause-icon {
+.pause-icon, .playing .play-icon {
     display: none;
 }
 
 .playing .pause-icon {
     display: inline;
-}
-
-.playing .play-icon {
-    display: none;
 }
 
 
@@ -168,9 +167,9 @@ svg {
 #description {
     display: inline-block;
     margin-left: var(--description-margin);
-    padding: .5em;
+    padding: .5rem;
     background: #9f9;
-    font-size: 0.9em;
+    font-size: calc(0.9 * var(--font-size));
     overflow-y: scroll;
     width:  calc(var(--description-width) - var(--borders));
     height: calc(var(--description-height) - var(--borders));;
@@ -201,10 +200,11 @@ svg {
     display: flex;
     align-items: center;
     top: 0;
+    font-size: var(--font-size);
     background: #cb9;
     color: black;
     overflow: visible;
-    height: calc(var(--sound-tracks-height) / var(--tracks-num));
+    height: var(--sound-height);
     border: 1px solid black;
     white-space: nowrap;
     cursor: pointer;

@@ -46,7 +46,7 @@ function pointerMove(event) {
     }
 
     this.style.visibility = 'hidden';
-    let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+    let elemBelow = document.elementFromPoint(event.pageX, event.pageY);
     this.style.visibility = 'visible';
 
     const trackBelow = elemBelow.closest('.track');

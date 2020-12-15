@@ -1,21 +1,32 @@
-describe('The description field', () => {
+describe('Sound descriptions', () => {
 
-    it('Focusing on sound elements shows the description', () => {
+    it('Display description', () => {
         cy.visit('/');
-        let descrFile, expectedDescr;
-        cy.get('#sound-menu .sound').not('.no-audio').first().focus()
-            .then($el => descrFile = $el.get(0).files.description)
-            .get('#description').should('not.be.empty')
-            .then($el => {
-                expectedDescr = $el.get(0).textContent.split('\n')[0];
-                expect(expectedDescr).to.not.be.empty;
-                cy.request(descrFile).its('body').should('include', expectedDescr);
-            })
-            .then(() => {
-                cy.get('#sound-menu .sound').not('.no-audio')
-                    .first().find('select').select('1');
-                cy.get('#active-sound-track1-0').focus()
-                    .get('#description').contains(expectedDescr);
-            });
+        cy.get('#sound-menu .sound').first().click();
+        cy.get('#description h3').then($el => {
+            cy.get('#sound-menu .sound').first()
+                .should('have.text',
+                        $el.get(0).textContent.charAt(0).toLowerCase()
+                        + $el.get(0).textContent.slice(1))
+        })
     });
+
+    it('Play a sound', () => {
+        cy.visit('/');
+        cy.get('#sound-menu .sound').not('.no-audio').first().click().type(' ');
+        cy.get('#description .play-icon').should('not.be.visible');
+        cy.get('#description .pause-icon').should('be.visible');
+
+        cy.get('#description-play').click();
+        cy.get('#description .play-icon').should('be.visible');
+        cy.get('#description .pause-icon').should('not.be.visible');
+
+        cy.get('#description-play').click();
+        cy.get('#description .play-icon').should('not.be.visible');
+        cy.get('#description .pause-icon').should('be.visible');
+
+        cy.get('#sound-menu .sound').not('.no-audio').last().click();
+        cy.get('#description .play-icon').should('be.visible');
+        cy.get('#description .pause-icon').should('not.be.visible');
+    })
 });

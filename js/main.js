@@ -8,5 +8,5 @@ import './events.js';
 
 window.addEventListener('DOMContentLoaded', (event) => {
     initializePlayer(8, 20);
-    initializeMenu('sounds.json');
+    initializeMenu('/sounds.json');
 });
