@@ -1,8 +1,22 @@
 {
-    "devDependencies": {
-        "cypress": "6.0.0"
+    "name": "Onomatopoeia",
+    "description": "Browsing, listening to, and composing with onomatopoeia",
+    "version": "0.1.0",
+    "licence": "AGPL",
+    "homepage": "TBA",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TBA"
     },
     "scripts": {
-        "index-sounds": "node scripts/index-sounds.js"
+        "server": "python3 -m http.server --directory public",
+        "test": "npx cypress run",
+        "build": "cp -L -r public build",
+        "index-sounds": "scripts/index-sounds.js",
+        "copy-sounds": "scripts/copy-sounds.js",
+        "decode-sound-files": "scripts/decode-sound-files.sh"
+    },
+    "devDependencies": {
+        "cypress": "^6.0.0"
     }
 }

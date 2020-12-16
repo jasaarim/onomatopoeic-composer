@@ -13,10 +13,11 @@ async function initialize() {
 
 async function show(sound) {
     if (sound.files.description)
-        if (description.soundName != sound.name)
+        if (description.soundName != sound.name) {
             fetch(sound.files.description)
                 .then(response => response.text())
                 .then(text => description.prepareContent(sound, text));
+        }
 }
 
 

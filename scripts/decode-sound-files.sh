@@ -1,7 +1,14 @@
 #! /usr/bin/env bash
+#
+# Script to unescape characters from the old Finnish Ääninen files.
+#
+# This should be relevant only to those in possession of the old
+# files, and will be removed from the repository in the future.
+#
 
-DESCRIPTION_FOLDER=original_descriptions
-AUDIO_FOLDER=original_audio
+
+DESCRIPTION_FOLDER=data/descriptions
+AUDIO_FOLDER=data/audio
 
 for _ in 1 2 3
 do

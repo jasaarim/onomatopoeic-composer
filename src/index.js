@@ -6,7 +6,5 @@ import './description.js';
 import './events.js';
 
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    initializePlayer(8, 20);
-    initializeMenu('/sounds.json');
-});
+initializePlayer(8, 20);
+initializeMenu('sounds.json');

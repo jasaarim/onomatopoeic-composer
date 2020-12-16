@@ -1,5 +1,14 @@
 #! /usr/bin/env node
 
+/** Script to create the file `sounds.json`
+ *
+ * This expects that the files are in `data/descriptions` and
+ * `data/audio`. Each sound word should have files like `name.txt` and
+ * `name.mp3`, with identical base names.  If a description file is
+ * missing, the sound will not be indexed.
+ *
+ */
+
 const fs = require('fs');
 
 
@@ -7,42 +16,21 @@ function copyCallback(err) {
     if (err) throw err;
 }
 
+
 function main() {
     let sounds = {};
-    const audioFiles = fs.readdirSync('original_audio');
-    const descriptions = fs.readdirSync('original_descriptions');
+    const audioFiles = fs.readdirSync('data/audio');
+    const descriptions = fs.readdirSync('data/descriptions');
     for (const descr of descriptions) {
-        const base = descr.split('.txt')[0];
-        // Take only decriptions that do not have a number
-        if (['1', '2', '3'].includes(base[base.length - 1])) {
-            continue;
-        }
-        fs.copyFile(
-            `original_descriptions/${descr}`,
-            `descriptions/${descr}`,
-            copyCallback
-        );
-        let audio;
-        for (const suffix of ['', 1, 2, 3]) {
-            const candidate = `${base}${suffix}.mp3`;
-            if (audioFiles.includes(candidate)) {
-                audio = candidate;
-                fs.copyFile(
-                    `original_audio/${audio}`,
-                    `audio/${audio}`,
-                    copyCallback
-                );
-                break;
-            }
-        }
-        if (audio) {
-            sounds[base] = {audio: `/audio/${audio}`,
-                            description: `/descriptions/${descr}`};
-        } else {
-            sounds[base] = {description: `/descriptions/${descr}`};
+        if (descr.includes('.txt')) {
+            const base = descr.split('.txt')[0];
+            sounds[base] = {description: `descriptions/${descr}`};
+            const audio = `${base}.mp3`;
+            if (audioFiles.includes(audio))
+                sounds[base]['audio'] = `audio/${audio}`;
         }
     }
-    fs.writeFileSync('sounds.json', JSON.stringify(sounds));
+    fs.writeFileSync('data/sounds.json', JSON.stringify(sounds));
 }
 
 

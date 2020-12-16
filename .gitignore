@@ -1,0 +1,9 @@
+build/
+cypress/fixtures/
+cypress/plugins/
+cypress/support/
+cypress/videos/
+data/
+node_modules/
+shell.nix
+yarn.lock

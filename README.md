@@ -1,18 +1,44 @@
-# Sound word explorer
+# Onomatopoeia
 
-Multitrack player for pieces of audio that have their own descriptive
-word.
+An app to browse, listen to, and compose with onomatopoeia.
 
-## Running tests
 
-Testing is done with [Cypress](https://www.cypress.io/).  The tests
-are located in `cypress/integration` and require that the app is
-served from `http://localhost:8000` (for example, running `python -m
-http.server` at the root of the repository).  The tests can be run,
-for example, with `npx cypress run` or in the GUI with `npx cypress
-open`.
+## Adding words and audio
 
-## Deploying
+Sound descriptions and audio files are located in `data/descriptions`
+and `data/audio`.  The description files should be named like
+`sound.txt` and if there is a corresponding audio that should have the
+name `sound.mp3`.  To use the contents of these data directories run
 
-To serve the app, there needs to be a `sounds.json` file and that
-contains relative paths to audio files.
+```
+$ npm run index-sounds
+```
+
+## Running locally
+
+To run locally, a http server should point to files in the folder
+`public` (this contains symbolic links to the data and code).  To use
+Python to serve at `localhost:8000`, run
+
+```
+$ npm run server
+```
+
+
+## Testing
+
+The testing is done with Cypress.  To run the tests you should have the app running `localhost:8000` and then run
+
+```
+$ npm run test
+```
+
+## Building
+
+To place the static app on a server, first run
+
+```
+$ npm run build
+```
+
+The stand-alone app is now in the folder `build`.
