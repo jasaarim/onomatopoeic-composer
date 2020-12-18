@@ -3,6 +3,8 @@ import soundMenuScroll from './sound-menu-scroll.js';
 
 
 export default function dragScrollOrFocus(event) {
+    event.preventDefault();
+
     const data = {
         noDrag: false,
         initialY: event.pageY,
@@ -16,7 +18,7 @@ export default function dragScrollOrFocus(event) {
     data.pointerUp = maybeFocus.bind(data);
 
     document.addEventListener('pointermove', data.pointerMove,
-                              {'passive': false});
+                              {'passive': true});
     document.addEventListener('pointerup', data.pointerUp);
     document.addEventListener('pointercancel', data.pointerUp);
 
@@ -31,8 +33,6 @@ export default function dragScrollOrFocus(event) {
                 data.sound.focus();
         }
     }, timeOut)
-
-    event.preventDefault();
 }
 
 

@@ -12,6 +12,17 @@ const description = document.querySelector('#description');
 const descriptionPlayButton = document.querySelector('#description-play');
 const soundMenu = document.querySelector('#sound-menu');
 
+// Due to the hiding/showing address bar in some mobile browsers
+// the vh unit is not consistent with the visible page size.  This should
+// fix it.
+function resizeVh() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+window.addEventListener('DOMContentLoaded', resizeVh);
+window.addEventListener('resize', resizeVh);
+
 
 playButton.addEventListener('click', (event) => {
     playerControls.play();

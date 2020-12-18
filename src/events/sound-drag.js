@@ -30,7 +30,7 @@ export default function drag(event) {
 
     clone.pointerMove(event);
     document.body.addEventListener('pointermove', clone.pointerMove,
-                              {'passive': true});
+                                   {'passive': true});
     document.body.addEventListener('pointerup', clone.pointerUp);
     document.body.addEventListener('pointercancel', clone.pointerUp);
 }

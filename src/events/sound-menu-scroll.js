@@ -18,7 +18,7 @@ export default function scroll(event) {
     data.pointerUp = pointerUp.bind(data);
 
     document.addEventListener('pointermove', data.pointerMove,
-                                   {'passive': true});
+                              {'passive': true});
     document.addEventListener('pointerup', data.pointerUp);
     document.addEventListener('pointercancel', data.pointerUp);
 }
@@ -55,12 +55,13 @@ function pointerUp(event) {
 }
 
 
-
 function endInertia(menu, downwards, v, t0, t) {
     if (t && t0) {
         const dt = t - t0;
-        if (dt < 0 || (downwards && (v > 0)) || (!downwards && (v < 0)))
+        if (dt < 0 || (downwards && (v > 0)) || (!downwards && (v < 0))) {
+            menu.onclick = false;
             return;
+        }
         menu.scrollTop -= dt * v;
         v = (1 - 0.002 * dt) * v;
     } else {
@@ -77,6 +78,6 @@ function endInertia(menu, downwards, v, t0, t) {
         );
     }
     else {
-        menu.onclick();
+        menu.onclick = false;
     }
 }

@@ -1,13 +1,15 @@
 :root {
+    /* Update from JS. Fixes an inconsistency in some mobile browsers */
+    --vh: 1vh;
     --borders: 10px;
-    --tracks-height: 40vh;
-    --controls-height: 10vh;
-    --sound-menu-height: 40vh;
-    --description-height: 20vh;
+    --tracks-height: calc(40 * var(--vh));
+    --controls-height: calc(10 * var(--vh));
+    --sound-menu-height: calc(40 * var(--vh));
+    --description-height: calc(20 * var(--vh));
     --sound-menu-width: 25vw;
     --description-width: 40vw;
     --description-margin: 10vw;
-    --padding: 2.5vh;
+    --padding: calc(2.5 * var(--vh));
     --tracks-num: 8;
     --sound-height: calc((var(--tracks-height) - var(--borders))
                          / var(--tracks-num) - 2px);
@@ -17,10 +19,10 @@
 
 @media all and (orientation:portrait) {
     :root {
-        --tracks-height: calc(41vh + 5vh - 5vw);
-        --controls-height: 8vh;
-        --sound-menu-height: calc(41vh + 5vh - 5vw);
-        --description-height: 20vh;
+        --tracks-height: calc(41 * var(--vh) + 5 * var(--vh) - 5vw);
+        --controls-height: calc(8 * var(--vh));
+        --sound-menu-height: calc(41 * var(--vh) + 5 * var(--vh) - 5vw);
+        --description-height: calc(20 * var(--vh));
         --sound-menu-width: 45vw;
         --description-width: 35vw;
         --description-margin: 5vw;
@@ -89,10 +91,10 @@ body {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-top: 1vh;
-    margin-bottom: 2vh;
+    margin-top: calc(1 * var(--vh));
+    margin-bottom: calc(2 * var(--vh));
     font-size: 1rem;
-    height: calc(var(--controls-height) - 3vh);
+    height: calc(var(--controls-height) - 3 * var(--vh));
 }
 
 #player-controls p {
@@ -109,9 +111,9 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: calc(var(--controls-height) - 3vh);
-    width: calc(var(--controls-height) - 3vh);
-    min-width: calc(var(--controls-height) - 3vh);
+    height: calc(var(--controls-height) - 3 * var(--vh));
+    width: calc(var(--controls-height) - 3 * var(--vh));
+    min-width: calc(var(--controls-height) - 3 * var(--vh));
     background: transparent;
     border: 3px solid #555;
     border-radius: .5em;

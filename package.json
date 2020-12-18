@@ -11,7 +11,7 @@
     "scripts": {
         "server": "python3 -m http.server --directory public",
         "test": "npx cypress run",
-        "build": "cp -L -r public build",
+        "build": "rm build -r; cp -L -r public build",
         "index-sounds": "scripts/index-sounds.js",
         "copy-sounds": "scripts/copy-sounds.js",
         "decode-sound-files": "scripts/decode-sound-files.sh"
