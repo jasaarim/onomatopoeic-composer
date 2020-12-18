@@ -1,11 +1,10 @@
-import { soundToTrack } from './sound-active.js';
+import soundToTrack from '../elements/sound-active.js';
 
 
-function drag(event) {
+export default function drag(event) {
     try { window.navigator.vibrate(50); } catch {}
     const player = document.querySelector('#player');
-    const sound = event.target;
-    sound.setPointerCapture(event.pointerId)
+    const sound = event.target.closest('.sound');
     const clone = sound.cloneNode(true);
     clone.classList.add('clone');
     document.body.append(clone);
@@ -30,9 +29,10 @@ function drag(event) {
     clone.pointerUp = pointerUp.bind(clone)
 
     clone.pointerMove(event);
-    document.addEventListener('pointermove', clone.pointerMove);
-    document.addEventListener('pointerup', clone.pointerUp);
-    document.addEventListener('pointercancel', clone.pointerUp);
+    document.body.addEventListener('pointermove', clone.pointerMove,
+                              {'passive': true});
+    document.body.addEventListener('pointerup', clone.pointerUp);
+    document.body.addEventListener('pointercancel', clone.pointerUp);
 }
 
 
@@ -79,9 +79,9 @@ function pointerUp(event) {
         this.drop(event);
     else if (this.sound.classList.contains('active'))
         this.sound.remove();
-    document.removeEventListener('pointermove', this.pointerMove);
-    document.removeEventListener('pointerup', this.pointerUp);
-    document.removeEventListener('pointercancel', this.pointerUp);
+    document.body.removeEventListener('pointermove', this.pointerMove);
+    document.body.removeEventListener('pointerup', this.pointerUp);
+    document.body.removeEventListener('pointercancel', this.pointerUp);
     this.remove();
 }
 
@@ -99,5 +99,3 @@ function positionOnTrack(event) {
         position += this.sound.position;
     return position
 }
-
-export default drag;

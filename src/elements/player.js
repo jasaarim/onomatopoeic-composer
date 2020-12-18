@@ -1,7 +1,8 @@
-import { newTrack } from './track.js'
+import { translate } from '../app.js';
+import newTrack from './track.js'
 
 
-async function initialize(num, duration) {
+export default async function initialize(num, duration) {
 
     const player = document.querySelector('#player');
     player.cursor = player.querySelector('#player-cursor');
@@ -77,7 +78,8 @@ function updateCursor(tracks) {
     cursor.start = player.start;
     const startPercentage  = player.start / player.duration * 100;
     cursor.style.left = `${startPercentage}%`;
-    startDisplay.textContent = `Start: ${Math.round(startPercentage * 10) / 10} %`;
+    const rounded = Math.round(startPercentage * 10) / 10;
+    startDisplay.textContent = `${translate('Start')}: ${rounded} %`;
 }
 
 
@@ -109,6 +111,3 @@ async function applyActiveSounds(action) {
         action(sound);
     }
 }
-
-
-export default initialize;

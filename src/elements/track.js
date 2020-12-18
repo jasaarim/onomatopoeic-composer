@@ -1,4 +1,4 @@
-function newTrack(num, numAll) {
+export default function newTrack(num, numAll) {
     const track = document.createElement('div');
     track.player = document.querySelector('#player');
 
@@ -32,7 +32,3 @@ function lastEnd(sounds, duration) {
         .map(sound => (sound.position + sound.width) / 100 * duration || 0)
         .reduce((a, b) => Math.max(a, b), 0);
 }
-
-
-
-export { newTrack };

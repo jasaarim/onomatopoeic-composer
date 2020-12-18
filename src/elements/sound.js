@@ -1,4 +1,4 @@
-function newSound(name, files) {
+export default function newSound(name, files) {
     const sound = document.createElement('div');
     const audio = files.audio ? createSoundAudio(name, files.audio) : null;
     const addButton = createAddButton(audio);
@@ -53,5 +53,3 @@ function addButtonSvg() {
     return svg;
 }
 
-
-export { newSound };

@@ -1,14 +1,15 @@
-import { newSound } from './sound.js';
+import { translate } from '../app.js';
+import newSound from './sound.js';
 
 
-async function initialize(indexFile) {
+export default async function initialize(indexFile) {
     const menu = document.querySelector('#sound-menu');
     populate(menu, indexFile);
 }
 
 
 async function populate(menu, indexFile) {
-    menu.append('Loading sound words...');
+    menu.append(translate('Loading sounds...'));
     const frag = document.createDocumentFragment();
     try {
         await createAllSounds(indexFile).then(sounds => frag.append(...sounds));
@@ -35,6 +36,3 @@ function fetchSoundNames(indexFile) {
         .then(response => response.json())
         .catch(error => console.error('Error:', error))
 }
-
-
-export default initialize;

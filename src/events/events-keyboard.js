@@ -1,16 +1,19 @@
 async function keyboardInteraction(event) {
-    if (document.activeElement.classList.contains('sound')) {
-        const sound = document.activeElement;
+    const sound = document.activeElement.closest('.sound');
+    if (sound) {
         if (event.keyCode == 32) {
             // Space
             const description = document.querySelector('#description');
             if (description.soundName == sound.name && description.audio) {
-                description.play();
-                event.preventDefault();
+                if (document.activeElement != sound.addButton) {
+                    description.play();
+                    event.preventDefault();
+                }
             }
         } else if (event.keyCode == 13) {
             // Enter
-            sound.addButton.click();
+            if (document.activeElement != sound.addButton)
+                sound.addButton.click();
         } else if ([37, 38, 39, 40].includes(event.keyCode)) {
             // Arrow keys
             if (sound.classList.contains('active')) {
@@ -25,7 +28,6 @@ async function keyboardInteraction(event) {
         // Left and right arrow keys
         moveCursor(event);
     } else if ([38, 40].includes(event.keyCode)) {
-        // Up and down arrow keys
         document.querySelector('#sound-menu').querySelector('.sound').focus();
         event.preventDefault();
     }

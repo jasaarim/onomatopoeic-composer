@@ -1,4 +1,19 @@
-import { newSound } from './sound.js';
+import newSound from './sound.js';
+
+
+export default function soundToTrack(sound, track, position) {
+    const player = document.querySelector('#player');
+    if (!track) {
+        track = player.getATrack();
+        position = position || track.audioEnd / player.duration * 100;
+    }
+    if (!position)
+        position = player.start / player.duration * 100;
+    if (sound.move)
+        sound.move(track, position, true);
+    else
+        newActiveSound(sound, track, position);
+}
 
 
 async function newActiveSound(sound, target, position) {
@@ -140,21 +155,3 @@ function setPan() {
             this.bufferSource.panner.setPosition(value, 0, 1 - Math.abs(value));
     }
 }
-
-
-function soundToTrack(sound, track, position) {
-    const player = document.querySelector('#player');
-    if (!track) {
-        track = player.getATrack();
-        position = position || track.audioEnd / player.duration * 100;
-    }
-    if (!position)
-        position = player.start / player.duration * 100;
-    if (sound.move)
-        sound.move(track, position, true);
-    else
-        newActiveSound(sound, track, position);
-}
-
-
-export { newActiveSound, soundToTrack };

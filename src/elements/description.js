@@ -1,7 +1,10 @@
+import { translate } from '../app.js';
+
+
 async function initialize() {
     const description = document.querySelector('#description');
 
-    description.playButton = description.querySelector('#description-play')
+    description.playButton = description.querySelector('#description-play');
 
     description.prepareContent = prepareContent;
     description.show = show;
@@ -14,9 +17,16 @@ async function initialize() {
 async function show(sound) {
     if (sound.files.description)
         if (description.soundName != sound.name) {
-            fetch(sound.files.description)
-                .then(response => response.text())
-                .then(text => description.prepareContent(sound, text));
+            const p = document.createElement('p');
+            p.append(translate('Loading description...'));
+            description.append(p);
+            try {
+                fetch(sound.files.description)
+                    .then(response => response.text())
+                    .then(text => description.prepareContent(sound, text));
+            } finally {
+                p.remove();
+            }
         }
 }
 

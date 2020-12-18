@@ -1,28 +1,30 @@
-import { soundToTrack } from './sound-active.js';
-import { dragScrollOrFocus } from './drag-and-drop.js';
+import soundToTrack from '../elements/sound-active.js';
+import dragScrollOrClick from './drag-and-drop.js';
 import keyboardInteraction from './events-keyboard.js';
 
 
-const body = document.querySelector('body');
 const player = document.querySelector('#player');
 const cursor = document.querySelector('#player-cursor');
 const playerControls = document.querySelector('#player-controls');
+const playButton = document.querySelector('#play-button');
+const stopButton = document.querySelector('#stop-button');
 const description = document.querySelector('#description');
+const descriptionPlayButton = document.querySelector('#description-play');
 const soundMenu = document.querySelector('#sound-menu');
 
 
-playerControls.playButton.addEventListener('click', (event) => {
+playButton.addEventListener('click', (event) => {
     playerControls.play();
 });
 
 
-playerControls.stopButton.addEventListener('click', (event) => {
+stopButton.addEventListener('click', (event) => {
     playerControls.stop();
 });
 
 
 cursor.addEventListener('animationend', (event) => {
-    playerControls.stopButton.click();
+    stopButton.click();
 });
 
 
@@ -43,12 +45,12 @@ document.addEventListener('keydown', event => {
 })
 
 
-description.playButton.addEventListener('click', event => {
+descriptionPlayButton.addEventListener('click', event => {
     description.play();
 });
 
 
-body.addEventListener('click', event => {
+document.body.addEventListener('click', event => {
     if (event.target.className == 'add-button') {
         const sound = event.target.parentElement;
         if (!sound.classList.contains('active'))
@@ -59,17 +61,16 @@ body.addEventListener('click', event => {
 });
 
 
-body.addEventListener('focusin', event => {
+document.body.addEventListener('focusin', event => {
     if (event.target.classList.contains('sound')) {
         description.show(event.target);
     }
 });
 
 
-body.addEventListener('pointerdown', event => {
-    if (event.target.classList.contains('sound')
-        && !event.target.classList.contains('no-audio')) {
-
-        dragScrollOrFocus(event);
+document.body.addEventListener('pointerdown', event => {
+    const sound = event.target.closest('.sound');
+    if (sound && !sound.classList.contains('no-audio')) {
+        dragScrollOrClick(event);
     }
 });
