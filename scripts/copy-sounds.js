@@ -16,11 +16,6 @@
 const fs = require('fs');
 
 
-function copyCallback(err) {
-    if (err) throw err;
-}
-
-
 function main() {
     const audioFiles = fs.readdirSync('data/originals/audio');
     const descriptions = fs.readdirSync('data/originals/descriptions');
@@ -30,21 +25,34 @@ function main() {
         if (['1', '2', '3'].includes(base[base.length - 1])) {
             continue;
         }
-        fs.copyFile(
+        fs.copyFileSync(
             `data/originals/descriptions/${descr}`,
             `data/descriptions/${descr}`,
-            copyCallback
         );
         // Take the first existing audio from the suffix list below
         for (const suffix of ['', 1, 2, 3]) {
             const candidate = `${base}${suffix}.mp3`;
             const targetName = `${base}.mp3`;
             if (audioFiles.includes(candidate)) {
-                fs.copyFile(
+                fs.copyFileSync(
                     `data/originals/audio/${candidate}`,
                     `data/audio/${targetName}`,
-                    copyCallback
                 );
+                if (suffix != '') {
+                    descrCandidate = `${base}${suffix}.txt`;
+                    if (descriptions.includes(descrCandidate)) {
+                        let sample = fs.readFileSync(
+                            `data/originals/descriptions/${descrCandidate}`);
+                        sample = String(sample).split('txtSelitys=')[1];
+                        sample = sample.replace('Max', 'mies');
+                        sample = (sample.charAt(0).toLowerCase()
+                                  + sample.slice(1));
+                        fs.appendFileSync(
+                            `data/descriptions/${descr}`,
+                            `\r\nNäyte: ${sample}`
+                        );
+                    }
+                }
                 break;
             }
         }

@@ -84,4 +84,4 @@ document.body.addEventListener('pointerdown', event => {
     if (sound && !sound.classList.contains('no-audio')) {
         dragScrollOrClick(event);
     }
-});
+}, {'passive': true});

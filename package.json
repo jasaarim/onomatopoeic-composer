@@ -1,12 +1,12 @@
 {
-    "name": "Onomatopoeia",
+    "name": "onomatopoeic-composer",
     "description": "Browsing, listening to, and composing with onomatopoeia",
     "version": "0.1.0",
     "licence": "AGPL",
-    "homepage": "TBA",
+    "homepage": "https://github.com/jasaarim/onomatopoeic-composer",
     "repository": {
         "type": "git",
-        "url": "https://github.com/TBA"
+        "url": "https://github.com/jasaarim/onomatopoeic-composer"
     },
     "scripts": {
         "server": "python3 -m http.server --directory public",

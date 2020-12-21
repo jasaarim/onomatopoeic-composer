@@ -3,8 +3,6 @@ import soundMenuScroll from './sound-menu-scroll.js';
 
 
 export default function dragScrollOrFocus(event) {
-    event.preventDefault();
-
     const data = {
         noDrag: false,
         initialY: event.pageY,
@@ -39,8 +37,10 @@ export default function dragScrollOrFocus(event) {
 function maybeFocus(event) {
     this.noDrag = true;
     this.removeListeners();
-    if (!dragThreshold(event, this.initialY, this.sound))
-        event.target.focus();
+    if (!dragThreshold(event, this.initialY, this.sound)) {
+        if (!event.target.className == 'add-button')
+            this.sound.focus();
+    }
 }
 
 

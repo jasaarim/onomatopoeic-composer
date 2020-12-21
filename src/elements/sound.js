@@ -2,6 +2,8 @@ export default function newSound(name, files) {
     const sound = document.createElement('div');
     const audio = files.audio ? createSoundAudio(name, files.audio) : null;
     const addButton = createAddButton(audio);
+    const text = document.createElement('span');
+    text.append(name);
 
     sound.className = 'sound';
     sound.id = 'sound-' + name;
@@ -13,7 +15,7 @@ export default function newSound(name, files) {
 
     audio ? sound.append(audio) : sound.classList.add('no-audio');
     sound.append(addButton);
-    sound.append(name);
+    sound.append(text);
 
     return sound
 }

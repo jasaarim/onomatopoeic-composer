@@ -28,25 +28,34 @@ async function keyboardInteraction(event) {
         // Left and right arrow keys
         moveCursor(event);
     } else if ([38, 40].includes(event.keyCode)) {
-        document.querySelector('#sound-menu').querySelector('.sound').focus();
-        event.preventDefault();
+        // Up and down arrow keys
+        changeSoundMenuFocus(null, event);
     }
 }
 
 
-
 function changeSoundMenuFocus(sound, event) {
-    if (event.keyCode == 38 &&
-        sound.previousSibling &&
-        sound.previousSibling.classList &&
-        sound.previousSibling.classList.contains('sound'))
+    if (event.keyCode == 38) {
+        if (sound &&
+            sound.previousSibling &&
+            sound.previousSibling.classList &&
+            sound.previousSibling.classList.contains('sound')) {
 
-        sound.previousSibling.focus();
-    else if (event.keyCode == 40 &&
-             sound.nextSibling &&
-             sound.nextSibling.classList &&
-             sound.nextSibling.classList.contains('sound'))
-        sound.nextSibling.focus();
+            sound.previousSibling.focus();
+        } else {
+            document.querySelector('#sound-menu .sound:last-child').focus();
+        }
+    } else if (event.keyCode == 40) {
+        if (sound &&
+            sound.nextSibling &&
+            sound.nextSibling.classList &&
+            sound.nextSibling.classList.contains('sound')) {
+
+            sound.nextSibling.focus();
+        } else {
+            document.querySelector('#sound-menu .sound').focus();
+        }
+    }
     event.preventDefault();
 }
 

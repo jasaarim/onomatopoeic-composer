@@ -18,7 +18,7 @@ do
     mmv "$DESCRIPTION_FOLDER/*C3A4*" "$DESCRIPTION_FOLDER/#1ä#2"
 done
 
-for REP in "txtSelitys=/" "%2C/," "%20/ " "%C3%A4/ä" "%C3%B6/ö" "%C4/Ä" "%D6/Ö"
+for REP in "txtSelitys=/" "%2C/," "%20/ " "%C3%A4/ä" "%C3%B6/ö" "%C4/Ä" "%D6/Ö" "%3A/:" "%22/\"" "%21/!" "%28/(" "%29/)"
 do
     sed -i "s/$REP/g" $DESCRIPTION_FOLDER/*
 done

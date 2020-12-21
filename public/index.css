@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Nobile&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
+
+
 :root {
     /* Update from JS. Fixes an inconsistency in some mobile browsers */
     --vh: 1vh;
@@ -5,7 +9,7 @@
     --tracks-height: calc(40 * var(--vh));
     --controls-height: calc(10 * var(--vh));
     --sound-menu-height: calc(40 * var(--vh));
-    --description-height: calc(20 * var(--vh));
+    --description-height: calc(25 * var(--vh));
     --sound-menu-width: 25vw;
     --description-width: 40vw;
     --description-margin: 10vw;
@@ -22,7 +26,7 @@
         --tracks-height: calc(41 * var(--vh) + 5 * var(--vh) - 5vw);
         --controls-height: calc(8 * var(--vh));
         --sound-menu-height: calc(41 * var(--vh) + 5 * var(--vh) - 5vw);
-        --description-height: calc(20 * var(--vh));
+        --description-height: calc(30 * var(--vh));
         --sound-menu-width: 45vw;
         --description-width: 35vw;
         --description-margin: 5vw;
@@ -42,6 +46,7 @@ html {
 body {
     background: #fffff0;
     margin: 0;
+    font-family: 'Nobile', sans-serif;
     font-size: var(--font-size);
     padding: var(--padding);
     border-bottom-left-radius: var(--padding);
@@ -172,15 +177,22 @@ svg {
     padding: .5rem;
     background: #9f9;
     font-size: calc(0.9 * var(--font-size));
-    overflow-y: scroll;
+    overflow-y: auto;
     width:  calc(var(--description-width) - var(--borders));
-    height: calc(var(--description-height) - var(--borders));;
+    height: calc(var(--description-height) - var(--borders));
     border: calc(var(--borders) / 2) #777 inset;
 }
 
 #description h3, p {
     padding: 0;
     margin: 0;
+    white-space: pre-line;
+}
+
+#description h3 {
+    font-family: 'Cookie', cursive;
+    font-size: calc(1.5 * var(--font-size));
+    margin-bottom: 1rem;
 }
 
 
@@ -213,26 +225,53 @@ svg {
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    z-index: 1;
 }
 
 
-.sound:focus, .sound button:focus {
-    background: rgb(224, 208, 144, 0.8);
+.sound.active span {
+    position: relative;
+}
+
+.sound.active button::after, .sound.active span::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: -10%;
+    left: -10%;
+    background: #cb9;
+    height: var(--font-size);
+    z-index: -1;
+    border-radius: 5px;
+}
+
+.sound.active:focus {
+    z-index: 2;
+}
+
+
+.sound:focus,
+.sound button:focus,
+.sound.active:focus button::after,
+.sound.active:focus span::after {
+    background: rgb(224, 208, 144, 1);
+    outline: none;
+}
+
+
+.sound.no-audio:focus {
+    background: rgb(240, 176, 160, 1);
 }
 
 
 .sound.no-audio {
-    background: #ea9;
+    background: #d98;
     touch-action: auto;
 }
 
 .sound.no-audio button {
     visibility: hidden;
-}
-
-
-.sound.no-audio:focus {
-    background: rgb(240, 176, 160, 0.8);
 }
 
 
@@ -247,6 +286,7 @@ svg {
 
 
 .sound button {
+    position: relative;
     border-width: 1px;
     width: 1em;
     height: 80%;
