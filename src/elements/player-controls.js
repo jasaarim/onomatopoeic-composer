@@ -13,10 +13,13 @@ async function initialize() {
 
 
 async function play() {
+    this.player.warmupAudioCxt();
     if (!this.player.classList.contains('playing')) {
         this.player.classList.add('playing');
         const audioCxt = this.player.getAudioCxt();
-        audioCxt.resume();
+        if (audioCxt.state === 'suspended') {
+            audioCxt.resume();
+        }
         this.player.applyActiveSounds(async sound => {
             let start = this.audioStart(sound);
             const offset = Math.max(0, -start);

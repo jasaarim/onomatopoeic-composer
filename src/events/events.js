@@ -34,7 +34,7 @@ stopButton.addEventListener('click', (event) => {
 });
 
 
-cursor.addEventListener('animationend', (event) => {
+cursor.addEventListener('transitionend', (event) => {
     stopButton.click();
 });
 

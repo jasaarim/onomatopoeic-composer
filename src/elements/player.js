@@ -18,6 +18,7 @@ export default async function initialize(num, duration) {
     player.getAudioCxt = getAudioCxt;
     player.clearAudioCxt = clearAudioCxt;
     player.applyActiveSounds = applyActiveSounds;
+    player.warmupAudioCxt = warmupAudioCxt;
 
     player.getATrack = getATrack;
     // This method will work in both a track and in the player
@@ -109,5 +110,19 @@ function clearAudioCxt() {
 async function applyActiveSounds(action) {
     for (const sound of this.querySelectorAll('.sound:not(.clone)')) {
         action(sound);
+    }
+}
+
+
+// Some mobile devices require this before the Audio Context works
+function warmupAudioCxt() {
+    if (!this.warmedUp) {
+        this.applyActiveSounds(sound => {
+            if (!this.warmedUp) {
+                sound.audio.play().catch(() => {});
+                sound.audio.pause();
+                this.warmedUp = true;
+            }
+        });
     }
 }
