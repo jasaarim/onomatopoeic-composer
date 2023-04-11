@@ -17,6 +17,6 @@
         "decode-sound-files": "scripts/decode-sound-files.sh"
     },
     "devDependencies": {
-        "cypress": "^6.0.0"
+        "cypress": "^10.10.0"
     }
 }
