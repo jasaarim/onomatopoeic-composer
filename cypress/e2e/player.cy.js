@@ -8,7 +8,13 @@ describe('Moving sounds', () => {
         cy.get('#sound-menu .sound').not('.no-audio').first()
             .type('{enter}')
             .type('{rightArrow}{rightArrow}{rightArrow}{leftArrow}')
-            .type('{enter}{enter}{enter}{enter}{enter}{enter}{enter}');
+            .type('{enter}')
+            .type('{enter}')
+            .type('{enter}')
+            .type('{enter}')
+            .type('{enter}')
+            .type('{enter}')
+            .type('{enter}');
         cy.get('#player').find('.sound')
             .should($sounds => expect($sounds.length).to.eq(9));
         cy.get('#track1').find('.sound')

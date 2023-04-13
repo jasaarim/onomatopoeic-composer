@@ -1,5 +1,10 @@
 # Change log
 
+## Version 0.2.0
+
+- Migrate to TypeScript.  The code is rough now, improvements will
+  follow.
+
 ## Version 0.1.1
 
 - Bugfix: Player cursor movement behaved strangely on iOS. Now the

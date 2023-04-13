@@ -1,9 +1,15 @@
-async function keyboardInteraction(event) {
-    const sound = document.activeElement.closest('.sound');
+import { type Description } from "../elements/description.js";
+import { type Player } from "../elements/player.js";
+import { type Sound } from "../elements/sound.js";
+import { type ActiveSound } from "../elements/sound-active.js";
+import { type Track } from "../elements/track.js";
+
+async function keyboardInteraction(event: KeyboardEvent) {
+    const sound = (document.activeElement as HTMLElement).closest('.sound') as Sound;
     if (sound) {
         if (event.keyCode == 32) {
             // Space
-            const description = document.querySelector('#description');
+            const description = document.querySelector('#description') as Description;
             if (description.soundName == sound.name && description.audio) {
                 if (document.activeElement != sound.addButton) {
                     description.play();
@@ -12,12 +18,12 @@ async function keyboardInteraction(event) {
             }
         } else if (event.keyCode == 13) {
             // Enter
-            if (document.activeElement != sound.addButton)
+            if (document.activeElement != sound.addButton && !sound.classList.contains('active'))
                 sound.addButton.click();
         } else if ([37, 38, 39, 40].includes(event.keyCode)) {
             // Arrow keys
             if (sound.classList.contains('active')) {
-                moveSound(sound, event);
+                moveSound(sound as ActiveSound, event);
             } else if ([37, 39].includes(event.keyCode)) {
                 moveCursor(event);
             } else {
@@ -34,63 +40,61 @@ async function keyboardInteraction(event) {
 }
 
 
-function changeSoundMenuFocus(sound, event) {
+function changeSoundMenuFocus(sound: Sound | null, event: KeyboardEvent) {
     if (event.keyCode == 38) {
         if (sound &&
             sound.previousSibling &&
-            sound.previousSibling.classList &&
-            sound.previousSibling.classList.contains('sound')) {
-
-            sound.previousSibling.focus();
+            (sound.previousSibling as HTMLElement).classList &&
+            (sound.previousSibling as HTMLElement).classList.contains('sound')) {
+            (sound.previousSibling as HTMLElement).focus();
         } else {
-            document.querySelector('#sound-menu .sound:last-child').focus();
+            (document.querySelector('#sound-menu .sound:last-child') as HTMLElement).focus();
         }
     } else if (event.keyCode == 40) {
         if (sound &&
             sound.nextSibling &&
-            sound.nextSibling.classList &&
-            sound.nextSibling.classList.contains('sound')) {
-
-            sound.nextSibling.focus();
+            (sound.nextSibling as HTMLElement).classList &&
+            (sound.nextSibling as HTMLElement).classList.contains('sound')) {
+            (sound.nextSibling as HTMLElement).focus();
         } else {
-            document.querySelector('#sound-menu .sound').focus();
+            (document.querySelector('#sound-menu .sound') as HTMLElement).focus();
         }
     }
     event.preventDefault();
 }
 
 
-function moveSound(sound, event) {
+function moveSound(sound: ActiveSound, event: KeyboardEvent) {
     let position = sound.position;
-    let track = sound.parentElement;
+    let track = sound.track;
     if (event.keyCode == 39)
         position = Math.round(sound.position + 1);
     else if (event.keyCode == 37)
         position = Math.round(sound.position - 1);
     else if (event.keyCode == 38 &&
-             track.previousSibling &&
-             track.previousSibling.classList &&
-             track.previousSibling.classList.contains('track'))
-        track = track.previousSibling;
+        track.previousSibling &&
+        (track.previousSibling as HTMLElement).classList &&
+        (track.previousSibling as HTMLElement).classList.contains('track'))
+        track = track.previousSibling as Track;
     else if (event.keyCode == 40 &&
-             track.nextSibling &&
-             track.nextSibling.classList &&
-             track.nextSibling.classList.contains('track'))
-        track = track.nextSibling;
+        track.nextSibling &&
+        (track.nextSibling as HTMLElement).classList &&
+        (track.nextSibling as HTMLElement).classList.contains('track'))
+        track = track.nextSibling as Track;
     sound.move(track, position, true);
     sound.focus();
 }
 
 
-function moveCursor(event) {
-    const player = document.querySelector('#player');
+function moveCursor(event: KeyboardEvent) {
+    const player = document.querySelector('#player') as Player;
     let start = null;
     if (event.keyCode === 39)
         start = Math.min(player.start + 0.01 * player.duration,
                          0.99 * player.duration);
     else if (event.keyCode === 37)
         start = Math.max(player.start - 0.01 * player.duration, 0);
-    if ('null' != start)
+    if (start !== null)
         player.setStart(start)
 }
 
