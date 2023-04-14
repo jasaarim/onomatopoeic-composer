@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "target": "ES2022",
-    "module": "ES2022",
+    "isolatedModules": true,
+    "target": "ES6",
+    "module": "ES6",
     "declaration": true,
     "strict": true,
     "moduleResolution": "node",

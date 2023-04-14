@@ -18,6 +18,8 @@
     },
     "devDependencies": {
         "cypress": "^10.10.0",
+        "eslint-config-standard-with-typescript": "^34.0.1",
+        "eslint-plugin-cypress": "^2.13.2",
         "http-server": "^14.1.1",
         "typescript": "^5.0.4"
     }

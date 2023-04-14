@@ -9,29 +9,21 @@
  *
  */
 
-const fs = require('fs');
+import fs from 'fs'
 
-
-function copyCallback(err) {
-    if (err) throw err;
-}
-
-
-function main() {
-    let sounds = {};
-    const audioFiles = fs.readdirSync('data/audio');
-    const descriptions = fs.readdirSync('data/descriptions');
-    for (const descr of descriptions) {
-        if (descr.includes('.txt')) {
-            const base = descr.split('.txt')[0];
-            sounds[base] = {description: `descriptions/${descr}`};
-            const audio = `${base}.mp3`;
-            if (audioFiles.includes(audio))
-                sounds[base]['audio'] = `audio/${audio}`;
-        }
+function main () {
+  const sounds = {}
+  const audioFiles = fs.readdirSync('data/audio')
+  const descriptions = fs.readdirSync('data/descriptions')
+  for (const descr of descriptions) {
+    if (descr.includes('.txt')) {
+      const base = descr.split('.txt')[0]
+      sounds[base] = { description: `descriptions/${descr}` }
+      const audio = `${base}.mp3`
+      if (audioFiles.includes(audio)) { sounds[base].audio = `audio/${audio}` }
     }
-    fs.writeFileSync('data/sounds.json', JSON.stringify(sounds));
+  }
+  fs.writeFileSync('data/sounds.json', JSON.stringify(sounds))
 }
 
-
-main();
+main()
