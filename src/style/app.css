@@ -1,0 +1,54 @@
+:host {
+  /* Update --vh from JS: on some mobile browsers vh is not consistent
+   with the visible size due to hiding/showing the address bar.  Also
+   use the units to scale the app.*/
+  --vh: 1vh;
+  --vw: 1vw;
+  --borders: 10px;
+  --tracks-height: calc(42.5 * var(--vh));
+  --controls-height: calc(10 * var(--vh));
+  --sound-menu-height: calc(42.5 * var(--vh));
+  --description-height: calc(25 * var(--vh));
+  --sound-menu-width: calc(25 * var(--vw));
+  --description-width: calc(40 * var(--vw));
+  --description-margin: calc(10 * var(--vw));
+  --padding: calc(2.5 * var(--vh));
+  --tracks-num: 8;
+  --sound-height: calc((var(--tracks-height) - var(--borders))
+                       / var(--tracks-num) - 2px);
+  --font-size: calc(0.75 * var(--sound-height));
+  --cursor-width: .5%;
+}
+
+@media all and (orientation:portrait) {
+  :host {
+    --tracks-height: calc(41 * var(--vh) + 5 * var(--vh) - 2.5vw);
+    --controls-height: calc(8 * var(--vh));
+    --sound-menu-height: calc(41 * var(--vh) + 5 * var(--vh) - 2.5vw);
+    --description-height: calc(30 * var(--vh));
+    --sound-menu-width: calc(45 * var(--vw));
+    --description-width: calc(35 * var(--vw));
+    --description-margin: calc(5 * var(--vw));
+    --padding: calc(2.5 * var(--vw));
+    --font-size: calc(0.5 * var(--sound-height));
+    --cursor-width: 1%;
+  }
+}
+
+:host {
+  display: block;
+  font-family: 'Nobile', sans-serif;
+  font-size: var(--font-size);
+  background: #eee;
+  margin: 0;
+  padding: var(--padding);
+  user-select: none;
+  height: calc(100 * var(--vh) - 2 * var(--padding));
+  width: calc(100 * var(--vw) - 2 * var(--padding));
+  -webkit-user-select: none;
+}
+
+#menu-and-description {
+  display: flex;
+  align-items: flex-start;
+}

@@ -1,0 +1,22 @@
+@import url('common-button.css');
+
+:host {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: calc(1 * var(--vh));
+  margin-bottom: calc(2 * var(--vh));
+  font-size: 1rem;
+  height: calc(var(--controls-height) - 3 * var(--vh));
+}
+
+#left-side {
+  display: inline-flex;
+}
+
+
+p {
+  font-size: var(--font-size);
+  margin-left: 2em;
+  margin-top: 0.5em;
+}

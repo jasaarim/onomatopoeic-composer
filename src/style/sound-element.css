@@ -1,0 +1,73 @@
+@import url('common-button.css');
+
+:host {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0;
+  font-size: var(--font-size);
+  background: #cb9;
+  color: black;
+  overflow: visible;
+  height: var(--sound-height);
+  border: 1px solid black;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  /* At the time of writing this, z-index is also used as an indicator
+       for when the styles of a sound-element are loaded in
+       constructing the sound-menu */
+  z-index: 1;
+}
+
+:host(.no-audio) {
+  background: #d98;
+  touch-action: auto;
+}
+
+/* The last two selectors are for active-sound */
+:host(:focus),
+button:focus,
+:host(:focus) button::after,
+:host(:focus) span::after
+{
+  background: rgb(224, 208, 144, 1);
+  outline: none;
+}
+
+button:focus {
+  border-width: 2px;
+}
+
+:host(.no-audio:focus) {
+  background: rgb(240, 176, 160, 1);
+}
+
+:host(.no-audio) button {
+  visibility: hidden;
+}
+
+:host(.clone), :host(.setting-buffer) {
+  cursor: grab;
+  opacity: 0.6;
+  width: calc(var(--sound-menu-width) - var(--borders) - 1rem - 2px);
+  border-width: 2px;
+  border-color: red;
+  touch-action: none;
+}
+
+:host(.initializing) {
+  visibility: hidden;
+}
+
+button {
+  cursor: pointer;
+  position: relative;
+  border-width: 1px;
+  width: 1em;
+  height: 80%;
+  margin-left: .3em;
+  margin-right: .3em;
+}

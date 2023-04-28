@@ -1,24 +1,24 @@
-import { type Sound } from '../elements/sound.js'
+import { type SoundElement } from '../elements/sound-element.js'
 import soundDrag from './sound-drag.js'
 import soundMenuScroll from './sound-menu-scroll.js'
 
 interface Data {
   noDrag: boolean
   initialY: number
-  sound: Sound
+  sound: SoundElement
   removeListeners: () => void
   pointerMove: (event: PointerEvent) => void
   pointerUp: (event: PointerEvent) => void
 }
 
-export default function dragScrollOrFocus (event: PointerEvent): void {
+export default function dragScrollOrFocus (event: PointerEvent, sound: SoundElement): void {
   const data: Data = {
     noDrag: false,
     initialY: event.pageY,
-    sound: (event.target as HTMLElement).closest('.sound') as Sound,
     removeListeners: () => { removeListeners(data) },
     pointerMove: (event) => { maybeScroll(data, event) },
-    pointerUp: (event) => { maybeFocus(data, event) }
+    pointerUp: (event) => { maybeFocus(data, event) },
+    sound
   }
 
   document.addEventListener('pointermove', data.pointerMove,
@@ -32,7 +32,7 @@ export default function dragScrollOrFocus (event: PointerEvent): void {
   window.setTimeout(() => {
     if (!data.noDrag) {
       data.removeListeners()
-      soundDrag(event)
+      soundDrag(event, sound)
       if (mouseEvent) { data.sound.focus() }
     }
   }, timeOut)
@@ -42,7 +42,8 @@ function maybeFocus (data: Data, event: PointerEvent): void {
   data.noDrag = true
   data.removeListeners()
   if (!dragThreshold(event, data.initialY, data.sound)) {
-    if ((event.target as HTMLElement).className !== 'add-button') { data.sound.focus() }
+    // throw new Error(`${data.sound.soundName}`)
+    // data.sound.focus()
   }
 }
 
@@ -54,7 +55,7 @@ function maybeScroll (data: Data, event: PointerEvent): void {
   }
 }
 
-function dragThreshold (event: PointerEvent, initialY: number, sound: Sound): boolean {
+function dragThreshold (event: PointerEvent, initialY: number, sound: SoundElement): boolean {
   const soundHeight = sound.clientHeight
   return Math.abs(event.pageY - initialY) > (0.5 * soundHeight)
 }

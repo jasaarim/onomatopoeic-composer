@@ -1,72 +1,82 @@
-import { type Player } from './player.js'
-import { type ActiveSound } from './sound-active.js'
+import { createShadow, funDummy, resolveDummy } from './utils.js'
 
-export interface PlayerControls extends HTMLElement {
-  player: Player
-  playButton: HTMLButtonElement
-  stopButton: HTMLButtonElement
-  audioStart: (sound: ActiveSound) => number
-  play: () => void
-  pause: () => void
-  stop: () => void
+interface ControlsParams {
+  playerPlay: () => void
+  playerStop: () => void
 }
 
-function initialize (): void {
-  const controls = document.querySelector('#player-controls') as PlayerControls
+export class PlayerControls extends HTMLElement {
+  playerPlay: () => void = funDummy
+  playerStop: () => void = funDummy
+  playButton: HTMLButtonElement = document.createElement('button')
+  stopButton: HTMLButtonElement = document.createElement('button')
+  start: number = -1
+  duration: number = -1
+  startDisplay: HTMLElement = document.createElement('p')
+  durationDisplay: HTMLElement = document.createElement('p')
+  connect: () => void
+  connected: Promise<void>
 
-  controls.player = document.querySelector('#player') as Player
-  controls.playButton = controls.querySelector('#play-button') as HTMLButtonElement
-  controls.stopButton = controls.querySelector('#stop-button') as HTMLButtonElement
+  static fromParams (params: ControlsParams): PlayerControls {
+    let controls = new PlayerControls()
+    controls = Object.assign(controls, params)
+    controls.initialize()
+    return controls
+  }
 
-  controls.audioStart = (sound) => audioStart(controls, sound)
-  controls.play = () => { play(controls) }
-  controls.pause = () => { pause(controls) }
-  controls.stop = () => { stop(controls) }
-}
-
-function play (playerControls: PlayerControls): void {
-  playerControls.player.warmupAudioCxt()
-  if (!playerControls.player.classList.contains('playing')) {
-    playerControls.player.classList.add('playing')
-    const audioCxt = playerControls.player.getAudioCxt()
-    if (audioCxt.state === 'suspended') {
-      audioCxt.resume().catch(error => { throw error })
-    }
-    playerControls.player.applyActiveSounds((sound) => {
-      let start = playerControls.audioStart(sound)
-      const offset = Math.max(0, -start)
-      start = Math.max(0, start)
-      sound.bufferSource.start(audioCxt.currentTime + start, offset)
+  constructor () {
+    super()
+    createShadow('player-controls', this, () => { this.finishShadow() })
+    this.connect = resolveDummy
+    this.connected = new Promise((resolve) => {
+      this.connect = resolve
     })
-    playerControls.player.cursor.play()
-  } else {
-    playerControls.pause()
+  }
+
+  initialize (): void {
+    this.connected
+      .then(() => {
+        this.playButton.addEventListener('click', () => { this.play() })
+        this.stopButton.addEventListener('click', () => { this.stop() })
+      })
+      .catch(error => { throw error })
+  }
+
+  play (): void {
+    this.hasAttribute('playing') ? this.removeAttribute('playing') : this.setAttribute('playing', '')
+    this.playerPlay()
+  }
+
+  stop (stopPlayer: boolean = true): void {
+    this.removeAttribute('playing')
+    // With this the player can also stop the control without
+    // triggering an infinite recursion
+    if (stopPlayer) this.playerStop()
+  }
+
+  finishShadow (): void {
+    this.playButton = this.shadowRoot?.querySelector('#play-button') as HTMLButtonElement
+    this.stopButton = this.shadowRoot?.querySelector('#stop-button') as HTMLButtonElement
+    this.startDisplay = this.shadowRoot?.querySelector('#start-display') as HTMLElement
+    this.durationDisplay = this.shadowRoot?.querySelector('#duration-display') as HTMLElement
+    // This means that somebody has already called setStart or setDuration
+    if (this.start !== -1) this.setStart(this.start)
+    if (this.duration !== -1) this.setDuration(this.duration)
+    this.connect()
+  }
+
+  // We should set the duration display to an input element
+  setDuration (duration: number): void {
+    this.duration = duration
+    duration = Math.round(duration * 10) / 10
+    this.durationDisplay.textContent = `${duration} s`
+  }
+
+  setStart (start: number): void {
+    this.start = start
+    start = Math.round(start * 10) / 10
+    this.startDisplay.textContent = `@ ${start.toFixed(1)} s`
   }
 }
 
-function audioStart (playerControls: PlayerControls, sound: ActiveSound): number {
-  let startSeconds = sound.position / 100 * playerControls.player.duration
-  startSeconds = startSeconds - playerControls.player.start
-  return startSeconds
-}
-
-function stop (playerConstrols: PlayerControls): void {
-  if (playerConstrols.player.classList.contains('playing')) {
-    playerConstrols.pause()
-  }
-  playerConstrols.player.setStart(0)
-  playerConstrols.player.cursor.stop()
-}
-
-function pause (playerControls: PlayerControls): void {
-  playerControls.player.applyActiveSounds((sound) => {
-    sound.bufferSource.stop()
-    sound.renewBufferSource()
-    sound.setPan()
-  })
-  playerControls.player.classList.remove('playing')
-  playerControls.player.getAudioCxt().suspend().catch(error => { throw error })
-  playerControls.player.cursor.pause()
-}
-
-initialize()
+customElements.define('player-controls', PlayerControls)

@@ -1,0 +1,29 @@
+:host {
+  border-top-right-radius: var(--borders);
+  transition: width .3s;
+}
+
+:host(:focus) {
+  z-index: 2;
+}
+
+span {
+  position: relative;
+}
+
+button::after, span::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: -10%;
+    left: -10%;
+    background: #cb9;
+    height: var(--font-size);
+    z-index: -1;
+    border-radius: 5px;
+}
+
+.button-vertical {
+  visibility: hidden;
+}

@@ -1,5 +1,7 @@
+import { type SoundMenu } from '../elements/sound-menu.js'
+
 interface Data {
-  menu: HTMLElement
+  menu: SoundMenu
   initialY: number
   initialScrollTop: number
   previousTime: number
@@ -12,10 +14,11 @@ interface Data {
 }
 
 export default function scroll (event: PointerEvent): void {
+  const menu = event.target as SoundMenu
   const data: Data = {
-    menu: (event.target as HTMLElement).parentElement as HTMLElement,
+    menu,
     initialY: event.pageY,
-    initialScrollTop: (event.target as HTMLElement).parentElement?.scrollTop as number,
+    initialScrollTop: menu.scrollTop,
     previousTime: Date.now(),
     previousY: event.pageY,
     velocity: null,
@@ -24,8 +27,7 @@ export default function scroll (event: PointerEvent): void {
     pointerMove: (event) => { pointerMove(data, event) },
     pointerUp: (event) => { pointerUp(data, event) }
   }
-  const target = event.target as HTMLElement
-  target.setPointerCapture(event.pointerId)
+  menu.setPointerCapture(event.pointerId)
 
   document.addEventListener('pointermove', data.pointerMove,
     { passive: true })
@@ -53,9 +55,9 @@ function pointerUp (data: Data, event: PointerEvent): void {
   document.removeEventListener('pointerup', data.pointerUp)
   document.removeEventListener('pointercancel', data.pointerUp)
 
-  endInertia(data.menu, data.downwards, data.velocity);
+  endInertia(data.menu, data.downwards, data.velocity)
 
-  (event.target as HTMLElement).releasePointerCapture(event.pointerId)
+  data.menu.releasePointerCapture(event.pointerId)
 }
 
 function endInertia (menu: HTMLElement, downwards: boolean | null, v: number | null, t0?: number, t?: number): void {

@@ -1,0 +1,22 @@
+:host {
+  display: inline-block;
+  background: #aaa;
+  overflow-y: scroll;
+  scrollbar-width: 1rem;
+  width: calc(var(--sound-menu-width) - var(--borders));
+  height: calc(var(--sound-menu-height) - var(--borders));
+  border: calc(var(--borders) / 2) #777 inset;
+  border-bottom-left-radius: var(--padding);
+}
+
+
+:host(.adding-first-sounds) sound-element {
+  visibility: hidden;
+}
+
+sound-element {
+  position: relative;
+  width: calc(100% - 2px);
+  overflow-x: hidden;
+}
+

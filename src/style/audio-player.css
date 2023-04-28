@@ -1,0 +1,38 @@
+#tracks {
+  position: relative;
+  background: #4a4;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  height: calc(var(--tracks-height) - var(--borders));
+  border: calc(var(--borders) / 2)  #555 outset;
+  border-top-left-radius: var(--padding);
+  border-top-right-radius: var(--padding);
+}
+
+audio-track {
+  flex-grow: 1;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+player-cursor {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--cursor-width);
+  background: rgba(200, 200, 200, 0.7);
+  transition-property: left;
+  transition-timing-function: linear;
+  z-index: 1;
+}
+
+#track1 { background: #f66; }
+#track2 { background: #f84; }
+#track3 { background: #ee0; }
+#track4 { background: #7e7; }
+#track5 { background: #5ee; }
+#track6 { background: #6bf; }
+#track7 { background: #c8f; }
+#track8 { background: #f8e; }

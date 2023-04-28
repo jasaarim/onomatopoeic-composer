@@ -4,13 +4,13 @@ describe('Sound elements', () => {
   it('Clicking on a sound fetches an audio file', () => {
     cy.intercept('/audio/*').as('audioRequest')
     cy.visit('/')
-    cy.get('#sound-menu .sound').not('.no-audio').first().then($el => {
+    cy.get('sound-element.with-audio').first().then($el => {
       expect($el.get(0).audio.preload).to.eq('none')
     })
-    cy.get('#sound-menu .sound').not('.no-audio').first().click().then(($el) => {
+    cy.get('sound-element.with-audio').first().click().then(($el) => {
       cy.wait('@audioRequest').then(({ request }) => {
         expect($el.get(0).audio.preload).to.eq('auto')
-        expect(decodeURI(request.url)).to.include($el.get(0).name)
+        expect(decodeURI(request.url)).to.include($el.get(0).soundName)
       })
     })
   })

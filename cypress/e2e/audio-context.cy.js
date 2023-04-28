@@ -28,16 +28,16 @@ class MockAudioCxt extends AudioContext {
 describe('Sounds integrate to Audio Context', () => {
   it('Sound graph', () => {
     cy.visit('/')
-    cy.get('#player').then($el => {
-      const player = $el.get(0)
-      player.audioCxt = new MockAudioCxt()
+    cy.get('audio-player').then(el => {
+      const player = el.get(0)
+      player._audioCxt = new MockAudioCxt()
     }).then(() => {
-      cy.get('#sound-menu .sound').not('.no-audio').first()
+      cy.get('sound-element.with-audio').first()
         .find('.add-button').click().click()
     }).then(() => {
-      cy.get('#player').then($el => {
-        const player = $el.get(0)
-        const graph = player.getAudioCxt().destination.src
+      cy.get('audio-player').then(el => {
+        const player = el.get(0)
+        const graph = player.audioCxt.destination.src
         expect(graph).to.deep.eq([['panner', ['buffer']],
           ['panner', ['buffer']]])
       })
@@ -48,18 +48,18 @@ describe('Sounds integrate to Audio Context', () => {
     cy.visit('/')
     const delays = []
     const offsets = []
-    cy.get('#player-tracks').click()
-      .get('#sound-menu .sound').not('.no-audio').first()
+    cy.get('sound-element.with-audio').first()
       .find('.add-button').click()
-      .type('{rightArrow}{rightArrow}').click()
-      .type('{leftArrow}')
-    cy.get('#player .sound').not('.initial').each($el => {
-      const sound = $el.get(0)
+    cy.get('body').type('{rightArrow}{rightArrow}', { force: true })
+    cy.get('sound-element.with-audio').first()
+      .find('.add-button').click()
+    cy.get('body').type('{leftArrow}', { force: true })
+    cy.get('active-sound').not('.initializing').each(el => {
+      const sound = el.get(0)
       // Mock start
       sound.bufferSource._start = sound.bufferSource.start
       sound.bufferSource.start = (delay, offset) => {
-        const audioCxt = sound.parentElement
-          .parentElement.parentElement.audioCxt
+        const audioCxt = sound.getAudioCxt()
         let d = delay - audioCxt.currentTime
         d = Math.round(d * 1000) / 1000
         const o = Math.round(offset * 1000) / 1000
@@ -68,10 +68,10 @@ describe('Sounds integrate to Audio Context', () => {
         sound.bufferSource._start(delay, offset)
       }
     }).then(() => {
-      cy.get('#play-button').click()
-      cy.get('#stop-button').click().then(() => {
-        expect(delays).to.deep.eq([0, 0.2])
-        expect(offsets).to.deep.eq([0.2, 0])
+      cy.get('player-controls').find('#play-button').click()
+      cy.get('player-controls').find('#stop-button').click().then(() => {
+        expect(delays).to.deep.eq([0, 0.1])
+        expect(offsets).to.deep.eq([0.1, 0])
       })
     })
   })

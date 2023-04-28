@@ -1,5 +1,10 @@
 # Change log
 
+## Version 0.2.1
+
+- Migrate to Web components.  Still somewhat rough code, more
+  improvements to come.
+
 ## Version 0.2.0
 
 - Migrate to TypeScript.  The code is rough now, improvements will

@@ -1,29 +1,32 @@
-import { type Player } from '../elements/player.js'
-import { type ActiveSound, soundToTrack } from '../elements/sound-active.js'
-import { type Sound } from '../elements/sound.js'
-import { type Track } from '../elements/track.js'
+import { type AudioPlayer } from '../elements/audio-player.js'
+import { type ActiveSound } from '../elements/active-sound.js'
+import { type SoundElement } from '../elements/sound-element.js'
+import { type AudioTrack } from '../elements/audio-track.js'
+import { type App } from '../elements/app.js'
 
-interface Clone extends Sound {
+interface Clone extends SoundElement {
   startX: number
-  sound: Sound
+  sound: SoundElement
   shiftX: number
   shiftY: number
+  player?: AudioPlayer
   leaveTrack: () => void
   enterTrack: () => void
   drop: (event: PointerEvent) => void
   positionOnTrack: (event: PointerEvent) => number
-  currentTrack?: Track | null
+  currentTrack?: AudioTrack
   pointerMove: (event: PointerEvent) => void
   pointerUp: (event: PointerEvent) => void
+  app: App
 }
 
-export default function drag (event: PointerEvent): void {
+export default function drag (event: PointerEvent, sound: SoundElement): void {
   try { window.navigator.vibrate(50) } catch {}
-  const player = document.querySelector('#player') as Player
-  const sound = (event.target as HTMLElement).closest('.sound') as Sound
   const clone = sound.cloneNode(true) as Clone
   clone.classList.add('clone')
-  document.body.append(clone)
+  const app = document.querySelector('app-') as App
+  clone.app = app
+  app.shadowRoot?.append(clone)
 
   // We only need X to find out the position on the track
   clone.startX = event.pageX
@@ -32,13 +35,11 @@ export default function drag (event: PointerEvent): void {
   clone.shiftX = event.clientX - sound.getBoundingClientRect().left
   clone.shiftY = event.clientY - sound.getBoundingClientRect().top
 
-  if (sound.buffer != null) {
-    if (player.tracks === null) {
-      throw new Error('Null tracks')
-    }
-    const trackWidth = player.tracks.clientWidth
-    const width = sound.buffer.duration / player.duration * trackWidth
-    clone.style.width = `${width}px`
+  const activeSoundWidth = (clone.sound as ActiveSound)?.sound?.width
+  if (activeSoundWidth != null) {
+    clone.style.width = `${activeSoundWidth}px`
+  } else if (clone.sound.width != null) {
+    clone.style.width = `${clone.sound.width}px`
   }
   clone.leaveTrack = () => { leaveTrack(clone) }
   clone.enterTrack = () => { enterTrack(clone) }
@@ -50,10 +51,10 @@ export default function drag (event: PointerEvent): void {
   clone.pointerUp = (event) => { pointerUp(clone, event) }
 
   clone.pointerMove(event)
-  document.body.addEventListener('pointermove', clone.pointerMove,
+  app.addEventListener('pointermove', clone.pointerMove,
     { passive: true })
-  document.body.addEventListener('pointerup', clone.pointerUp)
-  document.body.addEventListener('pointercancel', clone.pointerUp)
+  app.addEventListener('pointerup', clone.pointerUp)
+  app.addEventListener('pointercancel', clone.pointerUp)
 }
 
 function pointerMove (clone: Clone, event: PointerEvent): void {
@@ -66,10 +67,17 @@ function pointerMove (clone: Clone, event: PointerEvent): void {
   }
 
   clone.style.visibility = 'hidden'
-  const elemBelow = document.elementFromPoint(event.pageX, event.pageY) as HTMLElement
-  clone.style.visibility = 'visible'
+  const elemBelow = clone.app.shadowRoot?.elementFromPoint(event.pageX, event.pageY) as HTMLElement
 
-  const trackBelow = elemBelow.closest('.track') as Track
+  let trackBelow
+  if (elemBelow?.tagName === 'AUDIO-PLAYER') {
+    clone.player = elemBelow as AudioPlayer
+    const elemInPlayer = elemBelow.shadowRoot?.elementFromPoint(event.pageX, event.pageY)
+    trackBelow = elemInPlayer?.closest('audio-track') as AudioTrack
+  } else {
+    delete clone.player
+  }
+  clone.style.visibility = 'visible'
 
   if (trackBelow !== clone.currentTrack) {
     clone.leaveTrack()
@@ -87,7 +95,7 @@ function enterTrack (clone: Clone): void {
 
 function leaveTrack (clone: Clone): void {
   if (clone.currentTrack != null) {
-    document.body.append(clone)
+    clone.app.shadowRoot?.append(clone)
     clone.currentTrack.style.opacity = 'unset'
   }
 }
@@ -95,18 +103,22 @@ function leaveTrack (clone: Clone): void {
 function pointerUp (clone: Clone, event: PointerEvent): void {
   if (clone.currentTrack != null) {
     clone.drop(event)
-  } else if (clone.sound.classList.contains('active')) {
+  } else if ((clone.sound as ActiveSound).sound != null) {
     clone.sound.remove()
   }
-  document.body.removeEventListener('pointermove', clone.pointerMove)
-  document.body.removeEventListener('pointerup', clone.pointerUp)
-  document.body.removeEventListener('pointercancel', clone.pointerUp)
+  clone.app.removeEventListener('pointermove', clone.pointerMove)
+  clone.app.removeEventListener('pointerup', clone.pointerUp)
+  clone.app.removeEventListener('pointercancel', clone.pointerUp)
   clone.remove()
 }
 
 function drop (clone: Clone, event: PointerEvent): void {
   const position = clone.positionOnTrack(event)
-  soundToTrack(clone.sound as ActiveSound, clone.currentTrack, position)
+  if (clone.player == null) {
+    throw new Error('No player for the moving sound')
+  }
+  clone.player.soundToTrack(clone.sound, clone.currentTrack, position)
+    .catch(error => { throw error })
   clone.leaveTrack()
 }
 
