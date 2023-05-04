@@ -1,9 +1,10 @@
-import { AudioTrack } from './audio-track.js'
-import { ActiveSound } from './active-sound.js'
-import { PlayerCursor } from './player-cursor.js'
-import { PlayerControls } from './player-controls.js'
-import { makeStyleNode } from './utils.js'
-import { type SoundElement } from './sound-element.js'
+import { AudioTrack } from './audio-track'
+import { ActiveSound } from './active-sound'
+import { PlayerCursor } from './player-cursor'
+import { PlayerControls } from './player-controls'
+import { type SoundElement } from './sound-element'
+
+import '../style/audio-player.css'
 
 export class AudioPlayer extends HTMLElement {
   duration: number
@@ -20,7 +21,6 @@ export class AudioPlayer extends HTMLElement {
     super()
     this.length = 8
     this.duration = 20
-    const shadow = this.attachShadow({ mode: 'open' })
 
     const trackContainer = document.createElement('div')
     this.tracks = []
@@ -30,38 +30,41 @@ export class AudioPlayer extends HTMLElement {
       this.tracks.push(track)
     }
     trackContainer.id = 'tracks'
-    shadow.appendChild(trackContainer)
+    this.appendChild(trackContainer)
 
     this.cursor = this.makeCursor()
     trackContainer.appendChild(this.cursor)
 
     this.controls = this.makeControls()
-    shadow.appendChild(this.controls)
-
-    shadow.append(makeStyleNode('audio-player'))
+    this.appendChild(this.controls)
 
     this.connectEvents()
   }
 
   makeTrack (trackNum: number): AudioTrack {
-    return AudioTrack.fromParams({
+    const track = new AudioTrack()
+    track.initialize({
       trackNum,
       totalNum: this.length,
       getDuration: () => this.duration,
       getStart: () => this.start
     })
+    return track
   }
 
   makeCursor (): PlayerCursor {
-    return PlayerCursor.fromParams({
+    const cursor = new PlayerCursor()
+    cursor.initialize({
       getPlayerDuration: () => this.duration,
       getPlayerStart: () => this.start,
       playerStop: () => { this.stop() }
     })
+    return cursor
   }
 
   makeControls (): PlayerControls {
-    const controls = PlayerControls.fromParams({
+    const controls = new PlayerControls()
+    controls.initialize({
       playerPlay: () => { this.play() },
       playerStop: () => { this.stop() }
     })
@@ -76,7 +79,7 @@ export class AudioPlayer extends HTMLElement {
   }
 
   setCursorWithPointer (event: PointerEvent): void {
-    const target = this.shadowRoot?.elementFromPoint(event.pageX, event.pageY)
+    const target = document.elementFromPoint(event.pageX, event.pageY)
     if (target instanceof AudioTrack && (this.started == null)) {
       const x = event.clientX - this.tracks[0].getBoundingClientRect().left
       const start = x / this.width * this.duration
@@ -86,7 +89,7 @@ export class AudioPlayer extends HTMLElement {
 
   keyboardInteraction (event: KeyboardEvent): void {
     if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
-      const activeSound = this.shadowRoot?.activeElement
+      const activeSound = document.activeElement
       if (activeSound instanceof ActiveSound) {
         event.stopPropagation()
         const position = activeSound.position
@@ -157,7 +160,8 @@ export class AudioPlayer extends HTMLElement {
       if (sound.audioFile == null) {
         throw new Error('Cannot create active sound from null audio')
       }
-      activeSound = ActiveSound.fromParams({
+      activeSound = new ActiveSound()
+      activeSound.initialize({
         soundName: sound.soundName,
         descriptionFile: sound.descriptionFile,
         audioFile: sound.audioFile,
@@ -200,6 +204,7 @@ export class AudioPlayer extends HTMLElement {
     if (seconds > 0) {
       const ratio = seconds / this.duration
       this.duration = seconds
+      this.start *= ratio
       this.controls.setDuration(seconds)
       this.applyActiveSounds((activeSound: ActiveSound, track: AudioTrack) => {
         activeSound.adjustWidth()

@@ -1,4 +1,4 @@
-import { type numFun, funDummy } from './utils.js'
+import { type numFun, funDummy } from './utils'
 
 interface CursorParams {
   getPlayerDuration: numFun
@@ -11,12 +11,6 @@ export class PlayerCursor extends HTMLElement {
   getPlayerStart: numFun = funDummy
   playerStop: () => void = funDummy
 
-  static fromParams (params: CursorParams): PlayerCursor {
-    let cursor = new PlayerCursor()
-    cursor = Object.assign(cursor, params)
-    return cursor
-  }
-
   constructor () {
     super()
     this.style.left = '0%'
@@ -24,6 +18,12 @@ export class PlayerCursor extends HTMLElement {
       this.stop()
       this.playerStop()
     })
+  }
+
+  initialize (params: CursorParams): void {
+    this.getPlayerDuration = params.getPlayerDuration
+    this.getPlayerStart = params.getPlayerStart
+    this.playerStop = params.playerStop
   }
 
   play (): void {

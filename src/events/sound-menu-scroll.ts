@@ -1,4 +1,4 @@
-import { type SoundMenu } from '../elements/sound-menu.js'
+import { type SoundMenu } from '../elements/sound-menu'
 
 interface Data {
   menu: SoundMenu
@@ -14,7 +14,7 @@ interface Data {
 }
 
 export default function scroll (event: PointerEvent): void {
-  const menu = event.target as SoundMenu
+  const menu = (event.target as HTMLElement).parentElement as SoundMenu
   const data: Data = {
     menu,
     initialY: event.pageY,

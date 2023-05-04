@@ -1,38 +1,42 @@
-import { createShadow, makeStyleNode } from './utils.js'
+import { parseTemplate } from './elements/utils'
 
-import './description-display.js'
-import { AudioPlayer } from './audio-player.js'
-import { SoundMenu } from './sound-menu.js'
-import { type DescriptionDisplay } from './description-display.js'
+import './elements/audio-player'
+import './elements/description-display'
+import './elements/sound-menu'
+import { type SoundMenu } from './elements/sound-menu'
+import { type AudioPlayer } from './elements/audio-player'
+import { type DescriptionDisplay } from './elements/description-display'
+
+import template from './templates/app.html'
+import './style/app.css'
+
+const nodes = parseTemplate(template)
 
 export class App extends HTMLElement {
   descriptionDisplay?: DescriptionDisplay
-  soundMenu?: SoundMenu
-  audioPlayer: AudioPlayer = new AudioPlayer()
+  soundMenu: SoundMenu
+  audioPlayer: AudioPlayer
 
   constructor () {
     super()
-    createShadow('app', this, () => {
-      this.shadowRoot?.append(makeStyleNode('app'))
-      this.descriptionDisplay = this.shadowRoot?.querySelector('description-display') as DescriptionDisplay
-      this.audioPlayer = this.shadowRoot?.querySelector('audio-player') as AudioPlayer
-      this.soundMenu = SoundMenu.fromParams({
-        showDescription: (sound) => { this.descriptionDisplay?.show(sound) },
-        addToPlayer: (sound) => {
-          if (sound.audioFile != null) {
-            this.audioPlayer?.soundToTrack(sound).catch((error) => { throw error })
-          }
-        },
-        descriptionPlay: (sound) => {
-          if (this.descriptionDisplay?.soundName === sound.soundName) {
-            this.descriptionDisplay.play()
-          }
+    this.appendChild(nodes.cloneNode(true))
+    this.descriptionDisplay = this.querySelector('description-display') as DescriptionDisplay
+    this.audioPlayer = this.querySelector('audio-player') as AudioPlayer
+    this.soundMenu = this.querySelector('sound-menu') as SoundMenu
+    this.soundMenu.initialize({
+      showDescription: (sound) => { this.descriptionDisplay?.show(sound) },
+      addToPlayer: (sound) => {
+        if (sound.audioFile != null) {
+          this.audioPlayer.soundToTrack(sound).catch((error) => { throw error })
         }
-      })
-      this.soundMenu.setAttribute('slot', 'sound-menu')
-      this.append(this.soundMenu)
-      this.connectEvents()
+      },
+      descriptionPlay: (sound) => {
+        if (this.descriptionDisplay?.soundName === sound.soundName) {
+          this.descriptionDisplay.play()
+        }
+      }
     })
+    this.connectEvents()
   }
 
   connectEvents (): void {
@@ -51,8 +55,8 @@ export class App extends HTMLElement {
     let vw = window.innerWidth * 0.01
     vw = Math.min(vw, 15)
 
-    this.style.setProperty('--vh', `${vh}px`)
-    this.style.setProperty('--vw', `${vw}px`)
+    document.documentElement.style.setProperty('--vh', `${vh}px`)
+    document.documentElement.style.setProperty('--vw', `${vw}px`)
   }
 
   keyboardInteraction (event: KeyboardEvent): void {

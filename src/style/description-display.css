@@ -1,35 +1,33 @@
-@import url('common-button.css');
-
-:host {
-    display: inline-block;
-    margin-left: var(--description-margin);
-    padding: .5rem;
-    background: #9f9;
-    font-size: calc(0.9 * var(--font-size));
-    overflow-y: auto;
-    width:  calc(var(--description-width) - var(--borders));
-    height: calc(var(--description-height) - var(--borders));
-    border: calc(var(--borders) / 2) #777 inset;
+description-display {
+  display: inline-block;
+  margin-left: var(--description-margin);
+  padding: .5rem;
+  background: #9f9;
+  font-size: calc(0.9 * var(--font-size));
+  overflow-y: auto;
+  width:  calc(var(--description-width) - var(--borders));
+  height: calc(var(--description-height) - var(--borders));
+  border: calc(var(--borders) / 2) #777 inset;
 }
 
-::slotted(h3), ::slotted(p) {
-    padding: 0;
-    margin: 0;
-    white-space: pre-line;
+description-display h3, description-display p {
+  padding: 0;
+  margin: 0;
+  white-space: pre-line;
 }
 
-::slotted(h3) {
-    font-family: 'Cookie', cursive;
-    font-size: calc(1.5 * var(--font-size));
-    margin-bottom: 1rem;
+description-display h3 {
+  font-family: 'Cookie', cursive;
+  font-size: calc(1.5 * var(--font-size));
+  margin-bottom: 1rem;
 }
 
 
-button {
-    float: right;
-    display: none;
+description-display button {
+  float: right;
+  display: none;
 }
 
-:host([audio]) button {
-    display: flex;
+description-display[audio] button {
+  display: flex;
 }

@@ -1,32 +1,32 @@
 button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: calc(var(--controls-height) - 3 * var(--vh));
-    width: calc(var(--controls-height) - 3 * var(--vh));
-    min-width: calc(var(--controls-height) - 3 * var(--vh));
-    background: transparent;
-    border: 3px solid #555;
-    border-radius: .5em;
-    padding: 0;
-    margin: 0;
-    margin-right: 0.2em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--controls-height) - 3 * var(--vh));
+  width: calc(var(--controls-height) - 3 * var(--vh));
+  min-width: calc(var(--controls-height) - 3 * var(--vh));
+  background: transparent;
+  border: 3px solid #555;
+  border-radius: .5em;
+  padding: 0;
+  margin: 0;
+  margin-right: 0.2em;
 }
 
 button:focus {
-    background: #ccc;
+  background: #ccc;
 }
 
 svg {
-    height: 55%;
-    fill: #555;
-    pointer-events: none;
+  height: 55%;
+  fill: #555;
+  pointer-events: none;
 }
 
-.pause-icon, :host([playing]) .play-icon {
-    display: none;
+.pause-icon, .playing .play-icon {
+  display: none;
 }
 
-:host([playing]) .pause-icon {
-    display: inline;
+.playing .pause-icon {
+  display: inline;
 }

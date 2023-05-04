@@ -1,7 +1,7 @@
 {
   "name": "onomatopoeic-composer",
   "description": "Browsing, listening to, and composing with onomatopoeia",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "licence": "AGPL",
   "homepage": "https://github.com/jasaarim/onomatopoeic-composer",
   "repository": {
@@ -9,18 +9,18 @@
     "url": "https://github.com/jasaarim/onomatopoeic-composer"
   },
   "scripts": {
-    "dev": "npm run build; http-server build & tsc --build --watch",
+    "dev": "scripts/init-build-dir.sh -d && ./scripts/esbuild-dev.mjs",
+    "build": "scripts/init-build-dir.sh && ./scripts/esbuild-prod.mjs",
     "test": "npx cypress run",
-    "build": "rm build/ -rf; tsc --build; cp -r data/* build/; cp index.html build/; cp -r src/* build/",
     "index-sounds": "scripts/index-sounds.js",
     "copy-sounds": "scripts/copy-sounds.js",
     "decode-sound-files": "scripts/decode-sound-files.sh"
   },
   "devDependencies": {
     "cypress": "^10.10.0",
+    "esbuild": "^0.17.18",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-cypress": "^2.13.2",
-    "http-server": "^14.1.1",
     "typescript": "^5.0.4"
   }
 }

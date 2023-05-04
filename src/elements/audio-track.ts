@@ -1,5 +1,5 @@
-import { type ActiveSound } from './active-sound.js'
-import { type numFun, funDummy } from './utils.js'
+import { type ActiveSound } from './active-sound'
+import { type numFun, funDummy } from './utils'
 
 interface TrackParams {
   trackNum: number
@@ -16,19 +16,17 @@ export class AudioTrack extends HTMLElement {
   getStart: numFun = funDummy
   getDuration: numFun = funDummy
 
-  static fromParams (params: TrackParams): AudioTrack {
-    let audioTrack = new AudioTrack()
-    audioTrack = Object.assign(audioTrack, params)
-    audioTrack.initialize()
-    return audioTrack
-  }
-
   constructor () {
     super()
     this.activeSounds = []
   }
 
-  initialize (): void {
+  initialize (params: TrackParams): void {
+    this.trackNum = params.trackNum
+    this.totalNum = params.totalNum
+    this.getDuration = params.getDuration
+    this.getStart = params.getStart
+
     this.id = `track${this.trackNum}`
     // For stereo panning
     this.panValue = -1 + 2 / (this.totalNum - 1) * (this.trackNum - 1)

@@ -1,5 +1,7 @@
-import { SoundElement } from './sound-element.js'
-import { makeStyleNode, type numFun, funDummy } from './utils.js'
+import { SoundElement } from './sound-element'
+import { type numFun, funDummy } from './utils'
+
+import '../style/active-sound.css'
 
 interface ActiveSoundParams {
   soundName: string
@@ -27,15 +29,21 @@ export class ActiveSound extends SoundElement {
   stereoPanner?: StereoPannerNode
   panner?: PannerNode
 
-  static fromParams (params: ActiveSoundParams): ActiveSound {
-    let activeSound = new ActiveSound()
-    activeSound = Object.assign(activeSound, params)
-    activeSound.initialize()
-    return activeSound
+  constructor () {
+    super()
+    this.resolveBufferReady = () => { throw new Error('Impossible!') }
+    this.bufferReady = new Promise(resolve => {
+      this.resolveBufferReady = resolve
+    })
   }
 
-  initialize (): void {
-    super.initialize()
+  initialize (params: ActiveSoundParams): void {
+    super.initialize(params)
+    this.sound = params.sound
+    this.getPlayerDuration = params.getPlayerDuration
+    this.getPlayerWidth = params.getPlayerWidth
+    this.getAudioCxt = params.getAudioCxt
+
     // If the width is known by the source sound element, set it
     if (this.sound?.width != null) {
       this.style.width = `${this.sound.width}px`
@@ -51,18 +59,6 @@ export class ActiveSound extends SoundElement {
         setTimeout(() => { this.classList.remove('setting-buffer') }, 300)
       })
       .catch(error => { throw error })
-  }
-
-  constructor () {
-    super()
-    this.connected
-      .then(() => { this.shadowRoot?.append(makeStyleNode('active-sound')) })
-      .catch(error => { throw error })
-
-    this.resolveBufferReady = () => { throw new Error('Resolving outside Promise') }
-    this.bufferReady = new Promise(resolve => {
-      this.resolveBufferReady = resolve
-    })
   }
 
   setPosition (position: number, trackNum: number): void {
@@ -114,7 +110,7 @@ export class ActiveSound extends SoundElement {
   connectBufferSource (bufferSource: AudioBufferSourceNode): void {
     const audioCxt = this.getAudioCxt()
     let panner
-    if (audioCxt.createStereoPanner !== undefined) {
+    if (audioCxt.createStereoPanner != null) {
       panner = audioCxt.createStereoPanner()
       this.stereoPanner = panner
     } else {

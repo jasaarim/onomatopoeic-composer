@@ -1,4 +1,13 @@
-:host {
+@import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nobile&display=swap');
+
+@import url('common-button.css');
+
+body {
+  margin: 0;
+}
+
+:root {
   /* Update --vh from JS: on some mobile browsers vh is not consistent
    with the visible size due to hiding/showing the address bar.  Also
    use the units to scale the app.*/
@@ -21,7 +30,7 @@
 }
 
 @media all and (orientation:portrait) {
-  :host {
+  :root {
     --tracks-height: calc(41 * var(--vh) + 5 * var(--vh) - 2.5vw);
     --controls-height: calc(8 * var(--vh));
     --sound-menu-height: calc(41 * var(--vh) + 5 * var(--vh) - 2.5vw);
@@ -35,7 +44,7 @@
   }
 }
 
-:host {
+app- {
   display: block;
   font-family: 'Nobile', sans-serif;
   font-size: var(--font-size);

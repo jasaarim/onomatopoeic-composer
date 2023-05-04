@@ -14,15 +14,19 @@ name `sound.mp3`.  To use the contents of these data directories run
 $ npm run index-sounds
 ```
 
-## Running locally
-
-To run locally, a http server should point to files in the folder
-`public` (this contains symbolic links to the data and code).  To use
-Python to serve at `localhost:8000`, run
+## Development build
 
 ```
-$ npm run server
+$ npm run dev
 ```
+
+## Production build
+
+```
+$ npm run build
+```
+
+This will place the app in the `build/` folder.
 
 
 ## Testing
@@ -33,17 +37,6 @@ the app running `localhost:8000` and then run
 ```
 $ npm run test
 ```
-
-## Building
-
-To place the static app on a server, first run
-
-```
-$ npm run build
-```
-
-The stand-alone app is now in the folder `build`.
-
 
 ## Usage
 

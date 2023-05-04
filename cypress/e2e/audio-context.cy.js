@@ -34,13 +34,14 @@ describe('Sounds integrate to Audio Context', () => {
     }).then(() => {
       cy.get('sound-element.with-audio').first()
         .find('.add-button').click().click()
-    }).then(() => {
-      cy.get('audio-player').then(el => {
-        const player = el.get(0)
-        const graph = player.audioCxt.destination.src
-        expect(graph).to.deep.eq([['panner', ['buffer']],
-          ['panner', ['buffer']]])
-      })
+    })
+    cy.get('#track1 active-sound')
+    cy.get('#track2 active-sound')
+    cy.get('audio-player').then(el => {
+      const player = el.get(0)
+      const graph = player.audioCxt.destination.src
+      expect(graph).to.deep.eq([['panner', ['buffer']],
+        ['panner', ['buffer']]])
     })
   })
 
@@ -48,13 +49,17 @@ describe('Sounds integrate to Audio Context', () => {
     cy.visit('/')
     const delays = []
     const offsets = []
-    cy.get('sound-element.with-audio').first()
-      .find('.add-button').click()
-    cy.get('body').type('{rightArrow}{rightArrow}', { force: true })
-    cy.get('sound-element.with-audio').first()
-      .find('.add-button').click()
-    cy.get('body').type('{leftArrow}', { force: true })
-    cy.get('active-sound').not('.initializing').each(el => {
+    cy.get('sound-element.with-audio .add-button').first().click()
+    cy.get('#track1 active-sound').not('.setting-buffer')
+    cy.get('body').type('{rightArrow}{rightArrow}')
+    cy.get('audio-player').contains('0.2 s')
+    cy.get('sound-element.with-audio .add-button').first().click()
+    cy.get('#track2 active-sound').not('.setting-buffer').click()
+    // Click just to focus out of the active-sound
+    cy.get('description-display h3').click()
+    cy.get('body').type('{leftArrow}')
+    cy.get('audio-player').contains('0.1 s')
+    cy.get('active-sound').not('.setting-buffer').each(el => {
       const sound = el.get(0)
       // Mock start
       sound.bufferSource._start = sound.bufferSource.start
@@ -68,8 +73,8 @@ describe('Sounds integrate to Audio Context', () => {
         sound.bufferSource._start(delay, offset)
       }
     }).then(() => {
-      cy.get('player-controls').find('#play-button').click()
-      cy.get('player-controls').find('#stop-button').click().then(() => {
+      cy.get('#play-button').click()
+      cy.get('#stop-button').click().then(() => {
         expect(delays).to.deep.eq([0, 0.1])
         expect(offsets).to.deep.eq([0.1, 0])
       })

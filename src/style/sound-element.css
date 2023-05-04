@@ -1,6 +1,4 @@
-@import url('common-button.css');
-
-:host {
+sound-element, active-sound {
   position: absolute;
   display: flex;
   align-items: center;
@@ -22,34 +20,34 @@
   z-index: 1;
 }
 
-:host(.no-audio) {
+sound-element.no-audio {
   background: #d98;
   touch-action: auto;
 }
 
-/* The last two selectors are for active-sound */
-:host(:focus),
-button:focus,
-:host(:focus) button::after,
-:host(:focus) span::after
+sound-element:focus,
+sound-element button:focus,
+active-sound:focus,
+active-sound:focus button::after,
+active-sound:focus span::after
 {
   background: rgb(224, 208, 144, 1);
   outline: none;
 }
 
-button:focus {
+sound-element button:focus {
   border-width: 2px;
 }
 
-:host(.no-audio:focus) {
+sound-element.no-audio:focus {
   background: rgb(240, 176, 160, 1);
 }
 
-:host(.no-audio) button {
+sound-element.no-audio button {
   visibility: hidden;
 }
 
-:host(.clone), :host(.setting-buffer) {
+sound-element.clone, active-sound.setting-buffer {
   cursor: grab;
   opacity: 0.6;
   width: calc(var(--sound-menu-width) - var(--borders) - 1rem - 2px);
@@ -58,11 +56,15 @@ button:focus {
   touch-action: none;
 }
 
-:host(.initializing) {
+sound-element.clone, active-sound.clone {
+  z-index: 3;
+}
+
+sound-element.initializing {
   visibility: hidden;
 }
 
-button {
+sound-element button, active-sound button {
   cursor: pointer;
   position: relative;
   border-width: 1px;

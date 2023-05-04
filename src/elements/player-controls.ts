@@ -1,4 +1,9 @@
-import { createShadow, funDummy, resolveDummy } from './utils.js'
+import { parseTemplate, funDummy } from './utils'
+
+import template from '../templates/player-controls.html'
+import '../style/player-controls.css'
+
+const nodes = parseTemplate(template)
 
 interface ControlsParams {
   playerPlay: () => void
@@ -14,55 +19,37 @@ export class PlayerControls extends HTMLElement {
   duration: number = -1
   startDisplay: HTMLElement = document.createElement('p')
   durationDisplay: HTMLElement = document.createElement('p')
-  connect: () => void
-  connected: Promise<void>
-
-  static fromParams (params: ControlsParams): PlayerControls {
-    let controls = new PlayerControls()
-    controls = Object.assign(controls, params)
-    controls.initialize()
-    return controls
-  }
 
   constructor () {
     super()
-    createShadow('player-controls', this, () => { this.finishShadow() })
-    this.connect = resolveDummy
-    this.connected = new Promise((resolve) => {
-      this.connect = resolve
-    })
+    this.appendChild(nodes.cloneNode(true))
+    this.playButton = this.querySelector('#play-button') as HTMLButtonElement
+    this.stopButton = this.querySelector('#stop-button') as HTMLButtonElement
+    this.startDisplay = this.querySelector('#start-display') as HTMLElement
+    this.durationDisplay = this.querySelector('#duration-display') as HTMLElement
+    // This means that somebody has already called setStart or setDuration
+    if (this.start !== -1) this.setStart(this.start)
+    if (this.duration !== -1) this.setDuration(this.duration)
+
+    this.playButton.addEventListener('click', () => { this.play() })
+    this.stopButton.addEventListener('click', () => { this.stop() })
   }
 
-  initialize (): void {
-    this.connected
-      .then(() => {
-        this.playButton.addEventListener('click', () => { this.play() })
-        this.stopButton.addEventListener('click', () => { this.stop() })
-      })
-      .catch(error => { throw error })
+  initialize (params: ControlsParams): void {
+    this.playerPlay = params.playerPlay
+    this.playerStop = params.playerStop
   }
 
   play (): void {
-    this.hasAttribute('playing') ? this.removeAttribute('playing') : this.setAttribute('playing', '')
+    this.classList.contains('playing') ? this.classList.remove('playing') : this.classList.add('playing')
     this.playerPlay()
   }
 
   stop (stopPlayer: boolean = true): void {
-    this.removeAttribute('playing')
+    this.classList.remove('playing')
     // With this the player can also stop the control without
     // triggering an infinite recursion
     if (stopPlayer) this.playerStop()
-  }
-
-  finishShadow (): void {
-    this.playButton = this.shadowRoot?.querySelector('#play-button') as HTMLButtonElement
-    this.stopButton = this.shadowRoot?.querySelector('#stop-button') as HTMLButtonElement
-    this.startDisplay = this.shadowRoot?.querySelector('#start-display') as HTMLElement
-    this.durationDisplay = this.shadowRoot?.querySelector('#duration-display') as HTMLElement
-    // This means that somebody has already called setStart or setDuration
-    if (this.start !== -1) this.setStart(this.start)
-    if (this.duration !== -1) this.setDuration(this.duration)
-    this.connect()
   }
 
   // We should set the duration display to an input element

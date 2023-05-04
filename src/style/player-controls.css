@@ -1,6 +1,4 @@
-@import url('common-button.css');
-
-:host {
+player-controls {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -10,12 +8,12 @@
   height: calc(var(--controls-height) - 3 * var(--vh));
 }
 
-#left-side {
+#left-controls {
   display: inline-flex;
 }
 
 
-p {
+player-controls p {
   font-size: var(--font-size);
   margin-left: 2em;
   margin-top: 0.5em;

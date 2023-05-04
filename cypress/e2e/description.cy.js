@@ -3,7 +3,7 @@ describe('Sound descriptions', () => {
     cy.visit('/')
     cy.get('sound-element').first().click()
     cy.get('description-display h3').then(el => {
-      cy.get('sound-element').first()
+      cy.get('sound-element span').first()
         .should('have.text',
           el.get(0).textContent.charAt(0).toLowerCase() +
                         el.get(0).textContent.slice(1))

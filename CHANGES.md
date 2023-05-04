@@ -1,5 +1,12 @@
 # Change log
 
+
+## Version 0.3.0
+
+- Build with esbuild.
+
+- Discard shadow DOM.
+
 ## Version 0.2.1
 
 - Migrate to Web components.  Still somewhat rough code, more

@@ -1,4 +1,4 @@
-:host {
+sound-menu {
   display: inline-block;
   background: #aaa;
   overflow-y: scroll;
@@ -10,11 +10,11 @@
 }
 
 
-:host(.adding-first-sounds) sound-element {
+sound-menu.adding-first-sounds sound-element {
   visibility: hidden;
 }
 
-sound-element {
+sound-menu sound-element {
   position: relative;
   width: calc(100% - 2px);
   overflow-x: hidden;

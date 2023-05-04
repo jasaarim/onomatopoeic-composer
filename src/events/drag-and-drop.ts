@@ -1,6 +1,6 @@
-import { type SoundElement } from '../elements/sound-element.js'
-import soundDrag from './sound-drag.js'
-import soundMenuScroll from './sound-menu-scroll.js'
+import { SoundElement } from '../elements/sound-element'
+import soundDrag from './sound-drag'
+import soundMenuScroll from './sound-menu-scroll'
 
 interface Data {
   noDrag: boolean
@@ -51,7 +51,9 @@ function maybeScroll (data: Data, event: PointerEvent): void {
   if (dragThreshold(event, data.initialY, data.sound)) {
     data.noDrag = true
     data.removeListeners()
-    soundMenuScroll(event)
+    if (event.target instanceof SoundElement) {
+      soundMenuScroll(event)
+    }
   }
 }
 

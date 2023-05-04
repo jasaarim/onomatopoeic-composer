@@ -1,5 +1,7 @@
-import { SoundElement } from './sound-element.js'
-import { funDummy, makeStyleNode } from './utils.js'
+import { SoundElement } from './sound-element'
+import { funDummy } from './utils'
+
+import '../style/sound-menu.css'
 
 type SoundsJSON = Record<string, { description: string, audio?: string }>
 
@@ -16,19 +18,17 @@ export class SoundMenu extends HTMLElement {
   addToPlayer: (sound: SoundElement) => void = funDummy
   sounds: SoundElement[]
 
-  static fromParams (params: SoundMenuParams): SoundMenu {
-    let soundMenu = new SoundMenu()
-    soundMenu = Object.assign(soundMenu, params)
-    return soundMenu
-  }
-
   constructor () {
     super()
     this.sounds = []
-    const shadow = this.attachShadow({ mode: 'open' })
-    shadow.append(makeStyleNode('sound-menu'))
     this.addSounds().catch((error) => { throw error })
     this.connectEvents()
+  }
+
+  initialize (params: SoundMenuParams): void {
+    this.showDescription = params.showDescription
+    this.addToPlayer = params.addToPlayer
+    this.descriptionPlay = params.descriptionPlay
   }
 
   connectEvents (): void {
@@ -37,8 +37,8 @@ export class SoundMenu extends HTMLElement {
 
   keyboardInteraction (event: KeyboardEvent): void {
     if (['Space', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
-      const sound = this.shadowRoot?.activeElement as SoundElement
-      if (sound != null) {
+      const sound = event.target
+      if (sound instanceof SoundElement) {
         event.preventDefault()
         let index = this.sounds.indexOf(sound)
         if (event.code === 'Space') {
@@ -67,7 +67,8 @@ export class SoundMenu extends HTMLElement {
     let count = 0
     let frag = document.createDocumentFragment()
     for (const [soundName, { description, audio = undefined }] of Object.entries(json)) {
-      const sound = SoundElement.fromParams({
+      const sound = new SoundElement()
+      sound.initialize({
         soundName,
         descriptionFile: description,
         audioFile: audio,
@@ -78,22 +79,12 @@ export class SoundMenu extends HTMLElement {
       this.sounds.push(sound)
       // Add the first sounds to the menu
       if (count++ === 10) {
-        this.shadowRoot?.append(frag)
+        this.append(frag)
         frag = document.createDocumentFragment()
-        await this.waitForSoundStyles(sound)
         this.classList.remove('adding-first-sounds')
       }
     }
-    this.shadowRoot?.append(frag)
-  }
-
-  async waitForSoundStyles (sound: SoundElement): Promise<void> {
-    for (let i = 0; i < 10; i++) {
-      await new Promise<void>((resolve) => { setTimeout(() => { resolve() }, 20) })
-      if (window.getComputedStyle(sound).zIndex === '1') {
-        return
-      }
-    }
+    this.append(frag)
   }
 }
 

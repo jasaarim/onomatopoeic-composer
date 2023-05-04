@@ -1,5 +1,10 @@
-import { type SoundElement } from './sound-element.js'
-import { createShadow } from './utils.js'
+import { type SoundElement } from './sound-element'
+import { parseTemplate } from './utils'
+
+import template from '../templates/description-display.html'
+import '../style/description-display.css'
+
+const nodes = parseTemplate(template)
 
 export class DescriptionDisplay extends HTMLElement {
   playButton: HTMLButtonElement = document.createElement('button')
@@ -9,18 +14,8 @@ export class DescriptionDisplay extends HTMLElement {
 
   constructor () {
     super()
-    createShadow('description-display', this, () => { this.connectEvents() })
-  }
-
-  connectEvents (): void {
-    if (this.shadowRoot === null) {
-      throw new Error('Shadow root null')
-    }
-    const playButton = this.shadowRoot.querySelector('button')
-    if (playButton == null) {
-      throw new Error('Play button null')
-    }
-    this.playButton = playButton
+    this.appendChild(nodes.cloneNode(true))
+    this.playButton = this.querySelector('button') as HTMLButtonElement
     this.playButton.addEventListener('click', () => { this.play() })
   }
 
@@ -60,7 +55,7 @@ export class DescriptionDisplay extends HTMLElement {
       }
       delete this.text
     }
-    if (this.hasAttribute('playing')) {
+    if (this.classList.contains('playing')) {
       this.pause()
       if (this.audio == null) {
         throw new Error('description audio null at clear')
@@ -75,12 +70,13 @@ export class DescriptionDisplay extends HTMLElement {
   }
 
   play (): void {
-    if (!this.hasAttribute('playing')) {
+    if (!this.classList.contains('playing')) {
       if (this.audio == null) {
         throw new Error('description audio null at play')
       }
       this.audio.play().catch(error => { throw error })
-      this.setAttribute('playing', '')
+      this.audio.onended = () => { this.pause() }
+      this.classList.add('playing')
     } else {
       this.pause()
     }
@@ -91,7 +87,7 @@ export class DescriptionDisplay extends HTMLElement {
       throw new Error('description audio null at pause')
     }
     this.audio.pause()
-    this.removeAttribute('playing')
+    this.classList.remove('playing')
   }
 }
 

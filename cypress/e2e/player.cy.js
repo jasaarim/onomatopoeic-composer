@@ -1,19 +1,24 @@
 describe('Moving sounds', () => {
   it('Adding sounds from menu to the player', () => {
     cy.visit('/')
-    cy.get('sound-element.no-audio').first()
-      .find('.add-button').should('be.disabled')
-    cy.get('sound-element.with-audio').first().find('.add-button').click()
-    cy.get('body').click().type('{rightArrow}')
+    cy.get('sound-element.no-audio .add-button').should('be.disabled')
+    cy.get('sound-element.with-audio .add-button').first().click()
+    cy.get('#track1 active-sound').not('setting-buffer').should('have.css', 'left', '0px')
+    cy.wait(100)
+    cy.get('body').type('{rightArrow}')
+    cy.get('app-').contains('0.1 s')
     for (let i = 0; i < 8; i++) {
-      cy.get('sound-element.with-audio').first().find('.add-button').click()
-      cy.wait(10)
+      cy.get('sound-element.with-audio .add-button').first().click()
+      if (i < 7) {
+        cy.get(`#track${i + 2} active-sound`).not('setting-buffer')
+      }
+      cy.wait(50)
     }
     cy.get('audio-player').find('active-sound')
       .should($sounds => expect($sounds.length).to.eq(9))
-    cy.get('#track1').find('active-sound')
+    cy.get('#track1 active-sound')
       .should($sounds => expect($sounds.length).to.eq(2))
-    cy.get('#track3').find('active-sound').then($el => {
+    cy.get('#track3 active-sound').then($el => {
       expect(Math.round($el.get(0).position * 1000) / 1000).to.eq(0.5)
     })
   })
@@ -24,7 +29,7 @@ describe('Moving sounds', () => {
     cy.visit('/')
     cy.get('#track1').click()
     cy.get('audio-player').contains('10.0 s')
-    cy.get('body').click().type(arrows).click()
+    cy.get('body').type(arrows)
     cy.get('audio-player').contains('19.9 s')
     cy.get('sound-element.with-audio').first()
       .find('.add-button').click()
@@ -38,8 +43,7 @@ describe('Moving sounds', () => {
     })
   })
 
-  // This worked before the web components
-  it.skip('Adding and moving sounds by dragging', () => {
+  it('Adding and moving sounds by dragging', () => {
     cy.visit('/')
     cy.get('audio-player').contains('0.0 s')
     cy.get('#track1').contains('1')
@@ -53,7 +57,7 @@ describe('Moving sounds', () => {
     })
       .then(() => {
         cy.get('sound-element.with-audio').first()
-          .trigger('pointerdown', { pointerId: 1, force: true })
+          .trigger('pointerdown', { pointerId: 1 })
           .wait(350)
           .trigger('pointermove', {
             pageX: Math.round(targetX) + 200,
@@ -62,12 +66,11 @@ describe('Moving sounds', () => {
           })
           .trigger('pointerup', {
             pageX: Math.round(targetX) + 200,
-            pageY: Math.round(targetY),
-            force: true
+            pageY: Math.round(targetY)
           })
 
         cy.get('sound-element.with-audio').first()
-          .trigger('pointerdown', { pointerId: 1, force: true })
+          .trigger('pointerdown', { pointerId: 1 })
           .wait(350)
           .trigger('pointermove', {
             pageX: Math.round(targetX) + 200,
@@ -80,7 +83,7 @@ describe('Moving sounds', () => {
           })
 
         cy.get('active-sound').first()
-          .trigger('pointerdown', { pointerId: 1, force: true })
+          .trigger('pointerdown', { pointerId: 1 })
           .wait(350)
           .trigger('pointermove', {
             pageX: Math.round(targetX) + 200,
