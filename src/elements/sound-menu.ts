@@ -13,14 +13,20 @@ interface SoundMenuParams {
 
 export class SoundMenu extends HTMLElement {
   soundsFile: string = 'sounds.json'
-  showDescription: (sound: SoundElement) => void = funDummy
-  descriptionPlay: (sound: SoundElement) => void = funDummy
-  addToPlayer: (sound: SoundElement) => void = funDummy
-  sounds: SoundElement[]
+  sounds: Record<string, SoundElement>
+  resolveSoundsAdded: () => void
+  soundsAdded: Promise<void>
+  showDescription: SoundMenuParams['showDescription'] = funDummy
+  descriptionPlay: SoundMenuParams['descriptionPlay'] = funDummy
+  addToPlayer: SoundMenuParams['addToPlayer'] = funDummy
 
   constructor () {
     super()
-    this.sounds = []
+    this.sounds = {}
+    this.resolveSoundsAdded = () => {}
+    this.soundsAdded = new Promise(resolve => {
+      this.resolveSoundsAdded = resolve
+    })
     this.addSounds().catch((error) => { throw error })
     this.connectEvents()
   }
@@ -40,21 +46,22 @@ export class SoundMenu extends HTMLElement {
       const sound = event.target
       if (sound instanceof SoundElement) {
         event.preventDefault()
-        let index = this.sounds.indexOf(sound)
+        const soundArray = Object.values(this.sounds)
+        let index = soundArray.indexOf(sound)
         if (event.code === 'Space') {
           this.descriptionPlay(sound)
         } else if (event.code === 'Enter') {
           sound.buttonCallback(sound)
         } else if (event.code === 'ArrowUp') {
           if (index === 0) {
-            index = this.sounds.length
+            index = soundArray.length
           }
-          this.sounds[index - 1].focus()
+          soundArray[index - 1].focus()
         } else if (event.code === 'ArrowDown') {
-          if (index === this.sounds.length - 1) {
+          if (index === soundArray.length - 1) {
             index = -1
           }
-          this.sounds[index + 1].focus()
+          soundArray[index + 1].focus()
         }
       }
     }
@@ -76,7 +83,7 @@ export class SoundMenu extends HTMLElement {
         showDescription: (sound) => { this.showDescription(sound) }
       })
       frag.append(sound)
-      this.sounds.push(sound)
+      this.sounds[sound.soundName] = sound
       // Add the first sounds to the menu
       if (count++ === 10) {
         this.append(frag)
@@ -85,6 +92,7 @@ export class SoundMenu extends HTMLElement {
       }
     }
     this.append(frag)
+    this.resolveSoundsAdded()
   }
 }
 

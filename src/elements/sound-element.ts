@@ -6,7 +6,7 @@ import '../style/sound-element.css'
 
 const nodes = parseTemplate(template)
 
-interface SoundParams {
+export interface SoundParams {
   soundName: string
   descriptionFile: string
   audioFile?: string

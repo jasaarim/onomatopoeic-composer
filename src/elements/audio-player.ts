@@ -3,8 +3,18 @@ import { ActiveSound } from './active-sound'
 import { PlayerCursor } from './player-cursor'
 import { PlayerControls } from './player-controls'
 import { type SoundElement } from './sound-element'
+import { funDummy } from './utils'
 
 import '../style/audio-player.css'
+
+export interface SoundEntry { soundName: string, trackNum: number, start: number }
+export type SoundState = Map<number, SoundEntry>
+
+interface AudioPlayerParams {
+  addSoundToURL: (refNum: number, soundEntry: SoundEntry) => void
+  removeSoundFromURL: (refNum: number) => void
+  findSound: (soundName: string) => SoundElement
+}
 
 export class AudioPlayer extends HTMLElement {
   duration: number
@@ -16,11 +26,18 @@ export class AudioPlayer extends HTMLElement {
   warmedUp: boolean = false
   started?: number
   _audioCxt?: AudioContext
+  soundsAdded: number
+  soundState: SoundState
+  addSoundToURL: AudioPlayerParams['addSoundToURL'] = funDummy
+  removeSoundFromURL: AudioPlayerParams['removeSoundFromURL'] = funDummy
+  findSound: AudioPlayerParams['findSound'] = funDummy
 
   constructor () {
     super()
     this.length = 8
     this.duration = 20
+    this.soundsAdded = 0
+    this.soundState = new Map()
 
     const trackContainer = document.createElement('div')
     this.tracks = []
@@ -39,6 +56,12 @@ export class AudioPlayer extends HTMLElement {
     this.appendChild(this.controls)
 
     this.connectEvents()
+  }
+
+  initialize (params: AudioPlayerParams): void {
+    this.addSoundToURL = params.addSoundToURL
+    this.removeSoundFromURL = params.removeSoundFromURL
+    this.findSound = params.findSound
   }
 
   makeTrack (trackNum: number): AudioTrack {
@@ -82,7 +105,8 @@ export class AudioPlayer extends HTMLElement {
     const target = document.elementFromPoint(event.pageX, event.pageY)
     if (target instanceof AudioTrack && (this.started == null)) {
       const x = event.clientX - this.tracks[0].getBoundingClientRect().left
-      const start = x / this.width * this.duration
+      let start = x / this.width * this.duration
+      start = Math.round(start * 10) / 10
       this.start = start
     }
   }
@@ -150,12 +174,12 @@ export class AudioPlayer extends HTMLElement {
     return end
   }
 
-  async soundToTrack (sound: SoundElement, track?: AudioTrack, position?: number): Promise<void> {
+  async soundToTrack (sound: SoundElement, track?: AudioTrack, start?: number, refNum?: number): Promise<void> {
     let activeSound: ActiveSound
     if (sound instanceof ActiveSound) {
       activeSound = sound
-      // Make sure that the sound is remove from its track
-      this.removeSound(activeSound)
+      // Make sure that the sound is removed from its track
+      this.removeSound(activeSound, true)
     } else {
       if (sound.audioFile == null) {
         throw new Error('Cannot create active sound from null audio')
@@ -170,15 +194,28 @@ export class AudioPlayer extends HTMLElement {
         getPlayerWidth: () => this.width,
         getAudioCxt: () => this.audioCxt,
         buttonCallback: (sound) => { this.removeSound(sound as ActiveSound) },
+        refNum: (refNum != null) ? refNum : this.soundsAdded++,
         sound
       })
     }
     if (track == null) {
       track = this.getATrack()
     }
-    const audioEnd = await track.placeSound(activeSound, position)
-    if (audioEnd > this.duration) {
-      this.setDuration(audioEnd)
+    const fromState = refNum != null
+    start = await track.placeSound(activeSound, start, fromState)
+    if (!fromState) {
+      const audioEnd = track.lastEnd()
+      if (audioEnd > this.duration) {
+        this.setDuration(audioEnd)
+      }
+      refNum = activeSound.refNum
+      const soundEntry = {
+        soundName: activeSound.soundName,
+        trackNum: track.trackNum,
+        start
+      }
+      this.soundState.set(refNum, soundEntry)
+      this.addSoundToURL(refNum, soundEntry)
     }
   }
 
@@ -206,13 +243,27 @@ export class AudioPlayer extends HTMLElement {
       this.duration = seconds
       this.start *= ratio
       this.controls.setDuration(seconds)
-      this.applyActiveSounds((activeSound: ActiveSound, track: AudioTrack) => {
+      this.applyActiveSounds((activeSound: ActiveSound) => {
         activeSound.adjustWidth()
-        activeSound.setPosition(activeSound.position / ratio, track.trackNum)
+        activeSound.updatePosition()
       })
     } else {
       throw new Error(`Invalid duration: ${seconds}`)
     }
+  }
+
+  loadState (soundState: SoundState): void {
+    for (const [refNum, soundEntry] of soundState.entries()) {
+      if (!('soundName' in soundEntry) || !('trackNum' in soundEntry) || !('start' in soundEntry)) {
+        soundState.delete(refNum)
+      } else {
+        const sound = this.findSound(soundEntry.soundName)
+        const track = this.tracks[soundEntry.trackNum - 1]
+        const start = soundEntry.start
+        this.soundToTrack(sound, track, start, refNum).catch((error) => { throw error })
+      }
+    }
+    this.soundState = soundState
   }
 
   updateCursor (): void {
@@ -252,12 +303,17 @@ export class AudioPlayer extends HTMLElement {
     }
   }
 
-  removeSound (activeSound: ActiveSound): void {
+  removeSound (activeSound: ActiveSound, keepInState: boolean = false): void {
     this.applyActiveSounds((sound, track) => {
       if (sound === activeSound) {
         track.removeSound(sound)
       }
     })
+    if (!keepInState) {
+      const refNum = activeSound.refNum
+      this.soundState.delete(refNum)
+      this.removeSoundFromURL(refNum)
+    }
   }
 
   // Some mobile devices require this before the Audio Context works

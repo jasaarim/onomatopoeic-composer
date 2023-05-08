@@ -1,33 +1,32 @@
-import { SoundElement } from './sound-element'
-import { type numFun, funDummy } from './utils'
+import { SoundElement, type SoundParams } from './sound-element'
+import { funDummy } from './utils'
 
 import '../style/active-sound.css'
 
-interface ActiveSoundParams {
-  soundName: string
-  descriptionFile: string
-  audioFile: string
-  buttonCallback: (sound: SoundElement) => void
-  showDescription: (sound: SoundElement) => void
+interface ActiveSoundParams extends SoundParams {
   sound: SoundElement
-  getPlayerWidth: numFun
-  getPlayerDuration: numFun
+  refNum: number
+  getPlayerWidth: () => number
+  getPlayerDuration: () => number
   getAudioCxt: () => AudioContext
 }
 
 export class ActiveSound extends SoundElement {
-  sound?: SoundElement
   resolveBufferReady: () => void
   bufferReady: Promise<void>
-  getPlayerWidth: numFun = funDummy
-  getPlayerDuration: numFun = funDummy
-  getAudioCxt: () => AudioContext = funDummy
+  start: number = -1
   position: number = -1
-  width: number = 0
+  width: number = -1
+  duration: number = -1
   bufferSource?: AudioBufferSourceNode
   buffer?: AudioBuffer | null
   stereoPanner?: StereoPannerNode
   panner?: PannerNode
+  sound?: SoundElement
+  refNum: number = -1
+  getPlayerWidth: ActiveSoundParams['getPlayerWidth'] = funDummy
+  getPlayerDuration: ActiveSoundParams['getPlayerDuration'] = funDummy
+  getAudioCxt: ActiveSoundParams['getAudioCxt'] = funDummy
 
   constructor () {
     super()
@@ -44,6 +43,8 @@ export class ActiveSound extends SoundElement {
     this.getPlayerWidth = params.getPlayerWidth
     this.getAudioCxt = params.getAudioCxt
 
+    this.refNum = params.refNum
+    this.id = `active-sound-${this.refNum}`
     // If the width is known by the source sound element, set it
     if (this.sound?.width != null) {
       this.style.width = `${this.sound.width}px`
@@ -61,9 +62,13 @@ export class ActiveSound extends SoundElement {
       .catch(error => { throw error })
   }
 
-  setPosition (position: number, trackNum: number): void {
-    this.position = position
-    this.id = `active-sound-track${trackNum}-${this.position}`
+  setStart (start: number): void {
+    this.start = start
+    this.updatePosition()
+  }
+
+  updatePosition (): void {
+    this.position = this.start / this.getPlayerDuration() * 100
     this.style.left = `${this.position}%`
   }
 
@@ -71,8 +76,8 @@ export class ActiveSound extends SoundElement {
     if (this.bufferSource == null || this.bufferSource.buffer == null) {
       throw new Error('Null audio buffer')
     }
-    const audioDuration = this.bufferSource.buffer.duration
-    const width = audioDuration / this.getPlayerDuration() * 100
+    this.duration = this.bufferSource.buffer.duration
+    const width = this.duration / this.getPlayerDuration() * 100
     this.width = width
     this.style.width = `${this.width}%`
     if (this.sound != null) {

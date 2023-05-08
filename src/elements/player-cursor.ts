@@ -1,15 +1,15 @@
-import { type numFun, funDummy } from './utils'
+import { funDummy } from './utils'
 
 interface CursorParams {
-  getPlayerDuration: numFun
-  getPlayerStart: numFun
+  getPlayerDuration: () => number
+  getPlayerStart: () => number
   playerStop: () => void
 }
 
 export class PlayerCursor extends HTMLElement {
-  getPlayerDuration: numFun = funDummy
-  getPlayerStart: numFun = funDummy
-  playerStop: () => void = funDummy
+  getPlayerDuration: CursorParams['getPlayerDuration'] = funDummy
+  getPlayerStart: CursorParams['getPlayerStart'] = funDummy
+  playerStop: CursorParams['playerStop'] = funDummy
 
   constructor () {
     super()

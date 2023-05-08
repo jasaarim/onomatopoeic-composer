@@ -5,8 +5,6 @@ export function parseTemplate (text: string): DocumentFragment {
   return content
 }
 
-export type numFun = () => number
-
 export function funDummy (): any {
   throw new Error('Class parameters unset')
 }

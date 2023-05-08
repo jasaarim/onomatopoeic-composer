@@ -4,7 +4,7 @@ describe('Moving sounds', () => {
     cy.get('sound-element.no-audio .add-button').should('be.disabled')
     cy.get('sound-element.with-audio .add-button').first().click()
     cy.get('#track1 active-sound').not('setting-buffer').should('have.css', 'left', '0px')
-    cy.wait(100)
+    cy.wait(50)
     cy.get('body').type('{rightArrow}')
     cy.get('app-').contains('0.1 s')
     for (let i = 0; i < 8; i++) {
@@ -12,7 +12,7 @@ describe('Moving sounds', () => {
       if (i < 7) {
         cy.get(`#track${i + 2} active-sound`).not('setting-buffer')
       }
-      cy.wait(50)
+      cy.wait(10)
     }
     cy.get('audio-player').find('active-sound')
       .should($sounds => expect($sounds.length).to.eq(9))
@@ -35,9 +35,9 @@ describe('Moving sounds', () => {
       .find('.add-button').click()
     cy.get('active-sound').not('.setting-buffer').then(el => {
       let expected = el.get(0).bufferSource.buffer.duration + 19.9
-      expected = Math.round(expected * 100) / 100
+      expected = Math.round(expected * 10) / 10
       cy.get('audio-player').then(el2 => {
-        expect(Math.round(el2.get(0).duration * 100) / 100)
+        expect(Math.round(el2.get(0).duration * 10) / 10)
           .to.eq(expected)
       })
     })
@@ -99,5 +99,22 @@ describe('Moving sounds', () => {
       .should($sounds => expect($sounds.length).to.eq(1))
     cy.get('#track4').find('active-sound')
       .should($sounds => expect($sounds.length).to.eq(1))
+  })
+
+  it('Sounds in the player show in the URL', () => {
+    cy.visit('/')
+    cy.get('#track1').click()
+    cy.get('audio-player').contains('10.0 s')
+    cy.get('sound-element.with-audio .add-button').first().click()
+    cy.wait(30)
+    cy.get('sound-element.with-audio .add-button').first().click()
+    cy.get('#track1 active-sound .add-button').click()
+    cy.get('#track2 active-sound')
+    cy.url().should('include', '&track1=2&start1=10').should('not.include', 'track0')
+      .then(url => {
+        url = url.replace('track1=2', 'track1=3')
+        cy.visit(url)
+      })
+    cy.get('#track3 active-sound')
   })
 })

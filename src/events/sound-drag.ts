@@ -102,7 +102,7 @@ function pointerUp (clone: Clone, event: PointerEvent): void {
   if (clone.currentTrack != null) {
     clone.drop(event)
   } else if (clone.sound instanceof ActiveSound) {
-    clone.sound.remove()
+    clone.player?.removeSound(clone.sound)
   }
   clone.app.removeEventListener('pointermove', clone.pointerMove)
   clone.app.removeEventListener('pointerup', clone.pointerUp)
@@ -115,7 +115,8 @@ function drop (clone: Clone, event: PointerEvent): void {
   if (clone.player == null) {
     throw new Error('No player for the moving sound')
   }
-  clone.player.soundToTrack(clone.sound, clone.currentTrack, position)
+  const start = position / 100 * clone.player.duration
+  clone.player.soundToTrack(clone.sound, clone.currentTrack, start)
     .catch(error => { throw error })
   clone.leaveTrack()
 }

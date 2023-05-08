@@ -33,15 +33,17 @@ describe('Sounds integrate to Audio Context', () => {
       player._audioCxt = new MockAudioCxt()
     }).then(() => {
       cy.get('sound-element.with-audio').first()
-        .find('.add-button').click().click()
+        .find('.add-button').click()
+      cy.wait(50)
+      cy.get('sound-element.with-audio').first()
+        .find('.add-button').click()
     })
-    cy.get('#track1 active-sound')
-    cy.get('#track2 active-sound')
+    cy.get('#track1 active-sound').not('.setting-buffer')
+    cy.get('#track2 active-sound').not('.setting-buffer')
     cy.get('audio-player').then(el => {
       const player = el.get(0)
       const graph = player.audioCxt.destination.src
-      expect(graph).to.deep.eq([['panner', ['buffer']],
-        ['panner', ['buffer']]])
+      expect(graph).to.deep.eq([['panner', ['buffer']], ['panner', ['buffer']]])
     })
   })
 
