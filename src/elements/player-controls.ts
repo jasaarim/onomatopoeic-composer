@@ -1,68 +1,86 @@
-import { parseTemplate, funDummy } from './utils'
+import { parseTemplate } from './utils'
+import { type NumberInput } from './number-input'
 
 import template from '../templates/player-controls.html'
 import '../style/player-controls.css'
 
 const nodes = parseTemplate(template)
 
-interface ControlsParams {
-  playerPlay: () => void
-  playerStop: () => void
-}
-
 export class PlayerControls extends HTMLElement {
-  playerPlay: () => void = funDummy
-  playerStop: () => void = funDummy
-  playButton: HTMLButtonElement = document.createElement('button')
-  stopButton: HTMLButtonElement = document.createElement('button')
-  start: number = -1
-  duration: number = -1
-  startDisplay: HTMLElement = document.createElement('p')
-  durationDisplay: HTMLElement = document.createElement('p')
+  playButton: HTMLButtonElement
+  stopButton: HTMLButtonElement
+  _position: number = -1
+  _duration: number = -1
+  positionInput: NumberInput
+  durationInput: NumberInput
 
   constructor () {
     super()
     this.appendChild(nodes.cloneNode(true))
     this.playButton = this.querySelector('#play-button') as HTMLButtonElement
     this.stopButton = this.querySelector('#stop-button') as HTMLButtonElement
-    this.startDisplay = this.querySelector('#start-display') as HTMLElement
-    this.durationDisplay = this.querySelector('#duration-display') as HTMLElement
-    // This means that somebody has already called setStart or setDuration
-    if (this.start !== -1) this.setStart(this.start)
-    if (this.duration !== -1) this.setDuration(this.duration)
+    this.positionInput = this.querySelector('#position-input') as NumberInput
+    this.durationInput = this.querySelector('#duration-input') as NumberInput
 
+    this.connectEvents()
+  }
+
+  connectEvents (): void {
     this.playButton.addEventListener('click', () => { this.play() })
     this.stopButton.addEventListener('click', () => { this.stop() })
+    this.positionInput.addEventListener('update', (event) => {
+      this.dispatchUpdate(event, 'position')
+    })
+    this.durationInput.addEventListener('update', (event) => {
+      this.dispatchUpdate(event, 'duration')
+    })
   }
 
-  initialize (params: ControlsParams): void {
-    this.playerPlay = params.playerPlay
-    this.playerStop = params.playerStop
+  dispatchUpdate (event: Event, kind: 'position' | 'duration'): void {
+    // https://github.com/microsoft/TypeScript/issues/28357
+    event = new CustomEvent(`${kind}Update`, { detail: (event as CustomEvent).detail })
+    this.dispatchEvent(event)
   }
 
-  play (): void {
-    this.classList.contains('playing') ? this.classList.remove('playing') : this.classList.add('playing')
-    this.playerPlay()
+  play (emit: boolean = true): void {
+    if (this.classList.contains('playing')) {
+      this.classList.remove('playing')
+      this.setInputsDisabled(false)
+    } else {
+      this.classList.add('playing')
+      this.setInputsDisabled(true)
+    }
+    if (emit) this.dispatchEvent(new CustomEvent('play'))
   }
 
-  stop (stopPlayer: boolean = true): void {
+  stop (emit: boolean = true): void {
     this.classList.remove('playing')
-    // With this the player can also stop the control without
-    // triggering an infinite recursion
-    if (stopPlayer) this.playerStop()
+    this.setInputsDisabled(false)
+    if (emit) this.dispatchEvent(new CustomEvent('stop'))
   }
 
-  // We should set the duration display to an input element
-  setDuration (duration: number): void {
-    this.duration = duration
-    duration = Math.round(duration * 10) / 10
-    this.durationDisplay.textContent = `${duration} s`
+  setInputsDisabled (to: boolean): void {
+    this.positionInput.disabled = to
+    this.durationInput.disabled = to
   }
 
-  setStart (start: number): void {
-    this.start = start
-    start = Math.round(start * 10) / 10
-    this.startDisplay.textContent = `@ ${start.toFixed(1)} s`
+  get duration (): number {
+    return this._duration
+  }
+
+  set duration (seconds: number) {
+    this.durationInput.value = seconds
+    this.positionInput.max = seconds
+    this._duration = seconds
+  }
+
+  get position (): number {
+    return this._position
+  }
+
+  set position (seconds: number) {
+    this.positionInput.value = seconds
+    this._position = seconds
   }
 }
 

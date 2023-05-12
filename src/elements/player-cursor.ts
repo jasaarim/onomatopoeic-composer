@@ -1,36 +1,36 @@
-import { funDummy } from './utils'
-
-interface CursorParams {
-  getPlayerDuration: () => number
-  getPlayerStart: () => number
-  playerStop: () => void
-}
-
 export class PlayerCursor extends HTMLElement {
-  getPlayerDuration: CursorParams['getPlayerDuration'] = funDummy
-  getPlayerStart: CursorParams['getPlayerStart'] = funDummy
-  playerStop: CursorParams['playerStop'] = funDummy
+  _duration: number = -1
+  _position: number = -1
 
   constructor () {
     super()
     this.style.left = '0%'
-    this.addEventListener('transitionend', () => {
-      this.stop()
-      this.playerStop()
-    })
+    this.addEventListener('transitionend', () => { this.dispatchEvent(new CustomEvent('end')) })
   }
 
-  initialize (params: CursorParams): void {
-    this.getPlayerDuration = params.getPlayerDuration
-    this.getPlayerStart = params.getPlayerStart
-    this.playerStop = params.playerStop
+  get position (): number {
+    return this._position
+  }
+
+  set position (seconds: number) {
+    this._position = seconds
+    this.update()
+  }
+
+  get duration (): number {
+    return this._duration
+  }
+
+  set duration (seconds: number) {
+    this._duration = seconds
+    this.update()
   }
 
   play (): void {
-    const duration = this.getPlayerDuration() - this.getPlayerStart()
-    const position = this.getPlayerStart() / this.getPlayerDuration()
-    this.style.left = `${position}%`
-    this.style.transitionDuration = `${duration}s`
+    const remainingDuration = this.duration - this.position
+    const left = this.position / this.duration * 100
+    this.style.left = `${left}%`
+    this.style.transitionDuration = `${remainingDuration}s`
     this.style.left = '100%'
   }
 
@@ -43,8 +43,8 @@ export class PlayerCursor extends HTMLElement {
   }
 
   update (): void {
-    const startPercentage = this.getPlayerStart() / this.getPlayerDuration() * 100
-    this.style.left = `${startPercentage}%`
+    const left = this.position / this.duration * 100
+    this.style.left = `${left}%`
   }
 }
 

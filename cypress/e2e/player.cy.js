@@ -6,7 +6,7 @@ describe('Moving sounds', () => {
     cy.get('#track1 active-sound').not('setting-buffer').should('have.css', 'left', '0px')
     cy.wait(50)
     cy.get('body').type('{rightArrow}')
-    cy.get('app-').contains('0.1 s')
+    cy.get('#position-input input').should('have.value', '0.1')
     for (let i = 0; i < 8; i++) {
       cy.get('sound-element.with-audio .add-button').first().click()
       if (i < 7) {
@@ -24,28 +24,31 @@ describe('Moving sounds', () => {
   })
 
   it('Adding a sound to the end', () => {
-    let arrows = ''
-    for (let i = 0; i < 99; i++) { arrows += '{rightArrow}' }
     cy.visit('/')
     cy.get('#track1').click()
-    cy.get('audio-player').contains('10.0 s')
-    cy.get('body').type(arrows)
-    cy.get('audio-player').contains('19.9 s')
+    cy.get('#position-input input').should('have.value', '10.0')
+      .clear()
+      .type('19.9')
+    cy.url().should('include', 'position=19.9')
     cy.get('sound-element.with-audio').first()
       .find('.add-button').click()
+    let expectedEnd
     cy.get('active-sound').not('.setting-buffer').then(el => {
-      let expected = el.get(0).bufferSource.buffer.duration + 19.9
-      expected = Math.round(expected * 10) / 10
-      cy.get('audio-player').then(el2 => {
-        expect(Math.round(el2.get(0).duration * 10) / 10)
-          .to.eq(expected)
-      })
+      expectedEnd = el.get(0).bufferSource.buffer.duration + 19.9
+    }).then(() => {
+      cy.get('#duration-input input').should('have.value', `${expectedEnd.toFixed(1)}`)
+      cy.url().should('include', `duration=${expectedEnd.toFixed(2)}`)
+        .then(url => {
+          url = url.replace(`duration=${expectedEnd.toFixed(2)}`, 'duration=23')
+          cy.visit(url)
+        })
     })
+    cy.get('#duration-input input').should('have.value', '23.0')
   })
 
   it('Adding and moving sounds by dragging', () => {
     cy.visit('/')
-    cy.get('audio-player').contains('0.0 s')
+    cy.get('#position-input input').should('have.value', '0.0')
     cy.get('#track1').contains('1')
     let targetY, targetX, targetY2
     cy.get('#track3').then(el => {
@@ -104,7 +107,7 @@ describe('Moving sounds', () => {
   it('Sounds in the player show in the URL', () => {
     cy.visit('/')
     cy.get('#track1').click()
-    cy.get('audio-player').contains('10.0 s')
+    cy.get('#position-input input').should('have.value', '10.0')
     cy.get('sound-element.with-audio .add-button').first().click()
     cy.wait(30)
     cy.get('sound-element.with-audio .add-button').first().click()

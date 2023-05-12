@@ -1,47 +1,64 @@
+function mockPlayerForTime (player, times) {
+  player._play = player.play
+  player.play = () => {
+    times.start = Date.now()
+    player._play()
+  }
+  player._stop = player.stop
+  player.stop = () => {
+    times.end = Date.now()
+    player._stop()
+  }
+}
+
 describe('Cursor in the player', () => {
   it('Cursor from start to finish', () => {
     cy.visit('/')
     // Change the duration to 500 ms
-    cy.get('audio-player').then(el => {
-      el.get(0).setDuration(0.5)
+    cy.get('#duration-input input').clear().type('0.46')
+    cy.get('#duration-input input').should('have.value', '0.5')
+    // Estimate how much time it takes for the cursor to travel across
+    cy.get('audio-player').then((el) => {
+      const player = el.get(0)
+      const times = {}
+      mockPlayerForTime(player, times)
+
+      cy.get('audio-player #play-button').click()
+      cy.get('player-controls').find('.pause-icon').should('be.visible')
+      cy.get('player-controls').find('.play-icon').should('be.visible')
+        .then(() => {
+          expect(times.end - times.start).to.gt(350).and.to.lt(650)
+        })
     })
-    cy.get('player-controls').contains('0.5 s')
-    let startTime
-    cy.get('#play-button').click().then(() => {
-      startTime = Date.now()
-    })
-    cy.get('player-controls').find('.pause-icon').should('be.visible')
-    cy.get('player-controls').find('.play-icon').should('be.visible')
-      .then(() => {
-        const endTime = Date.now()
-        const elapsed = endTime - startTime
-        // FIXME: measuring the time this way is unreliable and often this fails
-        expect(elapsed).to.gt(300).and.to.lt(500)
-      })
   })
 
   it('Cursor from half-way to the end', () => {
     cy.visit('/')
-    cy.get('audio-player').click()
-    cy.get('player-controls').contains('10.0 s')
+    cy.get('#position-input input').should('have.value', '0.0')
+    cy.get('#position-input input').clear().type('0.29')
+    cy.get('#position-input input').should('have.value', '0.3')
+    cy.url().should('include', 'position=0.3')
+    cy.get('#track1').click()
+    cy.get('#position-input input').should('have.value', '10.0')
     // Change the duration to 600 ms
-    cy.get('audio-player').then(el => {
-      el.get(0).setDuration(0.6)
+    cy.get('#duration-input input').clear().type('0.6')
+    cy.get('#duration-input input').should('have.value', '0.6')
+    cy.get('#position-input input').should('have.value', '0.0')
+    cy.url().should('include', 'position=0').then(url => {
+      url = url.replace('position=0', 'position=0.3')
+      cy.visit(url)
     })
-    cy.get('player-controls').contains('0.6 s')
-    cy.get('player-controls').contains('0.3 s')
+    cy.get('#position-input input').should('have.value', '0.3')
     // Estimate how much time it takes for the cursor to travel across
-    let startTime
-    cy.get('player-controls').find('#play-button').click()
-      .then(() => {
-        startTime = new Date()
-      })
-      .get('#play-button .play-icon').should('be.visible')
-      .then(() => {
-        const endTime = new Date()
-        const elapsed = endTime - startTime
-        // FIXME: measuring the time this way is unreliable and often this fails
-        expect(elapsed).to.gt(150).and.to.lt(400)
-      })
+    cy.get('audio-player').then((el) => {
+      const player = el.get(0)
+      const times = {}
+      mockPlayerForTime(player, times)
+      cy.get('player-controls').find('#play-button').click()
+        .get('#play-button .play-icon').should('be.visible')
+        .then(() => {
+          expect(times.end - times.start).to.gt(150).and.to.lt(450)
+        })
+    })
   })
 })

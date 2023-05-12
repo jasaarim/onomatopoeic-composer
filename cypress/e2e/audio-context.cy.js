@@ -1,24 +1,24 @@
 class MockAudioCxt extends AudioContext {
+  constructor () {
+    super()
+    this.panners = 0
+    this.buffers = 0
+  }
+
   createBufferSource () {
     const source = super.createBufferSource()
-    source.src = ['buffer']
-    return MockAudioCxt.mockConnect(source)
+    return this.mockConnect(source)
   }
 
   createStereoPanner () {
     const panner = super.createStereoPanner()
-    panner.src = ['panner']
-    return MockAudioCxt.mockConnect(panner)
+    return this.mockConnect(panner, false)
   }
 
-  static mockConnect (node) {
+  mockConnect (node, buffer = true) {
     node._connect = node.connect
     node.connect = (target) => {
-      if (!target.src) {
-        target.src = [node.src]
-      } else {
-        target.src.push(node.src)
-      }
+      (buffer) ? this.buffers++ : this.panners++
       return node._connect(target)
     }
     return node
@@ -35,16 +35,18 @@ describe('Sounds integrate to Audio Context', () => {
       cy.get('sound-element.with-audio').first()
         .find('.add-button').click()
       cy.wait(50)
-      cy.get('sound-element.with-audio').first()
+      cy.get('sound-element.with-audio').eq(1)
         .find('.add-button').click()
     })
     cy.get('#track1 active-sound').not('.setting-buffer')
     cy.get('#track2 active-sound').not('.setting-buffer')
-    cy.get('audio-player').then(el => {
-      const player = el.get(0)
-      const graph = player.audioCxt.destination.src
-      expect(graph).to.deep.eq([['panner', ['buffer']], ['panner', ['buffer']]])
-    })
+      .then(() => {
+        cy.get('audio-player').then(el => {
+          const player = el.get(0)
+          expect(player._audioCxt.buffers).to.eq(2)
+          expect(player._audioCxt.panners).to.eq(2)
+        })
+      })
   })
 
   it('Audio start called with right parameters', () => {
@@ -54,13 +56,13 @@ describe('Sounds integrate to Audio Context', () => {
     cy.get('sound-element.with-audio .add-button').first().click()
     cy.get('#track1 active-sound').not('.setting-buffer')
     cy.get('body').type('{rightArrow}{rightArrow}')
-    cy.get('audio-player').contains('0.2 s')
+    cy.get('#position-input input').should('have.value', '0.2')
     cy.get('sound-element.with-audio .add-button').first().click()
     cy.get('#track2 active-sound').not('.setting-buffer').click()
     // Click just to focus out of the active-sound
     cy.get('description-display h3').click()
     cy.get('body').type('{leftArrow}')
-    cy.get('audio-player').contains('0.1 s')
+    cy.get('#position-input input').should('have.value', '0.1')
     cy.get('active-sound').not('.setting-buffer').each(el => {
       const sound = el.get(0)
       // Mock start

@@ -1,20 +1,17 @@
 import { type ActiveSound } from './active-sound'
-import { funDummy } from './utils'
 
 interface TrackParams {
   trackNum: number
   totalNum: number
-  getStart: () => number
-  getDuration: () => number
 }
 
 export class AudioTrack extends HTMLElement {
   trackNum: number = -1
   totalNum: number = -1
   panValue: number = -1
+  duration: number = -1
+  position: number = -1
   activeSounds: ActiveSound[]
-  getStart: TrackParams['getStart'] = funDummy
-  getDuration: TrackParams['getDuration'] = funDummy
 
   constructor () {
     super()
@@ -24,8 +21,6 @@ export class AudioTrack extends HTMLElement {
   initialize (params: TrackParams): void {
     this.trackNum = params.trackNum
     this.totalNum = params.totalNum
-    this.getDuration = params.getDuration
-    this.getStart = params.getStart
 
     this.id = `track${this.trackNum}`
     // For stereo panning
@@ -47,7 +42,7 @@ export class AudioTrack extends HTMLElement {
       return activeSound.position + activeSound.width
     }
     const end = this.activeSounds
-      .map(activeSound => Math.max(soundEnd(activeSound) / 100 * this.getDuration(), 0))
+      .map(activeSound => Math.max(soundEnd(activeSound) / 100 * this.duration, 0))
       .reduce((a, b) => Math.max(a, b), 0)
     return end
   }
@@ -60,7 +55,7 @@ export class AudioTrack extends HTMLElement {
     this.activeSounds.push(activeSound)
     this.append(activeSound)
     await activeSound.bufferReady
-    let newStart = (start != null) ? start : this.getStart()
+    let newStart = (start != null) ? start : this.position
     if (!fromState) {
       newStart = await this.getFreeSlot(activeSound, newStart)
     }

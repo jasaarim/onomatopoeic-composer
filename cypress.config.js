@@ -5,6 +5,8 @@ module.exports = defineConfig({
     setupNodeEvents (on, config) {
       // implement node event listeners here
     },
-    baseUrl: 'http://localhost:8000'
+    baseUrl: 'http://localhost:8000',
+    video: false,
+    screenshotOnRunFailure: false
   }
 })

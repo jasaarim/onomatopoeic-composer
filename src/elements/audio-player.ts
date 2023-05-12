@@ -4,38 +4,35 @@ import { PlayerCursor } from './player-cursor'
 import { PlayerControls } from './player-controls'
 import { type SoundElement } from './sound-element'
 import { funDummy } from './utils'
+import { addSoundToURL, removeSoundFromURL, paramToURL } from './url-utils'
 
 import '../style/audio-player.css'
 
 export interface SoundEntry { soundName: string, trackNum: number, start: number }
 export type SoundState = Map<number, SoundEntry>
+export interface PlayerState { position?: number, duration?: number }
 
 interface AudioPlayerParams {
-  addSoundToURL: (refNum: number, soundEntry: SoundEntry) => void
-  removeSoundFromURL: (refNum: number) => void
   findSound: (soundName: string) => SoundElement
 }
 
 export class AudioPlayer extends HTMLElement {
-  duration: number
-  _start: number = 0
+  _position: number = -1
+  _duration: number = -1
   cursor: PlayerCursor
   controls: PlayerControls
   tracks: AudioTrack[]
-  length: number
+  length: number = 8
   warmedUp: boolean = false
   started?: number
   _audioCxt?: AudioContext
   soundsAdded: number
   soundState: SoundState
-  addSoundToURL: AudioPlayerParams['addSoundToURL'] = funDummy
-  removeSoundFromURL: AudioPlayerParams['removeSoundFromURL'] = funDummy
+  initialized: boolean = false
   findSound: AudioPlayerParams['findSound'] = funDummy
 
   constructor () {
     super()
-    this.length = 8
-    this.duration = 20
     this.soundsAdded = 0
     this.soundState = new Map()
 
@@ -49,65 +46,55 @@ export class AudioPlayer extends HTMLElement {
     trackContainer.id = 'tracks'
     this.appendChild(trackContainer)
 
-    this.cursor = this.makeCursor()
+    this.cursor = new PlayerCursor()
     trackContainer.appendChild(this.cursor)
 
-    this.controls = this.makeControls()
+    this.controls = new PlayerControls()
     this.appendChild(this.controls)
 
     this.connectEvents()
+
+    // Set these to initialize dependent objects
+    this.duration = 20
+    this.position = 0
   }
 
   initialize (params: AudioPlayerParams): void {
-    this.addSoundToURL = params.addSoundToURL
-    this.removeSoundFromURL = params.removeSoundFromURL
     this.findSound = params.findSound
+    this.initialized = true
   }
 
   makeTrack (trackNum: number): AudioTrack {
     const track = new AudioTrack()
     track.initialize({
       trackNum,
-      totalNum: this.length,
-      getDuration: () => this.duration,
-      getStart: () => this.start
+      totalNum: this.length
     })
     return track
-  }
-
-  makeCursor (): PlayerCursor {
-    const cursor = new PlayerCursor()
-    cursor.initialize({
-      getPlayerDuration: () => this.duration,
-      getPlayerStart: () => this.start,
-      playerStop: () => { this.stop() }
-    })
-    return cursor
-  }
-
-  makeControls (): PlayerControls {
-    const controls = new PlayerControls()
-    controls.initialize({
-      playerPlay: () => { this.play() },
-      playerStop: () => { this.stop() }
-    })
-    controls.setStart(this.start)
-    controls.setDuration(this.duration)
-    return controls
   }
 
   connectEvents (): void {
     this.addEventListener('pointerdown', (event) => { this.setCursorWithPointer(event) })
     this.addEventListener('keydown', (event) => { this.keyboardInteraction(event) })
+    this.cursor.addEventListener('end', () => { this.stop() })
+    // https://github.com/microsoft/TypeScript/issues/28357
+    this.controls.addEventListener('positionUpdate', (event) => {
+      this.position = (event as CustomEvent).detail
+    })
+    this.controls.addEventListener('durationUpdate', (event) => {
+      this.duration = (event as CustomEvent).detail
+    })
+    this.controls.addEventListener('play', () => { this.play() })
+    this.controls.addEventListener('stop', () => { this.stop() })
   }
 
   setCursorWithPointer (event: PointerEvent): void {
     const target = document.elementFromPoint(event.pageX, event.pageY)
     if (target instanceof AudioTrack && (this.started == null)) {
       const x = event.clientX - this.tracks[0].getBoundingClientRect().left
-      let start = x / this.width * this.duration
-      start = Math.round(start * 10) / 10
-      this.start = start
+      let position = x / this.width * this.duration
+      position = Math.round(position * 10) / 10
+      this.position = position
     }
   }
 
@@ -150,16 +137,43 @@ export class AudioPlayer extends HTMLElement {
     return this.tracks[0].getBoundingClientRect().width
   }
 
-  get start (): number {
-    return this._start
+  get position (): number {
+    return this._position
   }
 
-  set start (seconds: number) {
+  set position (seconds: number) {
     if (seconds >= 0 && seconds < this.duration) {
-      this._start = seconds
-      this.updateCursor()
+      this._position = seconds
+      this.controls.position = seconds
+      this.cursor.position = seconds
+      this.tracks.forEach((track: AudioTrack) => { track.position = seconds })
+      if (this.initialized) paramToURL('position', seconds)
     } else {
-      throw new Error(`Invalid start time: ${seconds}`)
+      throw new Error(`Invalid position: ${seconds}`)
+    }
+  }
+
+  get duration (): number {
+    return this._duration
+  }
+
+  set duration (seconds: number) {
+    if (seconds > 0) {
+      seconds = Math.ceil(seconds * 100) / 100
+      this._duration = seconds
+      if (this.position >= this.duration) {
+        this.position = 0
+      }
+      this.controls.duration = seconds
+      this.cursor.duration = seconds
+      this.tracks.forEach((track: AudioTrack) => { track.duration = seconds })
+      if (this.initialized) paramToURL('duration', seconds)
+      this.applyActiveSounds((activeSound: ActiveSound) => {
+        activeSound.updatePosition()
+        activeSound.adjustWidth().catch((error) => { throw error })
+      })
+    } else {
+      throw new Error(`Invalid duration: ${seconds}`)
     }
   }
 
@@ -206,7 +220,7 @@ export class AudioPlayer extends HTMLElement {
     if (!fromState) {
       const audioEnd = track.lastEnd()
       if (audioEnd > this.duration) {
-        this.setDuration(audioEnd)
+        this.duration = audioEnd
       }
       refNum = activeSound.refNum
       const soundEntry = {
@@ -215,7 +229,7 @@ export class AudioPlayer extends HTMLElement {
         start
       }
       this.soundState.set(refNum, soundEntry)
-      this.addSoundToURL(refNum, soundEntry)
+      addSoundToURL(refNum, soundEntry)
     }
   }
 
@@ -237,22 +251,7 @@ export class AudioPlayer extends HTMLElement {
     return endsFirst
   }
 
-  setDuration (seconds: number): void {
-    if (seconds > 0) {
-      const ratio = seconds / this.duration
-      this.duration = seconds
-      this.start *= ratio
-      this.controls.setDuration(seconds)
-      this.applyActiveSounds((activeSound: ActiveSound) => {
-        activeSound.adjustWidth()
-        activeSound.updatePosition()
-      })
-    } else {
-      throw new Error(`Invalid duration: ${seconds}`)
-    }
-  }
-
-  loadState (soundState: SoundState): void {
+  loadSoundState (soundState: SoundState): void {
     for (const [refNum, soundEntry] of soundState.entries()) {
       if (!('soundName' in soundEntry) || !('trackNum' in soundEntry) || !('start' in soundEntry)) {
         soundState.delete(refNum)
@@ -261,18 +260,28 @@ export class AudioPlayer extends HTMLElement {
         const track = this.tracks[soundEntry.trackNum - 1]
         const start = soundEntry.start
         this.soundToTrack(sound, track, start, refNum).catch((error) => { throw error })
+        this.soundsAdded = Math.max(refNum + 1, this.soundsAdded)
       }
     }
     this.soundState = soundState
   }
 
+  loadPlayerState (playerState: PlayerState): void {
+    if (playerState.duration != null) {
+      this.duration = playerState.duration
+    }
+    if (playerState.position != null) {
+      this.position = playerState.position
+    }
+  }
+
   updateCursor (): void {
-    this.controls.setStart(this.start)
+    this.controls.position = this.position
     this.cursor.update()
   }
 
   get audioCxt (): AudioContext {
-    if (this._audioCxt === undefined) {
+    if (this._audioCxt == null) {
       this._audioCxt = this.newAudioCxt()
     }
     return this._audioCxt
@@ -289,7 +298,7 @@ export class AudioPlayer extends HTMLElement {
   }
 
   clearAudioCxt (): void {
-    if (this.audioCxt !== undefined) {
+    if (this.audioCxt != null) {
       this.audioCxt.close().catch(error => { throw error })
       delete this._audioCxt
     }
@@ -312,7 +321,7 @@ export class AudioPlayer extends HTMLElement {
     if (!keepInState) {
       const refNum = activeSound.refNum
       this.soundState.delete(refNum)
-      this.removeSoundFromURL(refNum)
+      removeSoundFromURL(refNum)
     }
   }
 
@@ -342,7 +351,7 @@ export class AudioPlayer extends HTMLElement {
         this.audioCxt.resume().catch(error => { throw error })
       }
       this.applyActiveSounds((activeSound) => {
-        let start = activeSound.calculateAudioStart(this.duration, this.start)
+        let start = activeSound.calculateAudioStart(this.duration, this.position)
         const offset = Math.max(0, -start)
         start = Math.max(0, start)
         if (activeSound.bufferSource == null) {
@@ -369,8 +378,8 @@ export class AudioPlayer extends HTMLElement {
     if (this.started == null) {
       throw new Error('Calling pause when started attribute not set')
     }
-    const time = (Date.now() - this.started) / 1000 + this.start
-    this.start = time < this.duration ? time : 0
+    const time = (Date.now() - this.started) / 1000 + this.position
+    this.position = time < this.duration ? time : 0
     delete this.started
   }
 
@@ -378,7 +387,7 @@ export class AudioPlayer extends HTMLElement {
     if (this.started != null) {
       this.pause()
     }
-    this.start = 0
+    this.position = 0
     this.cursor.stop()
     this.controls.stop(false)
   }
@@ -386,7 +395,7 @@ export class AudioPlayer extends HTMLElement {
   updatePositionText (): void {
     if (this.started != null) {
       const elapsed = Date.now() - this.started
-      this.controls.setStart(this.start + elapsed / 1000)
+      this.controls.position = this.position + elapsed / 1000
       setTimeout(() => { this.updatePositionText() }, 100)
     }
   }

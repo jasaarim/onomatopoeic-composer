@@ -54,7 +54,7 @@ export class ActiveSound extends SoundElement {
     }
     this.setBufferSource()
       .then(() => {
-        this.adjustWidth()
+        this.adjustWidth().catch((error) => { throw error })
         this.resolveBufferReady()
         // Remove the class after 300ms (the width should transition)
         setTimeout(() => { this.classList.remove('setting-buffer') }, 300)
@@ -72,7 +72,8 @@ export class ActiveSound extends SoundElement {
     this.style.left = `${this.position}%`
   }
 
-  adjustWidth (): void {
+  async adjustWidth (): Promise<void> {
+    await this.bufferReady
     if (this.bufferSource == null || this.bufferSource.buffer == null) {
       throw new Error('Null audio buffer')
     }

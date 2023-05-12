@@ -16,5 +16,19 @@ player-controls {
 player-controls p {
   font-size: var(--font-size);
   margin-left: 2em;
-  margin-top: 0.5em;
+  margin-top: 0.2em;
+}
+
+player-controls input {
+  font-size: var(--font-size);
+  width: 2em;
+  text-align: right;
+  appearance: none;
+  -moz-appearance: textfield;
+  border-radius: 10px;
+}
+
+player-controls input::-webkit-outer-spin-button,
+player-controls input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }

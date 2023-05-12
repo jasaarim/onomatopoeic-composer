@@ -1,7 +1,7 @@
 {
   "name": "onomatopoeic-composer",
   "description": "Browsing, listening to, and composing with onomatopoeia",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "licence": "AGPL",
   "homepage": "https://github.com/jasaarim/onomatopoeic-composer",
   "repository": {

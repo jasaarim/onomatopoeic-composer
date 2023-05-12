@@ -1,5 +1,11 @@
 # Change log
 
+## Version 0.4.1
+
+- Position and duration as input fields
+
+- Position and duration to the query string
+
 ## Version 0.4.0
 
 - Save sounds in the player to the query string
