@@ -21,6 +21,7 @@ body {
   --sound-menu-width: calc(25 * var(--vw));
   --description-width: calc(40 * var(--vw));
   --app-width: calc(100 * var(--vw) - 2 * var(--padding));
+  --app-height: calc(100 * var(--vh) - 2 * var(--padding));
   --description-margin: calc(10 * var(--vw));
   --padding: calc(2.5 * var(--vh));
   --tracks-num: 8;
@@ -53,7 +54,7 @@ app- {
   margin: 0;
   padding: var(--padding);
   user-select: none;
-  height: calc(100 * var(--vh) - 2 * var(--padding));
+  height: var(--app-height);
   width: var(--app-width);
   -webkit-user-select: none;
 }

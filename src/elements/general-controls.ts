@@ -6,22 +6,37 @@ import '../style/general-controls.css'
 const nodes = parseTemplate(template)
 
 export class GeneralControls extends HTMLElement {
+  infoOverlay: HTMLDivElement
+  infoToggle: HTMLButtonElement
   fullscreenToggle: HTMLButtonElement
 
   constructor () {
     super()
     this.appendChild(nodes.cloneNode(true))
 
+    this.infoOverlay = this.querySelector('#info-overlay') as HTMLDivElement
+    this.infoToggle = this.querySelector('#info-toggle') as HTMLButtonElement
     this.fullscreenToggle = this.querySelector('#fullscreen-toggle') as HTMLButtonElement
 
     this.connectEvents()
   }
 
   connectEvents (): void {
+    this.infoToggle.addEventListener('click', () => { this.toggleInfo() })
     if (this.fullsceenAvailable) {
       this.fullscreenToggle.addEventListener('click', () => { this.toggleFullscreen() })
     } else {
       this.classList.add('no-fullscreen')
+    }
+  }
+
+  toggleInfo (): void {
+    if (this.classList.contains('show-info')) {
+      this.classList.remove('show-info')
+      this.infoToggle.classList.remove('active')
+    } else {
+      this.classList.add('show-info')
+      this.infoToggle.classList.add('active')
     }
   }
 

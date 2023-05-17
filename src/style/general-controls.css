@@ -5,3 +5,40 @@ general-controls {
 .no-fullscreen #fullscreen-toggle {
   display: none;
 }
+
+general-controls svg {
+  height: 70%;
+}
+
+#info-toggle {
+  position: relative;
+  z-index: 3;
+  background: #eee;
+}
+
+.show-info #info-overlay {
+  display: unset;
+}
+
+#info-overlay h1 {
+  font-family: 'Cookie';
+}
+
+#info-overlay a {
+  color: #eee;
+}
+
+#info-overlay {
+  position: fixed;
+  display: none;
+  color: #eee;
+  width: calc(var(--app-width) - var(--padding));
+  height: calc(var(--app-height) - var(--padding));
+  border-radius: var(--padding);
+  padding: var(--padding);
+  top: calc(var(--padding) / 2);
+  left: calc(var(--padding) / 2);
+  background-color: rgba(0,0,0,0.8);
+  z-index: 2;
+}
+

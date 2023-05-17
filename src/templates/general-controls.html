@@ -1,4 +1,56 @@
 <template>
+  <div id="info-overlay">
+    <h1>Onomatopoeia</h1>
+    <p>
+      In this app you can browse, listen to, and compose with
+      onomatopoeia, that is, words that phonetically resemble the sounds
+      that they describe.
+    </p>
+    <p>
+      The onomatopoeia are in the left-hand menu. Items with red
+      background and without plus button have only textual
+      descriptions but no audio.  The items with brown background and
+      plus button have both the description and the audio.  A
+      description can be viewed by clicking an item.
+    </p>
+    <p>
+      Sounds can be dragged to the above player with a mouse or a
+      pointer.  In the player there are eight tracks with varying
+      stereo balance: Track 1 uses only the left speaker and Track 8
+      only the right speaker. Horizontal direction in the player is
+      time.  The end time is shown in the right input field below the
+      player and the current position next to the stop button.
+    </p>
+    <p>
+      Once in the player, a sound can be moved by dragging or using
+      arrow keys when an item is focused.  When the focus is not on a
+      sound in the player, left and right keys change the current
+      position in the player.
+    </p>
+    <p>
+      The state of the app is stored in the URL.  So, you can share
+      your composition simply by copying the address.
+    </p>
+    <p>
+      The code for this app
+      is
+      <a href="https://github.com/jasaarim/onomatopoeic-composer">
+        open
+        source
+      </a>.
+    </p>
+  </div>
+
+  <button id="info-toggle">
+    <svg class="default-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="50" />
+      <text class="eraser" font-family="Nobile" font-size="80px" font-weight="bold" x="30" y="85">?</text>
+    </svg>
+    <svg class="active-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <text font-family="Nobile" font-size="80px" font-weight="bold" x="25" y="85">X</text>
+    </svg>
+  </button>
+
   <button id="fullscreen-toggle">
     <svg class="default-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
       <polygon points="0,0 0, 100 100,100 100, 0"/>
