@@ -1,0 +1,7 @@
+general-controls {
+  align-self: end;
+}
+
+.no-fullscreen #fullscreen-toggle {
+  display: none;
+}

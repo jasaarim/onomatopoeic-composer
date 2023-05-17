@@ -4,9 +4,11 @@ import './elements/audio-player'
 import './elements/description-display'
 import './elements/sound-menu'
 import './elements/number-input'
+import './elements/general-controls'
 import { type SoundMenu } from './elements/sound-menu'
 import { type AudioPlayer } from './elements/audio-player'
 import { type DescriptionDisplay } from './elements/description-display'
+import { type GeneralControls } from './elements/general-controls'
 
 import { soundStateFromURL, playerStateFromURL } from './elements/url-utils'
 
@@ -19,6 +21,7 @@ export class App extends HTMLElement {
   descriptionDisplay?: DescriptionDisplay
   soundMenu: SoundMenu
   audioPlayer: AudioPlayer
+  controls: GeneralControls
 
   constructor () {
     super()
@@ -26,10 +29,12 @@ export class App extends HTMLElement {
 
     this.descriptionDisplay = this.querySelector('description-display') as DescriptionDisplay
     this.audioPlayer = this.querySelector('audio-player') as AudioPlayer
+    this.soundMenu = this.querySelector('sound-menu') as SoundMenu
+    this.controls = this.querySelector('general-controls') as GeneralControls
+
     this.audioPlayer.initialize({
       findSound: (soundName) => this.soundMenu.sounds[soundName]
     })
-    this.soundMenu = this.querySelector('sound-menu') as SoundMenu
     this.soundMenu.initialize({
       showDescription: (sound) => { this.descriptionDisplay?.show(sound) },
       addToPlayer: (sound) => {

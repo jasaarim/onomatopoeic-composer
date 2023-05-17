@@ -43,18 +43,18 @@ export class PlayerControls extends HTMLElement {
   }
 
   play (emit: boolean = true): void {
-    if (this.classList.contains('playing')) {
-      this.classList.remove('playing')
+    if (this.playButton.classList.contains('active')) {
+      this.playButton.classList.remove('active')
       this.setInputsDisabled(false)
     } else {
-      this.classList.add('playing')
+      this.playButton.classList.add('active')
       this.setInputsDisabled(true)
     }
     if (emit) this.dispatchEvent(new CustomEvent('play'))
   }
 
   stop (emit: boolean = true): void {
-    this.classList.remove('playing')
+    this.playButton.classList.remove('active')
     this.setInputsDisabled(false)
     if (emit) this.dispatchEvent(new CustomEvent('stop'))
   }

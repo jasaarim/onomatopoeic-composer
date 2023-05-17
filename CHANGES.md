@@ -1,5 +1,9 @@
 # Change log
 
+## Version 0.4.2
+
+- Fullscreen toggle
+
 ## Version 0.4.1
 
 - Position and duration as input fields

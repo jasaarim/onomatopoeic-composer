@@ -20,6 +20,7 @@ body {
   --description-height: calc(25 * var(--vh));
   --sound-menu-width: calc(25 * var(--vw));
   --description-width: calc(40 * var(--vw));
+  --app-width: calc(100 * var(--vw) - 2 * var(--padding));
   --description-margin: calc(10 * var(--vw));
   --padding: calc(2.5 * var(--vh));
   --tracks-num: 8;
@@ -53,11 +54,20 @@ app- {
   padding: var(--padding);
   user-select: none;
   height: calc(100 * var(--vh) - 2 * var(--padding));
-  width: calc(100 * var(--vw) - 2 * var(--padding));
+  width: var(--app-width);
   -webkit-user-select: none;
 }
 
-#menu-and-description {
+#lower-panel {
   display: flex;
   align-items: flex-start;
+}
+
+#lr-corner {
+  margin-left: var(--description-margin);
+  height: var(--sound-menu-height);
+  width: calc(var(--app-width) - var(--sound-menu-width));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }

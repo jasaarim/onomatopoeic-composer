@@ -42,7 +42,7 @@ export class DescriptionDisplay extends HTMLElement {
     if (sound.audioFile != null) {
       this.audio = sound.audio
       this.audio.preload = 'auto'
-      this.audio.onended = () => { this.removeAttribute('playing') }
+      this.audio.onended = () => { this.playButton.removeAttribute('active') }
       this.setAttribute('audio', '')
     }
   }
@@ -55,7 +55,7 @@ export class DescriptionDisplay extends HTMLElement {
       }
       delete this.text
     }
-    if (this.classList.contains('playing')) {
+    if (this.playButton.classList.contains('active')) {
       this.pause()
       if (this.audio == null) {
         throw new Error('description audio null at clear')
@@ -70,13 +70,13 @@ export class DescriptionDisplay extends HTMLElement {
   }
 
   play (): void {
-    if (!this.classList.contains('playing')) {
+    if (!this.playButton.classList.contains('active')) {
       if (this.audio == null) {
         throw new Error('description audio null at play')
       }
       this.audio.play().catch(error => { throw error })
       this.audio.onended = () => { this.pause() }
-      this.classList.add('playing')
+      this.playButton.classList.add('active')
     } else {
       this.pause()
     }
@@ -87,7 +87,7 @@ export class DescriptionDisplay extends HTMLElement {
       throw new Error('description audio null at pause')
     }
     this.audio.pause()
-    this.classList.remove('playing')
+    this.playButton.classList.remove('active')
   }
 }
 

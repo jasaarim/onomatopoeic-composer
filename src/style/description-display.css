@@ -1,6 +1,5 @@
 description-display {
-  display: inline-block;
-  margin-left: var(--description-margin);
+  display: block;
   padding: .5rem;
   background: #9f9;
   font-size: calc(0.9 * var(--font-size));

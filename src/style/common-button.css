@@ -23,10 +23,15 @@ svg {
   pointer-events: none;
 }
 
-.pause-icon, .playing .play-icon {
-  display: none;
+svg .eraser {
+  fill: #eee;
 }
 
-.playing .pause-icon {
-  display: inline;
+button:focus svg .eraser {
+  fill: #ccc;
+}
+
+button:not(.active) .active-icon,
+button.active .default-icon {
+  display: none
 }

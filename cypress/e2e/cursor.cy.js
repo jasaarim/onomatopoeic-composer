@@ -24,8 +24,8 @@ describe('Cursor in the player', () => {
       mockPlayerForTime(player, times)
 
       cy.get('audio-player #play-button').click()
-      cy.get('player-controls').find('.pause-icon').should('be.visible')
-      cy.get('player-controls').find('.play-icon').should('be.visible')
+      cy.get('player-controls').find('.active-icon').should('be.visible')
+      cy.get('player-controls').find('.default-icon').should('be.visible')
         .then(() => {
           expect(times.end - times.start).to.gt(350).and.to.lt(650)
         })
@@ -55,7 +55,7 @@ describe('Cursor in the player', () => {
       const times = {}
       mockPlayerForTime(player, times)
       cy.get('player-controls').find('#play-button').click()
-        .get('#play-button .play-icon').should('be.visible')
+        .get('#play-button .default-icon').should('be.visible')
         .then(() => {
           expect(times.end - times.start).to.gt(150).and.to.lt(450)
         })
