@@ -1,4 +1,4 @@
-import { SoundElement } from '../elements/sound-element'
+import { SoundElement } from '../components/sound-element'
 import soundDrag from './sound-drag'
 import soundMenuScroll from './sound-menu-scroll'
 

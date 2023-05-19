@@ -4,7 +4,7 @@ import { context } from 'esbuild'
 console.log('Starting esbuild')
 
 let ctx = await context({
-  entryPoints: ['src/app.ts'],
+  entryPoints: ['src/index.ts'],
   bundle: true,
   sourcemap: true,
   loader: { '.html': 'text' },

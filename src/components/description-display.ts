@@ -1,5 +1,5 @@
 import { type SoundElement } from './sound-element'
-import { parseTemplate } from './utils'
+import { parseTemplate } from '../utils/general'
 
 import template from '../templates/description-display.html'
 import '../style/description-display.css'

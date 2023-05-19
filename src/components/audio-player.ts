@@ -1,10 +1,11 @@
-import { AudioTrack } from './audio-track'
 import { ActiveSound } from './active-sound'
-import { PlayerCursor } from './player-cursor'
+import { AudioTrack } from './audio-track'
 import { PlayerControls } from './player-controls'
+import { PlayerCursor } from './player-cursor'
 import { type SoundElement } from './sound-element'
-import { funDummy } from './utils'
-import { addSoundToURL, removeSoundFromURL, paramToURL } from './url-utils'
+
+import { funDummy } from '../utils/general'
+import { addSoundToURL, removeSoundFromURL, paramToURL } from '../utils/url'
 
 import '../style/audio-player.css'
 

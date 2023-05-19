@@ -1,4 +1,4 @@
-import { type SoundEntry, type SoundState, type PlayerState } from './audio-player'
+import { type SoundEntry, type SoundState, type PlayerState } from '../components/audio-player'
 
 function replaceState (modifySearchParams: (params: URLSearchParams) => void): void {
   const searchParams = new URLSearchParams(window.location.search)

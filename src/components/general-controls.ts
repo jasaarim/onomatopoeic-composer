@@ -1,4 +1,4 @@
-import { parseTemplate } from './utils'
+import { parseTemplate } from '../utils/general'
 
 import template from '../templates/general-controls.html'
 import '../style/general-controls.css'

@@ -1,4 +1,4 @@
-import { type SoundMenu } from '../elements/sound-menu'
+import { type SoundMenu } from '../components/sound-menu'
 
 interface Data {
   menu: SoundMenu

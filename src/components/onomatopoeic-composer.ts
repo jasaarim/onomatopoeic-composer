@@ -1,23 +1,17 @@
-import { parseTemplate } from './elements/utils'
+import { type AudioPlayer } from './audio-player'
+import { type DescriptionDisplay } from './description-display'
+import { type GeneralControls } from './general-controls'
+import { type SoundMenu } from './sound-menu'
 
-import './elements/audio-player'
-import './elements/description-display'
-import './elements/sound-menu'
-import './elements/number-input'
-import './elements/general-controls'
-import { type SoundMenu } from './elements/sound-menu'
-import { type AudioPlayer } from './elements/audio-player'
-import { type DescriptionDisplay } from './elements/description-display'
-import { type GeneralControls } from './elements/general-controls'
+import { parseTemplate } from '../utils/general'
+import { soundStateFromURL, playerStateFromURL } from '../utils/url'
 
-import { soundStateFromURL, playerStateFromURL } from './elements/url-utils'
-
-import template from './templates/app.html'
-import './style/app.css'
+import template from '../templates/onomatopoeic-composer.html'
+import '../style/onomatopoeic-composer.css'
 
 const nodes = parseTemplate(template)
 
-export class App extends HTMLElement {
+export class OnomatopoeicComposer extends HTMLElement {
   descriptionDisplay?: DescriptionDisplay
   soundMenu: SoundMenu
   audioPlayer: AudioPlayer
@@ -105,4 +99,4 @@ export class App extends HTMLElement {
   }
 }
 
-customElements.define('app-', App)
+customElements.define('onomatopoeic-composer', OnomatopoeicComposer)

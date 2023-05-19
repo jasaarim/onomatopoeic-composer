@@ -1,5 +1,5 @@
 import { SoundElement } from './sound-element'
-import { funDummy } from './utils'
+import { funDummy } from '../utils/general'
 
 import '../style/sound-menu.css'
 

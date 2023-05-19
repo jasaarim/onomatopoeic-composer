@@ -1,5 +1,6 @@
 import { SoundElement, type SoundParams } from './sound-element'
-import { funDummy } from './utils'
+
+import { funDummy } from '../utils/general'
 
 import '../style/active-sound.css'
 

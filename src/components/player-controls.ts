@@ -1,5 +1,6 @@
-import { parseTemplate } from './utils'
 import { type NumberInput } from './number-input'
+
+import { parseTemplate } from '../utils/general'
 
 import template from '../templates/player-controls.html'
 import '../style/player-controls.css'

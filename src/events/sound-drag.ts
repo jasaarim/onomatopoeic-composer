@@ -1,8 +1,8 @@
-import { type AudioPlayer } from '../elements/audio-player'
-import { ActiveSound } from '../elements/active-sound'
-import { type SoundElement } from '../elements/sound-element'
-import { AudioTrack } from '../elements/audio-track'
-import { type App } from '../app'
+import { type AudioPlayer } from '../components/audio-player'
+import { ActiveSound } from '../components/active-sound'
+import { type SoundElement } from '../components/sound-element'
+import { AudioTrack } from '../components/audio-track'
+import { type OnomatopoeicComposer } from '../components/onomatopoeic-composer'
 
 interface Clone extends SoundElement {
   startX: number
@@ -17,14 +17,14 @@ interface Clone extends SoundElement {
   currentTrack?: AudioTrack
   pointerMove: (event: PointerEvent) => void
   pointerUp: (event: PointerEvent) => void
-  app: App
+  app: OnomatopoeicComposer
 }
 
 export default function drag (event: PointerEvent, sound: SoundElement): void {
   try { window.navigator.vibrate(50) } catch {}
   const clone = sound.cloneNode(true) as Clone
   clone.classList.add('clone')
-  clone.app = document.querySelector('app-') as App
+  clone.app = document.querySelector('onomatopoeic-composer') as OnomatopoeicComposer
   clone.player = clone.app.audioPlayer
   clone.app.append(clone)
 

@@ -1,5 +1,5 @@
-import { parseTemplate, funDummy } from './utils'
 import dragScrollOrClick from '../events/drag-and-drop'
+import { parseTemplate, funDummy } from '../utils/general'
 
 import template from '../templates/sound-element.html'
 import '../style/sound-element.css'
