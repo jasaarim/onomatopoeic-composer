@@ -9,6 +9,9 @@ function replaceState (modifySearchParams: (params: URLSearchParams) => void): v
 
 export function paramToURL (key: string, value: number | string): void {
   replaceState((searchParams) => {
+    if (typeof value === 'number') {
+      value = value.toFixed(2)
+    }
     searchParams.set(`${key}`, `${value}`)
   })
 }

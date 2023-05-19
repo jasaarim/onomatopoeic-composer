@@ -45,7 +45,7 @@ describe('Cursor in the player', () => {
     cy.get('#duration-input input').should('have.value', '0.6')
     cy.get('#position-input input').should('have.value', '0.0')
     cy.url().should('include', 'position=0').then(url => {
-      url = url.replace('position=0', 'position=0.3')
+      url = url.replace('position=0.00', 'position=0.3')
       cy.visit(url)
     })
     cy.get('#position-input input').should('have.value', '0.3')

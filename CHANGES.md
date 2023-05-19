@@ -6,6 +6,8 @@
 
 - Enhance moving player sounds with arrow keys
 
+- Position and duration have 2 decimals in query string
+
 ## 0.4.2
 
 - Fullscreen toggle
