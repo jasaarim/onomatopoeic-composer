@@ -4,6 +4,8 @@
 
 - Enhance moving the player cursor with arrow keys
 
+- Enhance moving player sounds with arrow keys
+
 ## 0.4.2
 
 - Fullscreen toggle

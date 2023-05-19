@@ -99,19 +99,23 @@ export class AudioPlayer extends HTMLElement {
   }
 
   keyboardInteraction (event: KeyboardEvent): void {
+    /**
+     * Move the player sounds with arrow keys
+     */
     if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
       const activeSound = document.activeElement
       if (activeSound instanceof ActiveSound) {
         event.stopPropagation()
-        const position = activeSound.position
+        const start = activeSound.start
         const track = activeSound.parentElement as AudioTrack
-        let newPosition = position
+        let newStart = start
         let newTrack = track
         const trackIndex = this.tracks.indexOf(track)
+        const startStep = this.duration / 40
         if (event.code === 'ArrowRight') {
-          newPosition = position + 0.5
+          newStart += startStep
         } else if (event.code === 'ArrowLeft') {
-          newPosition = position - 0.5
+          newStart -= startStep
         } else if (event.code === 'ArrowUp') {
           let index = trackIndex - 1
           if (index < 0) {
@@ -125,10 +129,9 @@ export class AudioPlayer extends HTMLElement {
           }
           newTrack = this.tracks[index]
         }
-        if (newPosition >= 0) {
-          this.soundToTrack(activeSound, newTrack, newPosition).catch(error => { throw error })
-          activeSound.focus()
-        }
+        newStart = Math.max(0, newStart)
+        this.soundToTrack(activeSound, newTrack, newStart).catch(error => { throw error })
+        activeSound.focus()
       }
     }
   }
