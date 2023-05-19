@@ -6,7 +6,7 @@ describe('Moving sounds', () => {
     cy.get('#track1 active-sound').not('setting-buffer').should('have.css', 'left', '0px')
     cy.wait(50)
     cy.get('body').type('{rightArrow}')
-    cy.get('#position-input input').should('have.value', '0.1')
+    cy.get('#position-input input').should('have.value', '0.5')
     for (let i = 0; i < 8; i++) {
       cy.get('sound-element.with-audio .add-button').first().click()
       if (i < 7) {
@@ -19,7 +19,7 @@ describe('Moving sounds', () => {
     cy.get('#track1 active-sound')
       .should($sounds => expect($sounds.length).to.eq(2))
     cy.get('#track3 active-sound').then($el => {
-      expect(Math.round($el.get(0).position * 1000) / 1000).to.eq(0.5)
+      expect(Math.round($el.get(0).position * 1000) / 1000).to.eq(2.5)
     })
   })
 

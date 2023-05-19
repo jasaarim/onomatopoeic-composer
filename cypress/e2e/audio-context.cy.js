@@ -56,13 +56,13 @@ describe('Sounds integrate to Audio Context', () => {
     cy.get('sound-element.with-audio .add-button').first().click()
     cy.get('#track1 active-sound').not('.setting-buffer')
     cy.get('body').type('{rightArrow}{rightArrow}')
-    cy.get('#position-input input').should('have.value', '0.2')
+    cy.get('#position-input input').should('have.value', '1.0')
     cy.get('sound-element.with-audio .add-button').first().click()
     cy.get('#track2 active-sound').not('.setting-buffer').click()
     // Click just to focus out of the active-sound
     cy.get('description-display h3').click()
     cy.get('body').type('{leftArrow}')
-    cy.get('#position-input input').should('have.value', '0.1')
+    cy.get('#position-input input').should('have.value', '0.5')
     cy.get('active-sound').not('.setting-buffer').each(el => {
       const sound = el.get(0)
       // Mock start
@@ -79,8 +79,8 @@ describe('Sounds integrate to Audio Context', () => {
     }).then(() => {
       cy.get('#play-button').click()
       cy.get('#stop-button').click().then(() => {
-        expect(delays).to.deep.eq([0, 0.1])
-        expect(offsets).to.deep.eq([0.1, 0])
+        expect(delays).to.deep.eq([0, 0.5])
+        expect(offsets).to.deep.eq([0.5, 0])
       })
     })
   })

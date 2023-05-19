@@ -81,24 +81,25 @@ export class App extends HTMLElement {
   }
 
   keyboardInteraction (event: KeyboardEvent): void {
+    /**
+     * Move the player cursor with left and right arrow keys
+     */
     if (
       ['ArrowRight', 'ArrowLeft'].includes(event.code) &&
         (event.target as HTMLElement).tagName !== 'INPUT'
     ) {
       event.preventDefault()
       if (this.audioPlayer.started == null) {
+        let newStart = this.audioPlayer.position
+        const step = this.audioPlayer.duration / 40
         if (event.code === 'ArrowRight') {
-          const newStart = this.audioPlayer.position + 0.1
-          if (newStart < this.audioPlayer.duration) {
-            this.audioPlayer.position = newStart
-          }
+          newStart += step
+        } else if (event.code === 'ArrowLeft') {
+          newStart -= step
         }
-        if (event.code === 'ArrowLeft') {
-          const newStart = this.audioPlayer.position - 0.1
-          if (newStart >= -1e-10) {
-            this.audioPlayer.position = newStart
-          }
-        }
+        newStart = Math.max(0, newStart)
+        newStart = Math.min(newStart, this.audioPlayer.duration - 0.1)
+        this.audioPlayer.position = newStart
       }
     }
   }
