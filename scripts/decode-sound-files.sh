@@ -7,8 +7,8 @@
 #
 
 
-DESCRIPTION_FOLDER=data/descriptions
-AUDIO_FOLDER=data/audio
+DESCRIPTION_FOLDER=public/descriptions
+AUDIO_FOLDER=public/audio
 
 for _ in 1 2 3
 do

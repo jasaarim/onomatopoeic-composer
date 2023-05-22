@@ -3,10 +3,11 @@ cypress/fixtures/
 cypress/plugins/
 cypress/support/
 cypress/videos/
-data/audio/
-data/descriptions/
-data/sounds.json
-data/info-*.txt
+public/audio/
+public/descriptions/
+public/sounds.json
+public/info-*.txt
+originals/
 node_modules/
 shell.nix
 yarn.lock

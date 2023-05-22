@@ -5,8 +5,7 @@ echo "Checking types"
 tsc --noEmit
 echo "Checking linting"
 eslint .
-cp -r data/* build/
-cp index.html build/
+cp -r public/* build/
 
 # Add automatic reload to the app when there is a command line argument
 if [ $# -ne 0 ]
