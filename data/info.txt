@@ -1,0 +1,23 @@
+In this app you can compose with onomatopoeia, which are words that
+phonetically resemble the sounds that they describe.
+
+The onomatopoeia are in the left-hand menu. An item with red
+background has only a textual description and an item with brown
+background has both a description and an audio sample.  The audio
+samples can be put to the above multitrack player.
+
+The tracks 1–8 in the player balance right and left speaker
+differently.  The duration of the tracks is shown in the number field in
+the right and the current position next to the stop button.
+
+Sounds can be dragged from the menu to the player and from one
+position to another in the player. Once in the player, a sound can
+also be moved using arrow keys when an item is focused.  When the
+focus is not on a sound in the player, left and right keys change the
+current position in the player.
+
+The composition is automatically saved in the page address.
+
+The app is <a
+href="https://github.com/jasaarim/onomatopoeic-composer"> open source
+</a>.

@@ -3,7 +3,7 @@ import { type DescriptionDisplay } from './description-display'
 import { type GeneralControls } from './general-controls'
 import { type SoundMenu } from './sound-menu'
 
-import { parseTemplate } from '../utils/general'
+import { parseTemplate, config } from '../utils/general'
 import { soundStateFromURL, playerStateFromURL } from '../utils/url'
 
 import template from '../templates/onomatopoeic-composer.html'
@@ -52,6 +52,8 @@ export class OnomatopoeicComposer extends HTMLElement {
 
     // To enable blurring input elements by clicking anywhere
     this.tabIndex = 0
+
+    this.setTitle()
   }
 
   connectEvents (): void {
@@ -96,6 +98,13 @@ export class OnomatopoeicComposer extends HTMLElement {
         this.audioPlayer.position = newStart
       }
     }
+  }
+
+  setTitle (): void {
+    config.loaded.then(() => {
+      document.title = config.title
+    })
+      .catch(error => { throw error })
   }
 }
 

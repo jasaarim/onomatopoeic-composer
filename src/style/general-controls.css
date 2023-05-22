@@ -16,6 +16,10 @@ general-controls svg {
   background: #eee;
 }
 
+#info-overlay {
+  overflow-y: auto;
+}
+
 .show-info #info-overlay {
   display: unset;
 }

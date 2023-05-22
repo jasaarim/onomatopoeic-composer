@@ -3,8 +3,12 @@ cypress/fixtures/
 cypress/plugins/
 cypress/support/
 cypress/videos/
-data/
+data/audio/
+data/descriptions/
+data/sounds.json
+data/info-*.txt
 node_modules/
 shell.nix
 yarn.lock
 tsconfig.tsbuildinfo
+package-lock.json

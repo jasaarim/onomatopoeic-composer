@@ -1,4 +1,4 @@
-import { parseTemplate } from '../utils/general'
+import { fetchLocalized, parseTemplate, config } from '../utils/general'
 
 import template from '../templates/general-controls.html'
 import '../style/general-controls.css'
@@ -7,6 +7,7 @@ const nodes = parseTemplate(template)
 
 export class GeneralControls extends HTMLElement {
   infoOverlay: HTMLDivElement
+  infoContainer: HTMLDivElement
   infoToggle: HTMLButtonElement
   fullscreenToggle: HTMLButtonElement
 
@@ -17,6 +18,11 @@ export class GeneralControls extends HTMLElement {
     this.infoOverlay = this.querySelector('#info-overlay') as HTMLDivElement
     this.infoToggle = this.querySelector('#info-toggle') as HTMLButtonElement
     this.fullscreenToggle = this.querySelector('#fullscreen-toggle') as HTMLButtonElement
+
+    this.infoContainer = document.createElement('div')
+    this.infoOverlay.append(this.infoContainer)
+
+    this.prepareInfo().catch(error => { throw error })
 
     this.connectEvents()
   }
@@ -38,6 +44,25 @@ export class GeneralControls extends HTMLElement {
       this.classList.add('show-info')
       this.infoToggle.classList.add('active')
     }
+  }
+
+  async prepareInfo (): Promise<void> {
+    // Clear the container
+    this.infoContainer.textContent = ''
+    await this.prepareInfoTitle()
+    const text = await fetchLocalized('info', '.txt')
+    text.split('\n\n').forEach(paragraph => {
+      const p = document.createElement('p')
+      p.innerHTML = paragraph
+      this.infoContainer.append(p)
+    })
+  }
+
+  async prepareInfoTitle (): Promise<void> {
+    await config.loaded
+    const h = document.createElement('h1')
+    h.append(config.title)
+    this.infoContainer.append(h)
   }
 
   /**
