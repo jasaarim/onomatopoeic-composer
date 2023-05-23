@@ -68,9 +68,9 @@ export class OnomatopoeicComposer extends HTMLElement {
     // the vh unit is not consistent with the visible page size.  This should
     // fix it.
     let vh = window.innerHeight * 0.01
-    vh = Math.min(vh, 7)
+    vh = Math.min(vh, 8)
     let vw = window.innerWidth * 0.01
-    vw = Math.min(vw, 15)
+    vw = Math.min(vw, 16)
 
     document.documentElement.style.setProperty('--vh', `${vh}px`)
     document.documentElement.style.setProperty('--vw', `${vw}px`)

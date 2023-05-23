@@ -1,7 +1,7 @@
 {
   "name": "onomatopoeic-composer",
   "description": "Browsing, listening to, and composing with onomatopoeia",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "licence": "AGPL",
   "homepage": "https://github.com/jasaarim/onomatopoeic-composer",
   "repository": {
@@ -12,7 +12,7 @@
     "dev": "scripts/init-build-dir.sh -d && ./scripts/esbuild-dev.mjs",
     "build": "scripts/init-build-dir.sh && ./scripts/esbuild-prod.mjs",
     "test": "npx cypress run",
-    "index-sounds": "scripts/index-sounds.js",
+    "index-sounds": "scripts/index-sounds.mjs",
     "copy-sounds": "scripts/copy-sounds.js",
     "decode-sound-files": "scripts/decode-sound-files.sh"
   },

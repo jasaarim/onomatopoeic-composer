@@ -12,9 +12,11 @@ the right and the current position next to the stop button.
 
 Sounds can be dragged from the menu to the player and from one
 position to another in the player. Once in the player, a sound can
-also be moved using arrow keys when an item is focused.  When the
-focus is not on a sound in the player, left and right keys change the
-current position in the player.
+also be moved using arrow keys when it is in focus.  When the focus is
+not on a sound in the player, left and right keys change the current
+position in the player.  When the focus in on a sound in the menu, up
+and down arrow keys change the sound and pressing enter adds the sound
+to the player to where the player cursor is.
 
 The composition is automatically saved in the page address.
 

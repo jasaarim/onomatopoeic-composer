@@ -42,8 +42,7 @@ function maybeFocus (data: Data, event: PointerEvent): void {
   data.noDrag = true
   data.removeListeners()
   if (!dragThreshold(event, data.initialY, data.sound)) {
-    // throw new Error(`${data.sound.soundName}`)
-    // data.sound.focus()
+    data.sound.focus()
   }
 }
 

@@ -70,6 +70,11 @@ export class SoundMenu extends HTMLElement {
   async addSounds (): Promise<void> {
     this.classList.add('adding-first-sounds')
     const response = await fetch(this.soundsFile)
+    if (response.status === 404) {
+      this.style.padding = '.2em'
+      this.append('Cannot find any sounds')
+      return
+    }
     const json = await response.json() as SoundsJSON
     let count = 0
     let frag = document.createDocumentFragment()

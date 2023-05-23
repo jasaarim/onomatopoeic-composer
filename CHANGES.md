@@ -1,6 +1,12 @@
 # Change log
 
+## 0.5.0
+
+- Localization
+
 ## 0.4.3
+
+- Instructions toggle
 
 - Enhance moving the player cursor with arrow keys
 
