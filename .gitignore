@@ -12,4 +12,3 @@ node_modules/
 shell.nix
 yarn.lock
 tsconfig.tsbuildinfo
-package-lock.json
