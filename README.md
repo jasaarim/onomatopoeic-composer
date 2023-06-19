@@ -1,7 +1,7 @@
 # Onomatopoeic Composer
 
 Make compositions with short audio samples. Try a [demo with Finnish
-sounds](https://s7i.fi/ääniset).
+sounds](https://s7i.fi/ääninen).
 
 This repository does not contain sounds for the app.
 
