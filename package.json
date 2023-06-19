@@ -17,7 +17,7 @@
     "decode-sound-files": "scripts/decode-sound-files.sh"
   },
   "devDependencies": {
-    "cypress": "^10.10.0",
+    "cypress": "^12.9.0",
     "esbuild": "^0.17.18",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-cypress": "^2.13.2",
